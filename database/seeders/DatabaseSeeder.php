@@ -15,9 +15,17 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        //User::factory()->create([
+          //  'name' => 'Test User',
+          //  'email' => 'test@example.com',//
+
+           // Llamas al seeder de companies
+        $this->call(CompaniesTableSeeder::class);
+
+        // Aquí luego podrás llamar a los seeders de tus otras tablas
+        // $this->call(UsersTableSeeder::class);
+        // $this->call(RolesTableSeeder::class);
+        // etc.
+    
     }
 }
