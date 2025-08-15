@@ -22,14 +22,14 @@ class InvoiceNumber extends Model
     ];
 
     //listas blancas
-    protected $allowIncluded = [];//empresa
+    protected $allowIncluded = ['company']; //relacionado con nit de la empresa
     protected $allowFilter = [ 'id', 'nit', 'tipo_documento', 'prefijo', 'numero_inicial', 'numero_final', 'fecha_resolucion', 'numero_resolucion', 'fecha_inicio', 'fecha_fin', 'estado_actual'];
     protected $allowSort = ['id', 'nit', 'tipo_documento', 'prefijo', 'numero_inicial', 'numero_final', 'fecha_resolucion', 'numero_resolucion', 'fecha_inicio', 'fecha_fin', 'estado_actual'];
 
     public function Companies()
     {
         // This method can be used to define a relationship with the Company model if needed
-        // return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class);
     }
     
     public function scopeIncluded(Builder $query)

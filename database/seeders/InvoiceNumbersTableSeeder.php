@@ -15,7 +15,7 @@ class InvoiceNumbersTableSeeder extends Seeder
     {
         InvoiceNumber::insert([
             [
-                'NIT' => 900123456,
+                'nit' => 900123456,
                 'tipo_documento' => 'Factura',
                 'prefijo' => 'FAC',
                 'numero_inicial' => 1000,
@@ -29,7 +29,7 @@ class InvoiceNumbersTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'NIT' => 901234567,
+                'nit' => 901234567,
                 'tipo_documento' => 'notaCredito',
                 'prefijo' => 'NC',
                 'numero_inicial' => 500,
@@ -43,7 +43,7 @@ class InvoiceNumbersTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'NIT' => 902345678,
+                'nit' => 902345678,
                 'tipo_documento' => 'Factura',
                 'prefijo' => 'F2024',
                 'numero_inicial' => 200,
@@ -57,7 +57,7 @@ class InvoiceNumbersTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'NIT' => 903456789,
+                'nit' => 903456789,
                 'tipo_documento' => 'notaCredito',
                 'prefijo' => 'NCR',
                 'numero_inicial' => 300,
@@ -71,7 +71,7 @@ class InvoiceNumbersTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'NIT' => 904567890,
+                'nit' => 904567890,
                 'tipo_documento' => 'Factura',
                 'prefijo' => 'VENTA',
                 'numero_inicial' => 50,

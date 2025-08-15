@@ -16,23 +16,27 @@ class InvoiceNumberController extends Controller
 
         return response()->json($invoiceNumber);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $invoiceNumber = InvoiceNumber::create($request->all());
+            $validatedData = $request->validate([
+                'nit' => 'required|integer|gt:0',
+                'tipo_documento' => 'required|in:Factura,NotaCredito',
+                'prefijo' => 'required|string|max:10',
+                'numero_inicial' => 'required|integer|gt:0',
+                'numero_final' => 'required|integer|gt:0',
+                'fecha_resolucion' => 'required|date',
+                'numero_resolucion' => 'required|string|max:50',
+                'fecha_inicio' => 'required|date',
+                'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
+                'estado_actual' => 'required|boolean'
+            ]);
 
-        return response()->json($invoiceNumber);
+            $invoiceNumber = InvoiceNumber::create($validatedData);
+
+            return response()->json($invoiceNumber, 201);
     }
 
     /**
@@ -44,39 +48,27 @@ class InvoiceNumberController extends Controller
 
         return response()->json($invoiceNumber);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(InvoiceNumber $invoiceNumber)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, InvoiceNumber $invoiceNumber)
     {
-        $request->validate([
-            'nit' => 'required|integer|gt:0',
-            'tipo_documento' => 'required|in:Factura,NotaCredito',
-            'prefijo' => 'required|string|max:10',
-            'numero_inicial' => 'required|integer|gt:0',
-            'numero_final' => 'required|integer|gt:0',
-            'fecha_resolucion' => 'required|date',
-            'numero_resolucion' => 'required|string|max:50',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date',
-            'estado_actual' => 'required|boolean'
-        ]);
+            $validatedData = $request->validate([
+                'nit' => 'sometimes|integer|gt:0',
+                'tipo_documento' => 'sometimes|in:Factura,NotaCredito',
+                'prefijo' => 'sometimes|string|max:10',
+                'numero_inicial' => 'sometimes|integer|gt:0',
+                'numero_final' => 'sometimes|integer|gt:0',
+                'fecha_resolucion' => 'sometimes|date',
+                'numero_resolucion' => 'sometimes|string|max:50',
+                'fecha_inicio' => 'sometimes|date',
+                'fecha_fin' => 'sometimes|date|after_or_equal:fecha_inicio',
+                'estado_actual' => 'sometimes|boolean'
+            ]);
 
-        $invoiceNumber->update($request->all());
+            $invoiceNumber->update($validatedData);
 
-        return response()->json([
-            'message' => 'Numeración DIAN actualizada con éxito.',
-            'data' => $invoiceNumber
-        ], 200);
+            return response()->json($invoiceNumber);
     }
 
     /**
