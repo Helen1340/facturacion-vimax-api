@@ -15,21 +15,18 @@ return new class extends Migration
             $table->id();
 
             //$table->string('IdCertificado'); // PK Bigint 
-            $table->unsignedBigInteger('NIT'); // FK Bigint
-
-            $table->string('Nombre_Certificado', 225);
-            $table->text('Ruta_Certificado');
-            $table->string('Contrasena', 225);
-            $table->date('Fecha_Inicio');
-            $table->date('Fecha_Fin');
-            $table->enum('Estado', ['Vigente', 'Vencido', 'Revocado']);
-            $table->string('Proveedor', 100);
-
+            $table->unsignedBigInteger('nit'); // FK Bigint
+            $table->string('nombre_certificado', 225);
+            $table->text('ruta_certificado');
+            $table->string('contrasena', 225);
+            $table->date('fecha_inicio');
+            $table->date('fecha_fin');
+            $table->enum('estado', ['vigente', 'vencido', 'revocado']);
+            $table->string('proveedor', 100);
             $table->timestamps();
 
             // Relación FK con la tabla correspondiente ( empresas)
-
-            //$table->foreign('NIT')->references('NIT')->on('empresas')->onDelete('cascade');
+            //$table->foreign('nit')->references('nit')->on('empresas')->onDelete('cascade');
         });
     }
 

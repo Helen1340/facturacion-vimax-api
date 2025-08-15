@@ -47,34 +47,26 @@ class DigitalCertificateController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(DigitalCertificate $digitalCertificate)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, DigitalCertificate $digitalCertificate)
     {
         $validatedData = $request->validate([
-            'NIT'               => 'sometimes|nullable|exists:empresas,NIT',
-            'Nombre_Certificado'=> 'sometimes|string|max:225',
-            'Ruta_Certificado'  => 'sometimes|string',
-            'Contrasena'        => 'sometimes|string|max:225',
-            'Fecha_Inicio'      => 'sometimes|date',
-            'Fecha_Fin'         => [
+            'nit'               => 'sometimes|nullable|exists:empresas,NIT',
+            'nombre_certificado'=> 'sometimes|string|max:225',
+            'ruta_certificado'  => 'sometimes|string',
+            'contrasena'        => 'sometimes|string|max:225',
+            'fecha_inicio'      => 'sometimes|date',
+            'fecha_fin'         => [
                 'sometimes',
                 'date',
                 Rule::when(
-                    $request->has('Fecha_Inicio'),
-                    ['after_or_equal:Fecha_Inicio']
+                    $request->has('fecha_inicio'),
+                    ['after_or_equal:fecha_inicio']
                 ),
             ],
-            'Estado'            => 'sometimes|in:Vigente,Vencido,Revocado',
-            'Proveedor'         => 'sometimes|string|max:100',
+            'estado'            => 'sometimes|in:Vigente,Vencido,Revocado',
+            'proveedor'         => 'sometimes|string|max:100',
         ]);
 
         $digitalCertificate->update($validatedData);

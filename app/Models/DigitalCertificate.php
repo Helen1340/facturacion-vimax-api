@@ -8,26 +8,26 @@ use Illuminate\Database\Eloquent\Builder;
 class DigitalCertificate extends Model
 {
     protected $fillable = [
-        'NIT',
-        'Nombre_Certificado',
-        'Ruta_Certificado',
-        'Contrasena',
-        'Fecha_Inicio',
-        'Fecha_Fin',
-        'Estado',
-        'Proveedor',
+        'nit',
+        'nombre_certificado',
+        'ruta_certificado',
+        'contrasena',
+        'fecha_inicio',
+        'fecha_fin',
+        'estado',
+        'proveedor',
     ];
 
     
 
-    protected $allowIncluded = []; //relacionado con nit de la empresa
+    protected $allowIncluded = ['company']; //relacionado con nit de la empresa
     protected $allowFilter = ['id', 'nombre_certificado', 'ruta_certificado', 'contrasena', 'fecha_inicio', 'fecha_fin', 'estado', 'proveedor'];
     protected $allowSort = ['id', 'nombre_certificado', 'ruta_certificado', 'contrasena', 'fecha_inicio', 'fecha_fin', 'estado', 'proveedor'];
     
     public function Company()
     {
         // This method can be used to define a relationship with the Company model if needed
-        // return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class);
     }
     
     public function scopeIncluded(Builder $query)
