@@ -30,9 +30,18 @@ class TaxController extends Controller
      */
     public function store(Request $request)
     {
-        $taxe = Tax::create($request->all());
+            $validatedData = $request->validate([
+                'codigo_dian'      => 'required|string|max:20|unique:taxes,codigo_dian',
+                'nombre'           => 'required|string|max:100',
+                'descripcion'      => 'nullable|string',
+                'tipo_aplicacion'  => 'required|in:trasladado,retenido',
+                'porcentaje_base'  => 'required|numeric|min:0|max:100',
+                'estado'           => 'boolean',
+            ]);
 
-        return response()->json($taxe);
+            $taxe = Tax::create($validatedData);
+
+            return response()->json($taxe);
     }
 
     /**
@@ -50,18 +59,18 @@ class TaxController extends Controller
      */
     public function update(Request $request, Tax $tax)
     {
-        $validatedData = $request->validate([
-            'codigo_dian'      => 'required|string|max:20',
-            'nombre'           => 'required|string|max:100',
-            'descripcion'      => 'nullable|string|max:255',
-            'tipo_aplicacion'  => 'required|in:trasladado,retenido',
-            'porcentaje_base'  => 'required|numeric|min:0|max:100',
-            'estado'           => 'boolean',
-        ]);
+            $validatedData = $request->validate([
+                'codigo_dian'      => 'sometimes|string|max:20|unique:taxes,codigo_dian,' . $tax->id,
+                'nombre'           => 'sometimes|string|max:100',
+                'descripcion'      => 'sometimes|nullable|string',
+                'tipo_aplicacion'  => 'sometimes|in:trasladado,retenido',
+                'porcentaje_base'  => 'sometimes|numeric|min:0|max:100',
+                'estado'           => 'sometimes|boolean',
+            ]);
 
-        $tax->update($validatedData);
+            $tax->update($validatedData);
 
-        return $tax;
+            return response()->json($tax);
     }
 
     /**
