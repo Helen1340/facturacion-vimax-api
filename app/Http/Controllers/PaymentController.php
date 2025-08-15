@@ -47,13 +47,15 @@ class PaymentController extends Controller
 
         // Actualiza solo los campos que vienen en el request
         $payment->update($request->only(array_keys($request->all())));
-
+        //Actualiza el campo pero siempretenemos que poner o validar nit, razon_social y tipo_documento
+        //$paymet->update($request->all()); // Linea del Repositorio del Instrucor
         return response()->json($payment);
     }
 
     // eliminar un pago
-    public function destroy(Payment $payment)
+    public function destroy($id)
     {
+        $payment = Payment::findOrFail($id);
         $payment->delete();
         return response()->json(null, 204);
     }
