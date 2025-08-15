@@ -8,80 +8,60 @@ class SystemUsers extends Model
 {
 
     /* ==========================
-       CAMPOS RELLENABLES
+    CAMPOS RELLENABLES
     ========================== */
     protected $fillable = [
-        'IdUsuario',
-        'NombreCompleto',
-        'Rol',
-        'Contrasena',
-        'CorreoElectronico',
-        'Telefono',
-        'Estado',
-        'UltimoAcceso',
-        'NumeroIdentificacion'
+        'nombre_completo',
+        'rol',
+        'contrasena',
+        'correo_electronico',
+        'telefono',
+        'estado',
+        'ultimo_Acceso',
+        'numero_identificacion'
     ];
 
-    /* ==========================
-    RELACIONES (CARDINALIDADES)
-    ==========================
+    /*
+    LISTAS BLANCAS
+    */
+    protected $allowIncluded = [ 'CreditDebitNote', 'Role', 'ElectronicInvoice', 'Company'];
+    protected $allowFilter = ['nombre_completo', 'rol', 'correo_electronico', 'telefono', 'estado', 'numero_identificacion'];
+    protected $allowSort = ['nombre_completo', 'rol', 'correo_electronico', 'estado', 'numero_identificacion'];
 
-    Un usuario tiene muchas notas de crédito/debito
+
+
+    // (CARDINALIDADES)
+
+
+    //Un usuario tiene muchas notas de crédito/debito
     public function CreditDebitNote()
     {
-        return $this->hasMany(CreditDebitNote::class, 'usuario_id');
+        return $this->hasMany(CreditDebitNote::class);
     }
 
-    Muchos usuarios pertenecen a un rol
+    //Muchos usuarios pertenecen a un rol
     public function Role()
     {
-        return $this->belongsTo(Role::class, 'rol_id');
+        return $this->belongsTo(Role::class);
     }
 
-    Un usuario crea muchas facturas electrónicas
+    //Un usuario crea muchas facturas electrónicas
     public function ElectronicInvoice()
     {
-        return $this->hasMany(ElectronicInvoice::class, 'usuario_id');
+        return $this->hasMany(ElectronicInvoice::class);
     }
 
-    Muchos usuarios trabajan en una empresa
+    //Muchos usuarios trabajan en una empresa
     public function Company()
     {
-        return $this->belongsTo(Company::class, 'empresa_id');
+        return $this->belongsTo(Company::class);
     }
+
+
+
+    /*
+    SCOPES
     */
-
-    /* ==========================
-       LISTAS BLANCAS
-    ========================== */
-    protected $allowIncluded = [
-        'notasCredito',
-        'notasDebito',
-        'rol',
-        'facturasElectronicas',
-        'empresa'
-    ];
-
-    protected $allowFilter = [
-        'IdUsuario',
-        'NombreCompleto',
-        'Rol',
-        'CorreoElectronico',
-        'Telefono',
-        'Estado',
-        'NumeroIdentificacion'
-    ];
-
-    protected $allowSort = [
-        'NombreCompleto',
-        'Rol',
-        'CorreoElectronico',
-        'Estado'
-    ];
-
-    /* ==========================
-       SCOPES
-    ========================== */
     // scopes
 public function scopeIncluded(Builder $query)
 {

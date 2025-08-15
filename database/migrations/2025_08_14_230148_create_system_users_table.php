@@ -13,26 +13,22 @@ return new class extends Migration
     {
         Schema::create('system_users', function (Blueprint $table) {
             $table->id();
-
-            $table->string('IdUsuario')->unique();
-            $table->string('NombreCompleto');
-            $table->enum('Rol', ['Admin', 'Facturador']);
-            $table->string('Contraseña');
-            $table->string('CorreoElectronico');
-            $table->string('Teléfono');
-            $table->boolean('Estado');
-            $table->timestamp('UltimoAcceso')->nullable();
-            $table->timestamp('FechaCreación')->useCurrent();
-            $table->timestamp('FechaActualización')->nullable();
-            $table->string('NumeroIdentificacion')->unique();
+            $table->string('nombre_completo', 100);
+            $table->enum('rol', ['Admin', 'Facturador']);
+            $table->string('contrasena', 225);
+            $table->string('correo_electronico', 100);
+            $table->string('telefono', 20);
+            $table->boolean('estado');
+            $table->timestamp('ultimo_acceso')->nullable();
+            $table->string('numero_identificacion', 15);
 
             // FK: Rol
-            // $table->unsignedBigInteger('rol_id');
-            // $table->foreign('rol_id')->references('id')->on('roles')->onDelete('cascade');
+            // $table->unsignedBigInteger('role_id');
+            // $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
 
             // FK: NIT de Empresa
-            // $table->string('empresa_nit');
-            // $table->foreign('empresa_nit')->references('NIT')->on('empresas')->onDelete('cascade');
+            // $table->string('Company_id');
+            // $table->foreign('Company_id')->references('id')->on('Companys')->onDelete('cascade');
 
             $table->timestamps();
         });

@@ -11,59 +11,54 @@ class SystemUserSeeder extends Seeder
     {
         SystemUsers::insert([
             [
-                'IdUsuario' => 'USR001',
-                'NombreCompleto' => 'Juan Pérez',
-                'Rol' => 'Admin',
-                'Contrasena' => Hash::make('AdminPass123'),
-                'CorreoElectronico' => 'juan.perez@example.com',
-                'Telefono' => '3001234567',
-                'Estado' => true,
-                'UltimoAcceso' => now(),
-                'NumeroIdentificacion' => '123456789'
+                'nombre_completo' => 'Juan Pérez',
+                'rol' => 'Admin',
+                'contrasena' => Hash::make('AdminPass123'),
+                'correo_electronico' => 'juan.perez@example.com',
+                'telefono' => '3001234567',
+                'estado' => true,
+                'ultimo_acceso' => now(),
+                'numero_identificacion' => '123456789'
             ],
             [
-                'IdUsuario' => 'USR002',
-                'NombreCompleto' => 'María Gómez',
-                'Rol' => 'Facturador',
-                'Contrasena' => Hash::make('Factura2025'),
-                'CorreoElectronico' => 'maria.gomez@example.com',
-                'Telefono' => '3109876543',
-                'Estado' => true,
-                'UltimoAcceso' => now()->subDays(1),
-                'NumeroIdentificacion' => '987654321'
+                'nombre_completo' => 'María Gómez',
+                'rol' => 'Facturador',
+                'contrasena' => Hash::make('Factura2025'),
+                'correo_electronico' => 'maria.gomez@example.com',
+                'telefono' => '3109876543',
+                'estado' => true,
+                'ultimo_acceso' => now()->subDays(1),
+                'numero_identificacion' => '987654321'
             ],
             [
-                'IdUsuario' => 'USR003',
-                'NombreCompleto' => 'Carlos Ruiz',
-                'Rol' => 'Admin',
-                'Contrasena' => Hash::make('SeguraClave88'),
-                'CorreoElectronico' => 'carlos.ruiz@example.com',
-                'Telefono' => '3155557890',
-                'Estado' => false,
-                'UltimoAcceso' => null,
-                'NumeroIdentificacion' => '112233445'
+                'nombre_completo' => 'Carlos Ruiz',
+                'rol' => 'Admin',
+                'contrasena' => Hash::make('SeguraClave88'),
+                'correo_electronico' => 'carlos.ruiz@example.com',
+                'telefono' => '3155557890',
+                'estado' => false,
+                'ultimo_acceso' => null,
+                'numero_identificacion' => '112233445'
             ],
             [
-                'IdUsuario' => 'USR004',
-                'NombreCompleto' => 'Laura Fernández',
-                'Rol' => 'Facturador',
-                'Contrasena' => Hash::make('ClaveFuerte99'),
-                'CorreoElectronico' => 'laura.fernandez@example.com',
-                'Telefono' => '3204443322',
-                'Estado' => true,
-                'UltimoAcceso' => now()->subHours(5),
-                'NumeroIdentificacion' => '556677889'
+                'nombre_completo' => 'Laura Fernández',
+                'rol' => 'Facturador',
+                'contrasena' => Hash::make('ClaveFuerte99'),
+                'correo_electronico' => 'laura.fernandez@example.com',
+                'telefono' => '3204443322',
+                'estado' => true,
+                'ultimo_acceso' => now()->subHours(5),
+                'numero_identificacion' => '556677889'
             ],
             [
-                'IdUsuario' => 'USR005',
-                'NombreCompleto' => 'Andrés López',
-                'Rol' => 'Admin',
-                'Contrasena' => Hash::make('AdminSuper2025'),
-                'CorreoElectronico' => 'andres.lopez@example.com',
-                'Telefono' => null,
-                'Estado' => true,
-                'UltimoAcceso' => now()->subDays(3),
-                'NumeroIdentificacion' => '998877665'
+                'nombre_completo' => 'Andrés López',
+                'rol' => 'Admin',
+                'contrasena' => Hash::make('AdminSuper2025'),
+                'correo_electronico' => 'andres.lopez@example.com',
+                'telefono' => null,
+                'estado' => true,
+                'ultimo_acceso' => now()->subDays(3),
+                'numero_identificacion' => '998877665'
             ],
         ]);
     }
