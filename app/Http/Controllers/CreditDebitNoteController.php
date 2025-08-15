@@ -18,16 +18,15 @@ class CreditDebitNoteController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'IdUsuario'    => 'required|integer|exists:system_users,id',
-            'Motivo'       => 'required|string|max:255',
-            'TipoNota'     => 'required|in:debito,Credito',
-            'Descripcion'  => 'required|string',
-            'ValorTotal'   => 'required|numeric|between:0,9999999999999.99',
-            'CUFENota'     => 'required|string|max:100',
-            'XMLFirmado'   => 'required|string',
-            'EstadoDian'   => 'required|in:aceptada,rechazada,pendiente',
-            'FechaEmision' => 'nullable|date',
-            'Moneda'       => 'required|string|size:3',
+            'motivo'       => 'required|string|max:255',
+            'tipoNota'     => 'required|in:debito,Credito',
+            'descripcion'  => 'required|string',
+            'valor_total'   => 'required|numeric|between:0,9999999999999.99',
+            'cufe_nota'     => 'required|string|max:100',
+            'xml_firmado'   => 'required|string',
+            'estado_dian'   => 'required|in:aceptada,rechazada,pendiente',
+            'fecha_emision' => 'nullable|date',
+            'moneda'       => 'required|string|size:3',
         ]);
 
         $credit_debit_note = CreditDebitNote::create($request->all());
@@ -46,16 +45,15 @@ class CreditDebitNoteController extends Controller
     public function update(Request $request, CreditDebitNote $credit_debit_note)
     {
         $request->validate([
-            'IdUsuario'    => 'sometimes|integer|exists:system_users,id',
-            'Motivo'       => 'sometimes|string|max:255',
-            'TipoNota'     => 'sometimes|in:debito,Credito',
-            'Descripcion'  => 'sometimes|string',
-            'ValorTotal'   => 'sometimes|numeric|between:0,9999999999999.99',
-            'CUFENota'     => 'sometimes|string|max:100',
-            'XMLFirmado'   => 'sometimes|string',
-            'EstadoDian'   => 'sometimes|in:aceptada,rechazada,pendiente',
-            'FechaEmision' => 'sometimes|nullable|date',
-            'Moneda'       => 'sometimes|string|size:3',
+            'motivo'       => 'sometimes|string|max:255',
+            'tipo_nota'     => 'sometimes|in:debito,Credito',
+            'descripcion'  => 'sometimes|string',
+            'valor_total'   => 'sometimes|numeric|between:0,9999999999999.99',
+            'cufe_nota'     => 'sometimes|string|max:100',
+            'xml_firmado'   => 'sometimes|string',
+            'estado_dian'   => 'sometimes|in:aceptada,rechazada,pendiente',
+            'fecha_emision' => 'sometimes|nullable|date',
+            'moneda'       => 'sometimes|string|size:3',
         ]);
 
         // Actualiza solo los campos presentes en la petición
@@ -65,8 +63,9 @@ class CreditDebitNoteController extends Controller
     }
 
     // Eliminar una nota crédito / débito
-    public function destroy(CreditDebitNote $credit_debit_note)
+    public function destroy($id)
     {
+        $credit_debit_note = CreditDebitNote::findOrFail($id);
         $credit_debit_note->delete();
         return response()->json(null, 204);
     }

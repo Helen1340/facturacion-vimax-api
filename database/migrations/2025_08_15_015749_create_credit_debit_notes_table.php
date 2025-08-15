@@ -13,20 +13,21 @@ return new class extends Migration
     {
         Schema::create('CreditDebitNote', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('IdUsuario');
-            $table->string('Motivo');
-            $table->enum('TipoNota', ['Crédito', 'Débito']);
-            $table->text('Descripcion');
-            $table->decimal('ValorTotal');
-            $table->string('CufeNota');
-            $table->string('XmlFormado');
-            $table->enum('EstadoDian', ['Pendiente', 'Aprobado', 'Rechazado']);
+            $table->string('numero_nota')->unique();
+            $table->string('Motivo', 255)->nullable();
+            $table->enum('TipoNota', ['debito', 'credito']);
+            $table->text('Descripcion')->nullable();
+            $table->decimal('ValorTotal', 15, 2);
+            $table->string('CUFENota', 100)->nullable();
+            $table->text('XML_firmado')->nullable();
+            $table->enum('EstadoDian', ['aceptada', 'rechazada', 'pendiente']);
             $table->date('FechaEmision');
-            $table->char('Moneda');
+            $table->string('Moneda', 3);
             $table->timestamps();
 
             // Llave foránea (comentada por ahora)
-            // $table->foreign('IdUsuario')->references('id')->on('system_users')->onDelete('cascade');
+            //$table->unsignedBigInteger('system_user_id')->nullable();
+            // $table->foreign('system_user_id')->references('id')->on('system_users')->onDelete('cascade');
         });
     }
 

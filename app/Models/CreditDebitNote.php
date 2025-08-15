@@ -7,59 +7,39 @@ use Illuminate\Database\Eloquent\Model;
 
 class CreditDebitNote extends Model
 {
-    /* ==========================
+    /*
        CAMPOS RELLENABLES
-    ========================== */
+    */
     protected $fillable = [
-        'IdUsuario',
-        'Motivo',
-        'TipoNota',
-        'Descripcion',
-        'ValorTotal',
-        'CUFENota',
-        'XMLFirmado',
-        'EstadoDian',
-        'FechaEmision',
-        'Moneda'
+        'motivo',
+        'tipo_nota',
+        'descripcion',
+        'valor_total',
+        'cufe_nota',
+        'xml_firmado',
+        'estado_dian',
+        'fecha_emision',
+        'moneda'
     ];
 
-    // /* ==========================
-    //    RELACIONES (CARDINALIDADES)
-    // ========================== */
 
-    // // muchas nota de crédito/débito pertenece a un usuario
-    // public function user()
-    // {
-    //     return $this->belongsTo(SystemUsers::class, 'IdUsuario');
-    //     Nota: la FK en la tabla credit_debit_notes es IdUsuario
-    // }
 
-    /* ==========================
-       LISTAS BLANCAS
-    ========================== */
-    protected $allowIncluded = [
-        'user' // Solo se permite incluir la relación con usuario
-    ];
+    /*
+        LISTAS BLANCAS
+    */
+    protected $allowIncluded = ['user' ];// Solo se permite incluir la relación con usuario
+    protected $allowFilter = ['motivo', 'tipo_nota', 'cufe_nota', 'estado_dian', 'fecha_emision'];
+    protected $allowSort = ['motivo', 'tipo_nota', 'cufe_nota', 'estado_dian', 'fecha_emision'];
 
-    protected $allowFilter = [
-        'IdUsuario',
-        'Motivo',
-        'TipoNota',
-        'Descripcion',
-        'ValorTotal',
-        'CUFENota',
-        'EstadoDian',
-        'FechaEmision',
-        'Moneda'
-    ];
+        /*
+    (CARDINALIDADES)
+     */
 
-    protected $allowSort = [
-        'Motivo',
-        'TipoNota',
-        'ValorTotal',
-        'EstadoDian',
-        'FechaEmision'
-    ];
+    // muchas nota de crédito/débito pertenece a un usuario
+    public function user()
+    {
+        return $this->belongsTo(SystemUsers::class);
+    }
 
     /* ==========================
        SCOPES
