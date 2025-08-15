@@ -49,8 +49,9 @@ class PermissionController extends Controller
     }
 
     // Eliminar un permiso
-    public function destroy(Permission $permission)
+    public function destroy($id)
     {
+        $permission = Permission::findOrFail($id);
         $permission->delete();
         return response()->json(null, 204);
     }
