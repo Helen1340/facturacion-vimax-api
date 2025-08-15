@@ -18,7 +18,7 @@ class UnitOfMeasureController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_unidad_medida' => 'required|integer|unique:unit_of_measures,id_unidad_medida',
+            'id_unidad_medida' => 'required|integer|exists:unit_of_measures,id',
             'nombre' => 'required|string|max:100',
             'estado' => 'required|boolean',
             'codio_dian' => 'required|string|max:10',
@@ -40,7 +40,7 @@ class UnitOfMeasureController extends Controller
     public function update(Request $request, UnitOfMeasure $unit_of_measure)
     {
         $request->validate([
-            'id_unidad_medida' => 'sometimes|integer|unique:unit_of_measures,IdUnidadMedida,' . $unit_of_measure->IdUnidadMedida,
+            'id_unidad_medida' => 'sometimes|integer|exists:unit_of_measures,id',
             'nombre' => 'sometimes|string|max:150',
             'estado' => 'sometimes|boolean',
             'codio_dian' => 'sometimes|string|max:50',
