@@ -8,30 +8,35 @@ use Illuminate\Database\Eloquent\Builder;
 class InvoiceDetail extends Model
 {
     protected $fillable = [
-        'CodigoProductoServicio',
-        'Cantidad',
-        'ValorUnitario',
-        'Descuento',
-        'ValorTotal',
-        'IdFactura'
+        'descripcion',
+        'cantidad',
+        'precio_unitario',
+        'valor_total',
+        'descuento',
+        'porcentaje_iva',
+        'valor_iva',
+        'unidad_medida',
+        'codigo_producto',
+        'observacion',
     ];
-
-    // cardinalidad
-    //public function ProductService()
-    //{
-    //    return $this->belongsTo(ProductService::class);
-    //}
-
-    // public function ElectronicInvoice()
-    // {
-    //     return $this->belongsTo(ElectronicInvoice::class);
-    // }
 
 
     // listas blancas
     protected $allowIncluded = ['ProductService', 'ElectronicInvoice'];
-    protected $allowFilter = ['CodigoProductoServicio', 'Cantidad', 'ValorUnitario', 'Descuento', 'ValorTotal'];
-    protected $allowSort = ['CodigoProductoServicio', 'Cantidad', 'ValorUnitario', 'Descuento', 'ValorTotal'];
+    protected $allowFilter = ['descripcion', 'cantidad', 'precio_unitario', 'valor_total', 'descuento', 'porcentaje_iva', 'valor_iva', 'unidad_medida', 'codigo_producto', 'observacion'];
+    protected $allowSort = ['descripcion', 'cantidad', 'precio_unitario', 'valor_total', 'descuento', 'porcentaje_iva', 'valor_iva', 'unidad_medida', 'codigo_producto', 'observacion'];
+
+
+    // cardinalidad
+    public function ProductService()
+    {
+        return $this->belongsTo(ProductService::class);
+    }
+
+    public function ElectronicInvoice()
+    {
+        return $this->belongsTo(ElectronicInvoice::class);
+    }
 
 
     // scopes

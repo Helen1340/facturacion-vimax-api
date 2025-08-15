@@ -13,17 +13,16 @@ return new class extends Migration
     {
         Schema::create('invoice_details', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('Id_DetalleFactura')->unique();
-            $table->text('Descripcion');
-            $table->decimal('Cantidad');
-            $table->decimal('PrecioUnitario');
-            $table->decimal('ValorTotal');
-            $table->decimal('Descuento');
-            $table->decimal('PorcentajeIVA');
-            $table->decimal('ValorIVA');
-            $table->string('UnidadMedida');
-            $table->string('CodigoProducto');
-            $table->text('Observacion')->nullable();
+            $table->text('descripcion');
+            $table->decimal('cantidad', 10, 2);
+            $table->decimal('precio_unitario', 15, 2);
+            $table->decimal('valor_total', 15, 2);
+            $table->decimal('descuento', 15, 2)->nullable();
+            $table->decimal('porcentaje_iva', 5, 2);
+            $table->decimal('valor_iva', 15, 2);
+            $table->string('unidad_medida', 20);
+            $table->string('codigo_producto', 50);
+            $table->text('observacion')->nullable();
 
             //$table->unsignedBigInteger('product_service_id')->nullable();
             //table->unsignedBigInteger('electronic_invoice_id')->nullable();

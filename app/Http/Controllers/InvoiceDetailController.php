@@ -21,18 +21,16 @@ class InvoiceDetailController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'Id_DetalleFactura' => 'required|integer',
-            'Descripcion' => 'required|text',
-            'Cantidad' => 'required|numeric',
-            'PrecioUnitario' => 'required|numeric',
-            'ValorTotal' => 'required|numeric',
-            'Descuento' => 'nullable|numeric',
-            'PorcentajeIVA' => 'required|numeric',
-            'ValorIVA' => 'required|numeric',
-            'UnidadMedida' => 'required|string|max:20',
-            'CodigoProducto' => 'required|string|max:50',
-            'Observacion' => 'nullable|text',
-            'product_service_id' => 'nullable|exists:product_services,id',
+            'descripcion' => 'required|text',
+            'cantidad' => 'required|numeric',
+            'precio_unitario' => 'required|numeric',
+            'valor_total' => 'required|numeric',
+            'descuento' => 'nullable|numeric',
+            'porcentaje_iva' => 'required|numeric',
+            'valor_iva' => 'required|numeric',
+            'unidad_medida' => 'required|string|max:20',
+            'codigo_producto' => 'required|string|max:50',
+            'observacion' => 'nullable|text',
         ]);
         $invoice_detail = InvoiceDetail::create($request->all());
         return response()->json($invoice_detail);
@@ -47,18 +45,16 @@ class InvoiceDetailController extends Controller
     public function update(Request $request, InvoiceDetail $invoice_detail)
     {
         $request->validate([
-            'Id_DetalleFactura' => 'sometimes|integer',
-            'Descripcion' => 'sometimes|required|text',
-            'Cantidad' => 'sometimes|required|numeric',
-            'PrecioUnitario' => 'sometimes|required|numeric',
-            'ValorTotal' => 'sometimes|required|numeric',
-            'Descuento' => 'nullable|numeric',
-            'PorcentajeIVA' => 'sometimes|required|numeric',
-            'ValorIVA' => 'sometimes|required|numeric',
-            'UnidadMedida' => 'sometimes|required|string|max:20',
-            'CodigoProducto' => 'sometimes|required|string|max:50',
-            'Observacion' => 'nullable|text',
-            'product_service_id' => 'nullable|exists:product_services,id',
+            'descripcion' => 'sometimes|required|text',
+            'cantidad' => 'sometimes|required|numeric',
+            'precio_unitario' => 'sometimes|required|numeric',
+            'talor_total' => 'sometimes|required|numeric',
+            'descuento' => 'nullable|numeric',
+            'porcentaje_iva' => 'sometimes|required|numeric',
+            'valor_iva' => 'sometimes|required|numeric',
+            'unidad_medida' => 'sometimes|required|string|max:20',
+            'codigo_producto' => 'sometimes|required|string|max:50',
+            'observacion' => 'nullable|text',
         ]);
 
          // Actualiza solo los campos que vienen en el request
