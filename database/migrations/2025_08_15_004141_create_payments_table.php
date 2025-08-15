@@ -16,10 +16,10 @@ return new class extends Migration
 
         $table->unsignedBigInteger('Numero_Factura'); // FK hacia facturas electrónicas
 
-        $table->date('FechaPago');
-        $table->decimal('ValorPagado');
-        $table->string('Moneda');
-        $table->string('MedioPago');
+        $table->date('FechaPago')->nullable();
+        $table->decimal('ValorPagado', 15, 2);
+        $table->string('Moneda', 3);
+        $table->string('MedioPago', 50);
 
         // FK: Número de factura
         // $table->foreign('Numero_Factura')->references('NumeroFactura')->on('facturas_electronicas')->onDelete('cascade');

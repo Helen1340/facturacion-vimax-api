@@ -19,16 +19,17 @@ class Payment extends Model
         'MedioPago'
     ];
 
-    /* ==========================
-       RELACIONES (CARDINALIDADES)
-    ==========================
+    //  ==========================
+    //  RELACIONES (CARDINALIDADES)
+    //  ==========================
 
-    // Un pago pertenece a una factura electrónica
-    public function facturaElectronica()
+    //Un pago pertenece a una factura electrónica
+
+    public function ElectronicInvoices()
     {
         return $this->belongsTo(ElectronicInvoice::class, 'Numero_Factura', 'NumeroFactura');
     }
-    */
+
 
     /* ==========================
        LISTAS BLANCAS
@@ -37,23 +38,9 @@ class Payment extends Model
         'facturaElectronica'
     ];
 
-    protected $allowFilter = [
-        'IdPayment',
-        'Numero_Factura',
-        'FechaPago',
-        'ValorPagado',
-        'Moneda',
-        'MedioPago'
-    ];
+    protected $allowFilter = ['IdPayment','Numero_Factura','FechaPago','ValorPagado','Moneda','MedioPago'];
 
-    protected $allowSort = [
-        'IdPayment',
-        'Numero_Factura',
-        'FechaPago',
-        'ValorPagado',
-        'Moneda',
-        'MedioPago'
-    ];
+    protected $allowSort = ['IdPayment','Numero_Factura','FechaPago','ValorPagado','Moneda','MedioPago'];
 
     /* ==========================
        SCOPES
