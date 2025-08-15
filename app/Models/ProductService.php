@@ -36,7 +36,7 @@ class ProductService extends Model
     }
 
     // relacion uno a muchos con detalles de factura: un producto o servicio puede tener muchos detalles de factura y un detalle de factura pertenece a un producto o servicio
-    public function invoiceDetail()
+    public function invoiceDetails()
     {
         return $this->hasMany(InvoiceDetail::class);
     }
