@@ -18,11 +18,11 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'Numero_Factura' => 'required|integer|exists:facturas_electronicas,NumeroFactura',
-            'FechaPago' => 'nullable|date',
-            'ValorPagado' => 'required|numeric',
-            'Moneda' => 'required|string|max:3',
-            'MedioPago' => 'required|string|max:50',
+            'id_payment' => 'required|string',
+            'fecha_pago' => 'nullable|date',
+            'valor_pagado' => 'required|numeric',
+            'moneda' => 'required|string|max:3',
+            'medio_pago' => 'required|string|max:50',
         ]);
 
         $payment = Payment::create($request->all());
@@ -40,11 +40,11 @@ class PaymentController extends Controller
     public function update(Request $request, Payment $payment)
     {
         $request->validate([
-            'Numero_Factura' => 'sometimes|integer|exists:facturas_electronicas,NumeroFactura',
-            'FechaPago' => 'sometimes|nullable|date',
-            'ValorPagado' => 'sometimes|numeric',
-            'Moneda' => 'sometimes|string|max:3',
-            'MedioPago' => 'sometimes|string|max:50',
+            'id_payment' => 'sometimes|required|string|exists:payments,id',
+            'fecha_pago' => 'sometimes|nullable|date',
+            'valor_pagado' => 'sometimes|numeric',
+            'moneda' => 'sometimes|string|max:3',
+            'medio_pago' => 'sometimes|string|max:50',
         ]);
 
         // Actualiza solo los campos que vienen en el request

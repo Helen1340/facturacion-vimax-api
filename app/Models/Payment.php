@@ -11,41 +11,34 @@ class Payment extends Model
        CAMPOS RELLENABLES
     ========================== */
     protected $fillable = [
-        'IdPayment',
-        'Numero_Factura',
-        'FechaPago',
-        'ValorPagado',
-        'Moneda',
-        'MedioPago'
+        'id_payment',
+        'fecha_pago',
+        'valor_pagado',
+        'moneda',
+        ',medio_pago'
     ];
 
-    //  ==========================
-    //  (CARDINALIDADES)
-    //  ==========================
+    /*
+        LISTAS BLANCAS
+    */
+    protected $allowIncluded = ['ElectronicInvoices'];
+    protected $allowFilter = ['id_payment','fecha_pago','valor_pagado','moneda','medio_pago'];
+    protected $allowSort = ['id_payment','fecha_pago','valor_pagado','moneda','medio_pago'];
+
+
+     //  CARDINALIDADES
 
     //Un pago pertenece a una factura electrónica
 
     public function ElectronicInvoices()
     {
-        return $this->belongsTo(ElectronicInvoice::class, 'Numero_Factura', 'NumeroFactura');
+        return $this->belongsTo(ElectronicInvoice::class);
     }
 
-
-    /* ==========================
-       LISTAS BLANCAS
-    ========================== */
-    protected $allowIncluded = [
-        'facturaElectronica'
-    ];
-
-    protected $allowFilter = ['IdPayment','Numero_Factura','FechaPago','ValorPagado','Moneda','MedioPago'];
-
-    protected $allowSort = ['IdPayment','Numero_Factura','FechaPago','ValorPagado','Moneda','MedioPago'];
-
-    /* ==========================
-       SCOPES
-    ========================== */
-     public function scopeIncluded(Builder $query)
+    /*
+        SCOPES
+    */
+    public function scopeIncluded(Builder $query)
     {
         if (empty($this->allowIncluded) || empty(request('included'))) {
             // validamos que la lista blanca y la variable included enviada a través de HTTP no estén vacías

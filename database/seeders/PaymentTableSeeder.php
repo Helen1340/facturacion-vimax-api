@@ -15,44 +15,39 @@ class PaymentTableSeeder extends Seeder
     {
         DB::table('payment')->insert([
             [
-                'IdPayment' => 'P001',
-                'Numero_Factura' => 'F001',
-                'FechaPago' => '2025-08-10',
-                'ValorPagado' => 150000.00,
-                'Moneda' => 'COP',
-                'MedioPago' => 'Transferencia Bancaria'
+                'id_payment' => 'P001',
+                'fecha_pago' => '2025-08-10',
+                'valor_pagado' => 150000.00,
+                'moneda' => 'COP',
+                'medio_pago' => 'Transferencia Bancaria'
             ],
             [
-                'IdPayment' => 'P002',
-                'Numero_Factura' => 'F002',
-                'FechaPago' => '2025-08-11',
-                'ValorPagado' => 200.50,
-                'Moneda' => 'USD',
-                'MedioPago' => 'Tarjeta de Crédito'
+                'id_payment' => 'P002',
+                'fecha_pago' => '2025-08-11',
+                'valor_pagado' => 200.50,
+                'moneda' => 'USD',
+                'medio_pago' => 'Tarjeta de Crédito'
             ],
             [
-                'IdPaymet' => 'P003',
-                'Numero_Factura' => 'F003',
-                'FechaPago' => null,
-                'ValorPagado' => 75000.00,
-                'Moneda' => 'COP',
-                'MedioPago' => 'Efectivo'
+                'id_payment' => 'P003',
+                'fecha_pago' => null,
+                'valor_pagado' => 75000.00,
+                'moneda' => 'COP',
+                'medio_pago' => 'Efectivo'
             ],
             [
-                'IdPayment' => 'P004',
-                'Numero_Factura' => 'F004',
-                'FechaPago' => '2025-08-12',
-                'ValorPagado' => 1250.75,
-                'Moneda' => 'USD',
-                'MedioPago' => 'Cheque'
+                'id_payment' => 'P004',
+                'fecha_pago' => '2025-08-12',
+                'valor_pagado' => 1250.75,
+                'moneda' => 'USD',
+                'medio_pago' => 'Cheque'
             ],
             [
-                'IdPayment' => 'P005',
-                'Numero_Factura' => 'F005',
-                'FechaPago' => '2025-08-14',
-                'ValorPagado' => 500000.00,
-                'Moneda' => 'COP',
-                'MedioPago' => 'Pago en Línea'
+                'id_payment' => 'P005',
+                'fecha_pago' => '2025-08-14',
+                'valor_pagado' => 500000.00,
+                'moneda' => 'COP',
+                'medio_pago' => 'Pago en Línea'
             ]
         ]);
     }

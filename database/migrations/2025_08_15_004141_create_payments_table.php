@@ -12,20 +12,16 @@ return new class extends Migration
     public function up(): void
     {
     Schema::create('payments', function (Blueprint $table) {
-        $table->id('IdPayments'); // PK
+        $table->id();
+        $table->string('id_payments')->unique();
+        $table->date('fecha_pago')->nullable();
+        $table->decimal('valor_pagado', 15, 2);
+        $table->string('moneda', 3);
+        $table->string('medio_pago', 50);
 
-        $table->unsignedBigInteger('Numero_Factura'); // FK hacia facturas electrónicas
-
-        $table->date('FechaPago')->nullable();
-        $table->decimal('ValorPagado', 15, 2);
-        $table->string('Moneda', 3);
-        $table->string('MedioPago', 50);
-
-    // FK: Número de factura
-
-        //$table->unsignedBigInteger('Numero_Factura')->nullable();
-
-        // $table->foreign('Numero_Factura')->references('NumeroFactura')->on('facturas_electronicas')->onDelete('cascade');
+    // FK: factura electrónica
+        //$table->unsignedBigInteger('electronic_invioce_id')->nullable();
+        // $table->foreign('electronic_invioce_id')->references('id')->on('electronic_invioce')->onDelete('cascade');
 
         $table->timestamps();
         });
