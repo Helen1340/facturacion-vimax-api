@@ -18,9 +18,8 @@ class PermissionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_Permiso' => 'required|string|unique:permissions,id_Permiso',
-            'Nombre'     => 'required|string|max:100',
-            'Descripcion'=> 'nullable|string|max:150',
+            'nombre'     => 'required|string|max:100',
+            'descripcion'=> 'nullable|string|max:150',
         ]);
 
         $permission = Permission::create($request->all());
@@ -39,9 +38,8 @@ class PermissionController extends Controller
     public function update(Request $request, Permission $permission)
     {
         $request->validate([
-            'id_Permiso' => 'sometimes|string|unique:permissions,id_Permiso,' . $permission->id,
-            'Nombre'     => 'sometimes|string|max:100',
-            'Descripcion'=> 'sometimes|nullable|string|max:150',
+            'pombre'     => 'sometimes|string|max:100',
+            'descripcion'=> 'sometimes|nullable|string|max:150',
         ]);
 
         // Actualiza solo los campos que vienen en el request

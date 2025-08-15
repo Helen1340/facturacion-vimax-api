@@ -15,24 +15,24 @@ class permissionTableSeeder extends Seeder
     {
         DB::table('permissions')->insert([
             [
-                'Nombre' => 'Crear Usuario',
-                'Descripcion' => 'Permite crear nuevos usuarios en el sistema',
+                'nombre' => 'Crear Usuario',
+                'descripcion' => 'Permite crear nuevos usuarios en el sistema',
             ],
             [
-                'Nombre' => 'Editar Usuario',
-                'Descripcion' => 'Permite editar la información de los usuarios existentes',
+                'bombre' => 'Editar Usuario',
+                'descripcion' => 'Permite editar la información de los usuarios existentes',
             ],
             [
-                'Nombre' => 'Eliminar Usuario',
-                'Descripcion' => 'Permite eliminar usuarios del sistema',
+                'nombre' => 'Eliminar Usuario',
+                'descripcion' => 'Permite eliminar usuarios del sistema',
             ],
             [
-                'Nombre' => 'Ver Reportes',
-                'Descripcion' => 'Permite visualizar los reportes generados',
+                'nombre' => 'Ver Reportes',
+                'descripcion' => 'Permite visualizar los reportes generados',
             ],
             [
-                'Nombre' => 'Gestionar Roles',
-                'Descripcion' => 'Permite asignar y modificar roles de los usuarios',
+                'nombre' => 'Gestionar Roles',
+                'descripcion' => 'Permite asignar y modificar roles de los usuarios',
             ],
         ]);
     }

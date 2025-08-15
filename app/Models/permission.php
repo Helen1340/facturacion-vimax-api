@@ -8,28 +8,20 @@ use Illuminate\Database\Eloquent\Builder;
 class Permission extends Model
 {
     protected $fillable = [
-        'id_Permiso',
-        'Nombre',
-        'Descripcion',
+        'nombre',
+        'descripcion',
     ];
-
-    // relaciones
-    // ninguna relación definida por el momento
 
     // listas blancas de relaciones que se pueden incluir vía ?included
-    protected $allowIncluded = [];
+    protected $allowIncluded = ['roles'];
+    protected $allowFilter = ['nombre','descripcion',];
+    protected $allowSort = ['nombre','descripcion',];
 
-    // columnas que se pueden filtrar vía ?filter[field]=value
-    protected $allowFilter = [
-        'Nombre',
-        'Descripcion',
-    ];
-
-    // columnas que se pueden ordenar vía ?sort=columna o ?sort=-columna
-    protected $allowSort = [
-        'Nombre',
-        'Descripcion',
-    ];
+    // relaciones
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'permission_role', 'permission_id', 'role_id');
+    }
 
     // scopes
 

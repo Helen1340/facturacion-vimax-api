@@ -21,6 +21,6 @@ class DatabaseSeeder extends Seeder
         // ]);
 
 
-        $this->call(PaymentTableSeeder::class);
+        $this->call(permissionTableSeeder::class);
     }
 }
