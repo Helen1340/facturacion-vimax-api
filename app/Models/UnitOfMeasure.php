@@ -15,7 +15,7 @@ class UnitOfMeasure extends Model
         'Descripcion'
     ];
 
-    // relaciones
+    // cardinalidad de las relaciones
     //public function productService()
     //{
     //    return $this->hasMany(ProductService::class);
