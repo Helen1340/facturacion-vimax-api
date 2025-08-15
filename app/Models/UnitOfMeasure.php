@@ -17,7 +17,7 @@ class UnitOfMeasure extends Model
 
 
     //listas blancas
-    protected $allowIncluded = ['productService'];
+    protected $allowIncluded = ['productServices'];
     protected $allowFilter = ['Nombre', 'Estado', 'CodioDIAN'];
     protected $allowSort = ['Nombre', 'Estado'];
 
