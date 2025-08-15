@@ -38,7 +38,7 @@ class PermissionController extends Controller
     public function update(Request $request, Permission $permission)
     {
         $request->validate([
-            'pombre'     => 'sometimes|string|max:100',
+            'nombre'     => 'sometimes|string|max:100',
             'descripcion'=> 'sometimes|nullable|string|max:150',
         ]);
 
