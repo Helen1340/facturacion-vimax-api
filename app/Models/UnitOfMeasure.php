@@ -18,8 +18,8 @@ class UnitOfMeasure extends Model
 
     //listas blancas
     protected $allowIncluded = ['productServices'];
-    protected $allowFilter = ['Nombre', 'Estado', 'CodioDIAN'];
-    protected $allowSort = ['Nombre', 'Estado'];
+    protected $allowFilter = ['nombre', 'estado', 'codio_dian'];
+    protected $allowSort = ['nombre', 'estado'];
 
     // cardinalidad de las relaciones
     public function productServices()
