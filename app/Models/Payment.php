@@ -20,7 +20,7 @@ class Payment extends Model
     ];
 
     //  ==========================
-    //  RELACIONES (CARDINALIDADES)
+    //  (CARDINALIDADES)
     //  ==========================
 
     //Un pago pertenece a una factura electrónica

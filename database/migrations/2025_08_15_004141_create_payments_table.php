@@ -21,7 +21,10 @@ return new class extends Migration
         $table->string('Moneda', 3);
         $table->string('MedioPago', 50);
 
-        // FK: Número de factura
+    // FK: Número de factura
+
+        //$table->unsignedBigInteger('Numero_Factura')->nullable();
+
         // $table->foreign('Numero_Factura')->references('NumeroFactura')->on('facturas_electronicas')->onDelete('cascade');
 
         $table->timestamps();
