@@ -44,15 +44,7 @@ class TaxController extends Controller
 
         return response()->json($taxe);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Tax $tax)
-    {
-        //
-    }
-
+    
     /**
      * Update the specified resource in storage.
      */

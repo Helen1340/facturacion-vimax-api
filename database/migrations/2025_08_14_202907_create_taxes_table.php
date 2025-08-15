@@ -15,17 +15,11 @@ return new class extends Migration
             $table->id();
 
             $table->string('codigo_dian', 20)->unique();
-
             $table->string('nombre', 100);
-
             $table->text('descripcion')->nullable();
-
             $table->enum('tipo_aplicacion', ['trasladado', 'retenido']);
-
             $table->decimal('porcentaje_base', 5, 2)->comment('Porcentaje, hasta 100.00');
-
             $table->boolean('estado')->default(true);
-
             $table->timestamps();
         });
     }

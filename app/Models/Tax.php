@@ -16,14 +16,14 @@ class Tax extends Model
         'estado',
     ];
 
-    protected $allowIncluded = [];
+    protected $allowIncluded = ['ProductService'];
     protected $allowFilter = ['id', 'nombre', 'descripcion', 'tipo_aplicacion', 'porcentaje_base', 'estado'];
     protected $allowSort = ['id', 'nombre', 'descripcion', 'tipo_aplicacion', 'porcentaje_base', 'estado'];
 
     public function ProductServices()
     {
-        // This method can be used to define a relationship with the ProductService model if needed
-        // return $this->hasMany(ProductService::class, 'ProductServiceTax');
+        // ProductServiceTax es la tabla intermedia que relaciona el tax con el producto
+        return $this->hasMany(ProductService::class, 'ProductServiceTax');
     }
 
     public function scopeIncluded(Builder $query)
