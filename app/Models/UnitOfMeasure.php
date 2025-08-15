@@ -8,23 +8,24 @@ use Illuminate\Database\Eloquent\Builder;
 class UnitOfMeasure extends Model
 {
     protected $fillable = [
-        'IdUnidadMedida',
-        'Nombre',
-        'Estado',
-        'CodioDIAN',
-        'Descripcion'
+        'id_unidad_medida',
+        'nombre',
+        'estado',
+        'codio_dian',
+        'descripcion'
     ];
 
-    // cardinalidad de las relaciones
-    //public function productService()
-    //{
-    //    return $this->hasMany(ProductService::class);
-    //}
 
     //listas blancas
     protected $allowIncluded = ['productService'];
     protected $allowFilter = ['Nombre', 'Estado', 'CodioDIAN'];
     protected $allowSort = ['Nombre', 'Estado'];
+
+    // cardinalidad de las relaciones
+    public function productServices()
+    {
+        return $this->hasMany(ProductService::class);
+    }
 
     // scopes
     public function scopeIncluded(Builder $query)

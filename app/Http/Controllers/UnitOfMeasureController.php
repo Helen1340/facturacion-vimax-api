@@ -18,11 +18,11 @@ class UnitOfMeasureController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'IdUnidadMedida' => 'required|integer|unique:unit_of_measures,IdUnidadMedida',
-            'Nombre' => 'required|string|max:150',
-            'Estado' => 'required|boolean',
-            'CodioDIAN' => 'required|string|max:50',
-            'Descripcion' => 'nullable|string|max:150',
+            'id_unidad_medida' => 'required|integer|unique:unit_of_measures,id_unidad_medida',
+            'nombre' => 'required|string|max:100',
+            'estado' => 'required|boolean',
+            'codio_dian' => 'required|string|max:10',
+            'descripcion' => 'nullable|text',
         ]);
 
         $unit_of_measure = UnitOfMeasure::create($request->all());
@@ -40,11 +40,11 @@ class UnitOfMeasureController extends Controller
     public function update(Request $request, UnitOfMeasure $unit_of_measure)
     {
         $request->validate([
-            'IdUnidadMedida' => 'sometimes|integer|unique:unit_of_measures,IdUnidadMedida,' . $unit_of_measure->IdUnidadMedida,
-            'Nombre' => 'sometimes|string|max:150',
-            'Estado' => 'sometimes|boolean',
-            'CodioDIAN' => 'sometimes|string|max:50',
-            'Descripcion' => 'sometimes|nullable|string|max:150',
+            'id_unidad_medida' => 'sometimes|integer|unique:unit_of_measures,IdUnidadMedida,' . $unit_of_measure->IdUnidadMedida,
+            'nombre' => 'sometimes|string|max:150',
+            'estado' => 'sometimes|boolean',
+            'codio_dian' => 'sometimes|string|max:50',
+            'descripcion' => 'sometimes|nullable|string|max:150',
         ]);
 
         // Actualiza solo los campos que vienen en el request
