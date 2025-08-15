@@ -9,36 +9,37 @@ class ProductService extends Model
 {
     //
     protected $fillable = [
-        'CodigoProductoServicio',
-        'CostoUnitario',
-        'Tipo',
-        'Nombre',
-        'Descripcion',
-        'UsuarioCreacion',
-        'PorcentajeIva',
-        'AplicaImpuesto',
-        'Estado'
+        'codigo_producto_servicio',
+        'costo_unitario',
+        'tipo',
+        'nombre',
+        'descripcion',
+        'usuario_creacion',
+        'porcentaje_iva',
+        'aplica_impuesto',
+        'estado'
     ];
-
-    // relaciones
-
-    // relacion con unidad de medida de uno a muchos: muchos productos o servicios pueden tener una unidad de medida y una unuidad de medida puede tener muchos productos o servicios
-    //public function unitOfMeasure()
-    //{
-    //    return $this->belongsTo(UnitOfMeasure::class);
-    //}
-
-    // relacion uno a muchos con detalles de factura: un producto o servicio puede tener muchos detalles de factura y un detalle de factura pertenece a un producto o servicio
-    // public function invoiceDetail()
-    // {
-    //     return $this->hasMany(InvoiceDetail::class);
-    // }
 
     // listas blancas
     protected $allowIncluded = ['UnitOfMeasure', 'Taxes', 'InvoiceDetail']; ////relaciones que el cliente puede pedir vía included
-    protected $allowFilter = [ 'Nombre', 'Tipo', 'Estado', 'CostoUnitario', 'Descripcion', 'UsuarioCreación', 'PorcentajeIVA', 'AplicaImpuesto' ]; //columnas que se pueden filtrar vía ?filter[field]=value
-    protected $allowSort = [ 'Nombre', 'Tipo', 'Estado', 'CostoUnitario', 'PorcentajeIVA' ]; //columnas que se pueden ordenar vía ?sort=columna o ?sort=-columna
+    protected $allowFilter = [ 'nombre', 'tipo', 'estado', 'costo_unitario', 'descripcion', 'usuario_creación', 'porcentaje_iva', 'aplica_impuesto' ]; //columnas que se pueden filtrar vía ?filter[field]=value
+    protected $allowSort = [ 'nombre', 'tipo', 'estado', 'costo_unitario', 'porcentaje_iva' ]; //columnas que se pueden ordenar vía ?sort=columna o ?sort=-columna
 
+
+
+        // relaciones
+
+    // relacion con unidad de medida de uno a muchos: muchos productos o servicios pueden tener una unidad de medida y una unuidad de medida puede tener muchos productos o servicios
+    public function unitOfMeasure()
+    {
+        return $this->belongsTo(UnitOfMeasure::class);
+    }
+
+    // relacion uno a muchos con detalles de factura: un producto o servicio puede tener muchos detalles de factura y un detalle de factura pertenece a un producto o servicio
+    public function invoiceDetail()
+    {
+        return $this->hasMany(InvoiceDetail::class);
+    }
 
     // scopes
     public function scopeIncluded(Builder $query)

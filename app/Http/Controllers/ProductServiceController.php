@@ -21,15 +21,15 @@ class ProductServiceController extends Controller
     {
 
         $request->validate([
-                'CodigoProductoServicio' => 'required|integer|unique:product_services,CodigoProductoServicio',
-                'CostoUnitario' => 'required|numeric',
-                'Tipo' => 'required|in:Producto,Servicio',
-                'Nombre' => 'required|string|max:150',
-                'Descripcion' => 'nullable|string|max:150',
-                'UsuarioCreacion' => 'required|string|max:20',
-                'PorcentajeIva' => 'required|numeric|between:0,999.99',
-                'AplicaImpuesto' => 'required|boolean',
-                'Estado' => 'required|boolean',
+                'codigo_producto_servicio' => 'required|integer|unique:product_services,CodigoProductoServicio',
+                'costo_unitario' => 'required|numeric',
+                'tipo' => 'required|in:Producto,Servicio',
+                'nombre' => 'required|string|max:150',
+                'descripcion' => 'nullable|string|max:150',
+                'usuario_creacion' => 'required|string|max:20',
+                'porcentaje_iva' => 'required|numeric|between:0,999.99',
+                'aplica_impuesto' => 'required|boolean',
+                'estado' => 'required|boolean',
         ]);
 
 
@@ -49,15 +49,15 @@ class ProductServiceController extends Controller
     public function update(Request $request, ProductService $product_service)
     {
     $request->validate([
-        'CodigoProductoServicio' => 'sometimes|integer|unique:product_services,CodigoProductoServicio,' . $product_service->CodigoProductoServicio ,
-        'CostoUnitario' => 'sometimes|numeric',
-        'Tipo' => 'sometimes|in:Producto,Servicio',
-        'Nombre' => 'sometimes|string|max:150',
-        'Descripcion' => 'sometimes|nullable|string|max:150',
-        'UsuarioCreacion' => 'sometimes|string|max:20',
-        'PorcentajeIva' => 'sometimes|numeric|between:0,999.99',
-        'AplicaImpuesto' => 'sometimes|boolean',
-        'Estado' => 'sometimes|boolean',
+        'codigo_producto_servicio' => 'sometimes|integer|unique:product_services,CodigoProductoServicio,' . $product_service->CodigoProductoServicio ,
+        'costo_unitario' => 'sometimes|numeric',
+        'tipo' => 'sometimes|in:Producto,Servicio',
+        'nombre' => 'sometimes|string|max:150',
+        'descripcion' => 'sometimes|nullable|string|max:150',
+        'usuario_creacion' => 'sometimes|string|max:20',
+        'porcentaje_iva' => 'sometimes|numeric|between:0,999.99',
+        'aplica_impuesto' => 'sometimes|boolean',
+        'estado' => 'sometimes|boolean',
     ]);
 
     // Actualiza solo los campos que vienen en el request

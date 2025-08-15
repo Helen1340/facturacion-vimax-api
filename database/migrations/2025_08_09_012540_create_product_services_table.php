@@ -13,15 +13,15 @@ return new class extends Migration
     {
         Schema::create('product_services', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('CodigoProductoServicio')->unique();
-            $table->decimal('CostoUnitario');
-            $table->enum('Tipo', ['Producto', 'Servicio']);
-            $table->string('Nombre');
-            $table->text('Descripcion');
-            $table->string('UsuarioCreacion');
-            $table->decimal('PorcentajeIva');
-            $table->boolean('AplicaImpuesto');
-            $table->boolean('Estado');
+            $table->bigInteger('codigo_producto_servicio')->unique();
+            $table->decimal('costo_unitario');
+            $table->enum('tipo', ['Producto', 'Servicio']);
+            $table->string('nombre');
+            $table->text('descripcion');
+            $table->string('usuario_creacion');
+            $table->decimal('porcentaje_iva');
+            $table->boolean('aplica_impuesto');
+            $table->boolean('estado');
 
             // llave foranea a la tabla de unidades de medida
             //$table->unsignedBigInteger('unit_of_measure_id')->nullable();
