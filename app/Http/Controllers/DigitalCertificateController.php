@@ -31,9 +31,20 @@ class DigitalCertificateController extends Controller
      */
     public function store(Request $request)
     {
-        $digitalCertificate = DigitalCertificate::create($request->all());
+            $validatedData = $request->validate([
+                'nit'                => 'required|integer|exists:empresas,nit',
+                'nombre_certificado' => 'required|string|max:225',
+                'ruta_certificado'   => 'required|string',
+                'contrasena'         => 'required|string|max:225',
+                'fecha_inicio'       => 'required|date',
+                'fecha_fin'          => 'required|date|after_or_equal:fecha_inicio',
+                'estado'             => 'required|in:vigente,vencido,revocado',
+                'proveedor'          => 'required|string|max:100',
+            ]);
 
-        return response()->json($digitalCertificate);
+            $digitalCertificate = DigitalCertificate::create($validatedData);
+
+            return response()->json($digitalCertificate);
     }
 
     /**
@@ -51,27 +62,20 @@ class DigitalCertificateController extends Controller
      */
     public function update(Request $request, DigitalCertificate $digitalCertificate)
     {
-        $validatedData = $request->validate([
-            'nit'               => 'sometimes|nullable|exists:empresas,NIT',
-            'nombre_certificado'=> 'sometimes|string|max:225',
-            'ruta_certificado'  => 'sometimes|string',
-            'contrasena'        => 'sometimes|string|max:225',
-            'fecha_inicio'      => 'sometimes|date',
-            'fecha_fin'         => [
-                'sometimes',
-                'date',
-                Rule::when(
-                    $request->has('fecha_inicio'),
-                    ['after_or_equal:fecha_inicio']
-                ),
-            ],
-            'estado'            => 'sometimes|in:Vigente,Vencido,Revocado',
-            'proveedor'         => 'sometimes|string|max:100',
-        ]);
+            $validatedData = $request->validate([
+                'nit'                => 'sometimes|integer|exists:empresas,nit',
+                'nombre_certificado' => 'sometimes|string|max:225',
+                'ruta_certificado'   => 'sometimes|string',
+                'contrasena'         => 'sometimes|string|max:225',
+                'fecha_inicio'       => 'sometimes|date',
+                'fecha_fin'          => 'sometimes|date|after_or_equal:fecha_inicio',
+                'estado'             => 'sometimes|in:vigente,vencido,revocado',
+                'proveedor'          => 'sometimes|string|max:100',
+            ]);
 
-        $digitalCertificate->update($validatedData);
+            $digitalCertificate->update($validatedData);
 
-        return $digitalCertificate;
+            return response()->json($digitalCertificate);
     }
 
     /**
