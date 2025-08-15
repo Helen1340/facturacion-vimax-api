@@ -13,7 +13,6 @@ return new class extends Migration
     {
     Schema::create('payments', function (Blueprint $table) {
         $table->id();
-        $table->string('id_payments')->unique();
         $table->date('fecha_pago')->nullable();
         $table->decimal('valor_pagado', 15, 2);
         $table->string('moneda', 3);

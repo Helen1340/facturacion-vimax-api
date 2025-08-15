@@ -11,7 +11,6 @@ class Payment extends Model
        CAMPOS RELLENABLES
     ========================== */
     protected $fillable = [
-        'id_payment',
         'fecha_pago',
         'valor_pagado',
         'moneda',
@@ -22,8 +21,8 @@ class Payment extends Model
         LISTAS BLANCAS
     */
     protected $allowIncluded = ['ElectronicInvoices'];
-    protected $allowFilter = ['id_payment','fecha_pago','valor_pagado','moneda','medio_pago'];
-    protected $allowSort = ['id_payment','fecha_pago','valor_pagado','moneda','medio_pago'];
+    protected $allowFilter = ['id','fecha_pago','valor_pagado','moneda','medio_pago'];
+    protected $allowSort = ['id','fecha_pago','valor_pagado','moneda','medio_pago'];
 
 
      //  CARDINALIDADES

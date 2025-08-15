@@ -18,7 +18,6 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_payment' => 'required|string',
             'fecha_pago' => 'nullable|date',
             'valor_pagado' => 'required|numeric',
             'moneda' => 'required|string|max:3',
@@ -40,7 +39,6 @@ class PaymentController extends Controller
     public function update(Request $request, Payment $payment)
     {
         $request->validate([
-            'id_payment' => 'sometimes|required|string|exists:payments,id',
             'fecha_pago' => 'sometimes|nullable|date',
             'valor_pagado' => 'sometimes|numeric',
             'moneda' => 'sometimes|string|max:3',
