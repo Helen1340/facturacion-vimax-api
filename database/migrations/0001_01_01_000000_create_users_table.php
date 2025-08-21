@@ -13,10 +13,23 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+
+            // Clave foránea hacia companies
+            $table->unsignedBigInteger('company_id')->nullable();
+            //$table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+
+            $table->string('nombre', 100);
+            $table->enum('tipo_documento', ['NIT', 'CC', 'CE']);
+            $table->string('numero_documento', 15);
+            $table->string('direccion', 150);
+            $table->string('pais', 50);
+            $table->string('descripcion', 250);
+            $table->string('contrasena', 225);
+            $table->string('correo_electronico', 100)->unique();
+            $table->string('telefono', 20);
+            $table->enum('estado', ['Activo', 'Inactivo'])->default('Activo');
+            $table->timestamp('ultimo_acceso');
+
             $table->rememberToken();
             $table->timestamps();
         });
