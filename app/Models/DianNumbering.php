@@ -2,11 +2,13 @@
 
 namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class DianNumbering extends Model
 {
+use HasFactory;
+
     protected $fillable = [
         'tipo_documento',
         'prefijo',
