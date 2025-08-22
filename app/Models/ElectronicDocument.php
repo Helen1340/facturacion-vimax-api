@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ElectronicDocument extends Model
 {
+    use \Illuminate\Database\Eloquent\Factories\HasFactory;
     protected $table = 'electronic_documents';
 
     protected $fillable = [
