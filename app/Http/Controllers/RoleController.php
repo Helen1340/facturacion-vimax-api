@@ -32,7 +32,7 @@ class RoleController extends Controller
     public function store(Request $request)
     {
             $validated = $request->validate([
-                'nombre' => ['required', 'string', 'max:100'],
+                'nombre' => ['required', Rule::in(['administrador', 'facturador', 'contador', 'cliente'])],
                 'descripcion' => ['nullable', 'string', 'max:255'],
                 'estado' => ['required', Rule::in(['activo', 'inactivo'])],
             ]);
@@ -58,7 +58,7 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
             $validated = $request->validate([
-                'nombre' => ['sometimes', 'string', 'max:100'],
+                'nombre' => ['sometimes', Rule::in(['administrador', 'facturador', 'contador', 'cliente'])],
                 'descripcion' => ['sometimes', 'string', 'max:255'],
                 'estado' => ['sometimes', Rule::in(['activo', 'inactivo'])],
             ]);

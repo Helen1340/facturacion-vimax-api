@@ -13,32 +13,35 @@ class Roles extends Seeder
      */
     public function run(): void
     {
-        Role::insert([
+        // recomiendo mantener los roles fijos. Así aseguras que siempre existan los 4 roles principales
+        $rolesFijos = [
             [
-                'nombre' => 'Administrador',
-                'descripcion' => 'Acceso completo al sistema, puede gestionar todos los módulos y usuarios',
+                'nombre' => 'administrador',
+                'descripcion' => 'Acceso total al sistema',
                 'estado' => 'activo',
             ],
             [
-                'nombre' => 'Facturador',
-                'descripcion' => 'Acceso a la gestión de su área, reportes y supervisión de equipos',
+                'nombre' => 'facturador',
+                'descripcion' => 'Genera facturas',
                 'estado' => 'activo',
             ],
             [
-                'nombre' => 'Empleado',
-                'descripcion' => 'Acceso básico al sistema para realizar tareas operativas diarias',
+                'nombre' => 'contador',
+                'descripcion' => 'Gestiona la contabilidad',
                 'estado' => 'activo',
             ],
             [
-                'nombre' => 'Contador',
-                'descripcion' => 'Acceso a módulos financieros, contables y generación de reportes fiscales',
+                'nombre' => 'cliente',
+                'descripcion' => 'Acceso como cliente',
                 'estado' => 'activo',
             ],
-            [
-                'nombre' => 'Cliente',
-                'descripcion' => 'Acceso limitado de solo lectura para consultas básicas del sistema',
-                'estado' => 'inactivo',
-            ],
-        ]);
+        ];
+
+        foreach ($rolesFijos as $rol) {
+            Role::create($rol);
+        }
+
+        // Roles aleatorios
+        Role::factory()->count(50)->create();
     }
 }
