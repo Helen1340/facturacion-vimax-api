@@ -20,8 +20,8 @@ return new class extends Migration
             $table->id(); // Bigint(PK)
             $table->enum('tipo_documento', ['Factura', 'NotaCredito', 'NotaDebito']); // Enum para tipos de documento
             $table->string('prefijo', 10); // Varchar(10)
-            $table->bigInteger('numero_inicio'); // Bigint
-            $table->bigInteger('numero_fin'); // Bigint
+            $table->unsignedBigInteger('numero_inicio'); // Bigint
+            $table->unsignedBigInteger('numero_fin'); // Bigint
             $table->date('fecha_resolucion'); // Date
             $table->string('numero_resolucion', 50); // Varchar(50)
             $table->date('fecha_inicio'); // Date
