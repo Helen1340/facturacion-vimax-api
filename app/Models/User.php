@@ -20,6 +20,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'company_id',
+        'role_id',
         'nombre',
         'tipo_documento',
         'numero_documento',
@@ -35,7 +36,7 @@ class User extends Authenticatable
 
     protected $AllowIncluded = [ 
         'company',   // relación con la empresa
-        'roles',    // relación con roles
+        'role',    // relación con role
     ];     
 
     protected $AllowFilter = [ 'company_id', 'nombre', 'tipo_documento', 'numero_documento', 'direccion', 'pais', 'descripcion', 'correo_electronico', 'telefono', 'estado', 'ultimo_acceso' ];
@@ -48,8 +49,7 @@ class User extends Authenticatable
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id')
-                    ->withTimestamps();
+        return $this->belongsTo(Role::class, 'role_id');
     }
 
     public function scopeIncluded(Builder $query)

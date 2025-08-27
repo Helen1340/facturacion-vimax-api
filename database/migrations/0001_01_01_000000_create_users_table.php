@@ -18,6 +18,10 @@ return new class extends Migration
             $table->unsignedBigInteger('company_id')->nullable();
             //$table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
 
+            // Clave foránea hacia roles (tabla separada)
+            $table->unsignedBigInteger('role_id')->nullable();
+            // $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null'); // Agregar cuando roles esté disponible
+
             $table->string('nombre', 100);
             $table->enum('tipo_documento', ['NIT', 'CC', 'CE']);
             $table->string('numero_documento', 15);

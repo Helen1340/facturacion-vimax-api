@@ -25,6 +25,7 @@ class UserFactory extends Factory
     {
         return [
             'company_id' => fake()->numberBetween(1, 3),
+            'role_id' => fake()->numberBetween(1, 4), // Ajusta el rango según los roles existentes
             'nombre' => fake()->name(),
             'tipo_documento' => fake()->randomElement(['NIT', 'CC', 'CE']),
             'numero_documento' => fake()->numerify('##########'),

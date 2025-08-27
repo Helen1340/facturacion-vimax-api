@@ -35,6 +35,7 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'company_id' => ['nullable', 'integer', 'exists:companies,id'],
+            'role_id' => ['nullable', 'integer'], // Validar existencia cuando roles esté disponible
             'nombre' => ['required', 'string', 'max:100'],
             'tipo_documento' => ['nullable', 'string', 'max:20'],
             'numero_documento' => ['required', 'string', 'max:50', 'unique:users,numero_documento'],
@@ -76,6 +77,7 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'company_id' => ['sometimes', 'integer', 'exists:companies,id'],
+            'role_id' => ['sometimes', 'integer'], // Validar existencia cuando roles esté disponible
             'nombre' => ['sometimes', 'string', 'max:100'],
             'tipo_documento' => ['sometimes', 'string', 'max:20'],
             'numero_documento' => [
