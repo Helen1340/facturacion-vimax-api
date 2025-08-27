@@ -20,9 +20,9 @@ class DatabaseSeeder extends Seeder
         // Agrega aquí el seeder de la empresa
         CompanyTableSeeder::class,
         DigitalCertificateTableSeeder::class,
+        DianNumberingTableSeeder::class,
         
     ]);
 
-        
     }
 }
