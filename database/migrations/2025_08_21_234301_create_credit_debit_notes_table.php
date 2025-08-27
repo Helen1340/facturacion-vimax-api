@@ -12,13 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('credit_debit_notes', function (Blueprint $table) {
+             $table->id(); // Bigint(PK)
 
             //definicion de llave foranea de electronic invoice(factura electronica)
             // $table->unsignedBigInteger('electronic_invoice_id'); // Esta FK va en la tabla electronic_invoices
             // $table->foreign('electronic_invoice_id')->references('id')->on('electronic_invoices')->onDelete('cascade');
 
-            $table->id(); // Bigint(PK)
-            $table->string('motivo', 250); // Varchar(250)
+        
+            $table->string('motivo', 250); 
             $table->enum('tipo_documento', ['debito', 'credito']); // Enum para tipo de documento
             $table->string('descripcion', 250); // Varchar(250)
             $table->string('numero_nota', 50); // Varchar(50)
