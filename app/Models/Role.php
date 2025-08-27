@@ -27,8 +27,7 @@ class Role extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'role__users', 'role_id', 'user_id')
-                    ->withTimestamps(); // Para incluir created_at y updated_at de la tabla pivote
+        return $this->hasMany(User::class, 'role_id');
     }
 
     public function scopeIncluded(Builder $query)
