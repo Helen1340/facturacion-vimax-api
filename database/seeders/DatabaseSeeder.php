@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
         RadianEventTableSeeder::class,
         ElectronicDocument::class,
         taxTableSeeder::class,
+        Users::class,
         
         
     ]);
