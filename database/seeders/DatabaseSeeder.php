@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         CreditDebitNoteTableSeeder::class,
         ElectronicInvoiceseeder::class,
         paymentTableSeeder::class,
+        PaymentMethodTableSeeder::class,
         
     ]);
 
