@@ -14,15 +14,16 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-
         
     $this->call([
         // Agrega aquí el seeder de la empresa
         CompanyTableSeeder::class,
         DigitalCertificateTableSeeder::class,
         DianNumberingTableSeeder::class,
+        CreditDebitNoteTableSeeder::class,
         
     ]);
+
 
     }
 }
