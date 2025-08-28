@@ -24,12 +24,12 @@ class DatabaseSeeder extends Seeder
         DianNumberingTableSeeder::class,
         CreditDebitNoteTableSeeder::class,
         ElectronicInvoiceseeder::class,
-        paymentTableSeeder::class,
+        PaymentTableSeeder::class,
         PaymentMethodTableSeeder::class,
         MeasurementUnitTableSeeder::class,
         RadianEventTableSeeder::class,
-        ElectronicDocument::class,
-        taxTableSeeder::class,
+        ElectronicDocumentsSeeder::class,
+        TaxTableSeeder::class,
         Users::class,
         
         

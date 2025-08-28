@@ -6,50 +6,37 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-
-class ElectronicDocument extends Model
+class Tax extends Model
 {
     use HasFactory;
 
-    protected   $model = 'electronic_documents';
+    protected $fillable = ['nombre', 'descripcion', 'tipo', 'porcentaje_base', 'estado'];
 
-    protected $fillable = [
-        'ElectronicInvoice_id',
-        'DianNumbering_id',
-        'CreditDebitNote_id',
-        'cufe',
-        'cude',
-        'xml_documento',
-        'estado_dian',
-        'fecha_validacion',
-        'firma_digital',
-        'hash_documento',
-        'descripcion',
-        'ambiente',
-        'tipo_documento',
-        'qr_codigo',
-        'cdr',
-        'modo_emision',
-    ];
+    // Las posibles relaciones (includes) que se pueden cargar
+    // a través de query parameters en la API
+    protected $allowIncluded = ['products', 'services'];
 
-    protected $AllowIncluded = ['ElectronicInvoice', 'DianNumbering', 'CreditDebitNote',]; //relaciones con otras tablas
-    protected $AllowFilter = [ 'ElectronicInvoice_id', 'DianNumbering_id', 'CreditDebitNote_id', 'cufe', 'cude', 'xml_documento', 'estado_dian', 'fecha_validacion', 'firma_digital', 'hash_documento', 'descripcion', 'ambiente', 'tipo_documento', 'qr_codigo', 'cdr', 'modo_emision',];
-    protected $AllowSort = [ 'ElectronicInvoice_id', 'DianNumbering_id', 'CreditDebitNote_id', 'cufe', 'cude', 'xml_documento', 'estado_dian', 'fecha_validacion', 'firma_digital', 'hash_documento', 'descripcion', 'ambiente', 'tipo_documento', 'qr_codigo', 'cdr', 'modo_emision',];
+    // Los campos por los que se puede filtrar la consulta
+    protected $allowFilter = ['nombre', 'tipo', 'estado'];
 
-    public function electronicInvoice()
-    {
-        return $this->belongsTo(ElectronicInvoice::class);
-    }
+    // Los campos por los que se puede ordenar la consulta
+    protected $allowSort = ['nombre', 'tipo', 'porcentaje_base', 'estado'];
 
-    public function dianNumbering()
-    {
-        return $this->belongsTo(DianNumbering::class, );
-    }
+    // CARDINALIDAD //
 
-    public function creditDebitNote()
-    {
-        return $this->belongsTo(CreditDebitNote::class);
-    }
+    // Muchos a muchos con productos
+    // public function products()
+    // {
+    //     return $this->belongsToMany(Product::class, 'product_tax');
+    // }
+
+    // Muchos a muchos con servicios
+    // public function services()
+    // {
+    //     return $this->belongsToMany(Service::class, 'service_tax');
+    // }
+
+    // SCOPES //
 
     public function scopeIncluded(Builder $query)
     {
@@ -57,12 +44,10 @@ class ElectronicDocument extends Model
             return;
         }
 
-        $relations  = explode(',', request('included'));
-
+        $relations = explode(',', request('included'));
         $allowIncluded = collect($this->allowIncluded);
 
         foreach ($relations as $key => $relationship) {
-
             if (!$allowIncluded->contains($relationship)) {
                 unset($relations[$key]);
             }
@@ -73,19 +58,15 @@ class ElectronicDocument extends Model
 
     public function scopeFilter(Builder $query)
     {
-
         if (empty($this->allowFilter) || empty(request('filter'))) {
             return;
         }
 
         $filters = request('filter');
-
         $allowFilter = collect($this->allowFilter);
 
         foreach ($filters as $filter => $value) {
-
             if ($allowFilter->contains($filter)) {
-
                 $query->where($filter, 'LIKE', '%' . $value . '%');
             }
         }
@@ -93,7 +74,6 @@ class ElectronicDocument extends Model
 
     public function scopeSort(Builder $query)
     {
-
         if (empty($this->allowSort) || empty(request('sort'))) {
             return;
         }
@@ -102,13 +82,13 @@ class ElectronicDocument extends Model
         $allowSort = collect($this->allowSort);
 
         foreach ($sortFields as $sortField) {
-
             $direction = 'asc';
 
             if (substr($sortField, 0, 1) == '-') {
                 $direction = 'desc';
                 $sortField = substr($sortField, 1);
             }
+
             if ($allowSort->contains($sortField)) {
                 $query->orderBy($sortField, $direction);
             }
@@ -124,6 +104,7 @@ class ElectronicDocument extends Model
                 return $query->paginate($perPage);
             }
         }
+
         return $query->get();
     }
 }
