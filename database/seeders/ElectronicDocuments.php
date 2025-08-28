@@ -14,6 +14,6 @@ class ElectronicDocuments extends Seeder
     public function run(): void
     {
     // Generar 50 documentos electrónicos aleatorios con la factory
-    \App\Models\ElectronicDocument::factory()->count(50)->create();
+    ElectronicDocument::factory()->count(50)->create();
     }
 }

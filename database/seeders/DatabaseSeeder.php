@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ElectronicDocument;
 use App\Models\ElectronicInvoice;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -27,6 +28,8 @@ class DatabaseSeeder extends Seeder
         PaymentMethodTableSeeder::class,
         MeasurementUnitTableSeeder::class,
         RadianEventTableSeeder::class,
+        ElectronicDocument::class,
+        
         
     ]);
 
