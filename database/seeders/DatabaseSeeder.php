@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         ElectronicInvoiceseeder::class,
         paymentTableSeeder::class,
         PaymentMethodTableSeeder::class,
+        MeasurementUnitTableSeeder::class,
         
     ]);
 
