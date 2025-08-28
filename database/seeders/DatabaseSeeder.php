@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
         
     $this->call([
         // Agrega aquí el seeder de la empresa
@@ -25,9 +26,9 @@ class DatabaseSeeder extends Seeder
         paymentTableSeeder::class,
         PaymentMethodTableSeeder::class,
         MeasurementUnitTableSeeder::class,
+        RadianEventTableSeeder::class,
         
     ]);
-
 
 
     }
