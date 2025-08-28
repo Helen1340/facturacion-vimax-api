@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
         MeasurementUnitTableSeeder::class,
         RadianEventTableSeeder::class,
         ElectronicDocument::class,
+        taxTableSeeder::class,
         
         
     ]);
