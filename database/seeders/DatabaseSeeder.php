@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
         ElectronicDocumentsSeeder::class,
         TaxTableSeeder::class,
         Users::class,
+        ElectronicInvoiceseeder::class,
         
         
     ]);
