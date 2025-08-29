@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         ServiceSeeder::class,
         ProductsSeeder::class,
         InvoiceDetailSeeder::class,
-        
+        RolesSeeder::class,
         
     ]);
 
