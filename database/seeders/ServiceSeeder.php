@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\models\Service;
 
 class Services extends Seeder
 {
@@ -12,6 +13,7 @@ class Services extends Seeder
      */
     public function run(): void
     {
-    \App\Models\Service::factory()->count(50)->create();
+
+    Service::factory()->count(50)->create();
     }
 }

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\ElectronicDocument;
 use App\Models\ElectronicInvoice;
+use App\Models\Service;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -32,6 +33,7 @@ class DatabaseSeeder extends Seeder
         TaxTableSeeder::class,
         Users::class,
         ElectronicInvoiceseeder::class,
+        ServiceSeeder::class,
         
         
     ]);
