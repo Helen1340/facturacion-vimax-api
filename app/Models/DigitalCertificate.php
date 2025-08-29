@@ -10,6 +10,7 @@ class DigitalCertificate extends Model
     use HasFactory;
 
     protected $fillable = [
+        'company_id',
         'nombre_certificado',
         'ruta_certificado',
         'numero_serial',

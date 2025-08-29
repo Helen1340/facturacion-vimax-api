@@ -49,7 +49,7 @@ class DigitalCertificateController extends Controller
     /*  la función update actualiza un certificado digital existente
         validando los datos de la solicitud y actualizando solo los campos proporcionados.
     */
-    public function update(Request $request, DigitalCertificate $digital_certificate)
+    public function update(Request $request, DigitalCertificate $digitalCertificate)
     {
         $request->validate([
             'nombre_certificado' => 'sometimes|required|string|max:225',
@@ -63,9 +63,9 @@ class DigitalCertificateController extends Controller
         ]);
 
         // Actualiza solo los campos que vienen en el request
-        $digital_certificate->update($request->only(array_keys($request->all())));
+        $digitalCertificate->update($request->only(array_keys($request->all())));
 
-        return response()->json($digital_certificate);
+        return response()->json($digitalCertificate);
     }
 
     /*  la función destroy elimina un certificado digital específico
