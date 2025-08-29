@@ -24,17 +24,25 @@ class Tax extends Model
 
     // CARDINALIDAD //
 
-    // Muchos a muchos con productos
-    // public function products()
-    // {
-    //     return $this->belongsToMany(Product::class, 'product_tax');
-    // }
+    public function products()
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'product_tax',
+            'Tax_id',
+            'Product_id'
+        )->withTimestamps();
+    }
 
-    // Muchos a muchos con servicios
-    // public function services()
-    // {
-    //     return $this->belongsToMany(Service::class, 'service_tax');
-    // }
+    public function services()
+    {
+        return $this->belongsToMany(
+            Service::class,
+            'service_tax',
+            'Tax_id',
+            'Service_id'
+        )->withTimestamps();
+    }
 
     // SCOPES //
 

@@ -17,7 +17,7 @@ class ServiceFactory extends Factory
     public function definition(): array
     {
         return [
-            'measurementunit_id' => $this->faker->numberBetween(1, 10), // Ajusta según los ids válidos
+            'measurement_unit_id' => $this->faker->numberBetween(1, 10), // Ajusta según los ids válidos
             'nombre' => $this->faker->words(2, true),
             'descripcion' => $this->faker->sentence(6),
             'codigo_servicio' => $this->faker->unique()->bothify('SVC-####'),

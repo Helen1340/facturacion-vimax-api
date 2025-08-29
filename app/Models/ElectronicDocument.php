@@ -51,6 +51,11 @@ class ElectronicDocument extends Model
         return $this->belongsTo(CreditDebitNote::class);
     }
 
+    public function radianEvents()
+    {
+        return $this->hasMany(RadianEvent::class, 'electronic_document_id');
+    }
+
     public function scopeIncluded(Builder $query)
     {
         if (empty($this->allowIncluded) || empty(request('included'))) {

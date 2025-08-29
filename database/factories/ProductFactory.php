@@ -17,7 +17,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'measurementunit_id' => $this->faker->numberBetween(1, 10), // Ajusta según los ids válidos
+            'measurement_unit_id' => $this->faker->numberBetween(1, 10), // Ajusta según los ids válidos
             'codigo_estandar' => $this->faker->optional()->bothify('EST-####'),
             'codigo_producto' => $this->faker->unique()->bothify('PRD-####'),
             'nombre' => $this->faker->words(2, true),
