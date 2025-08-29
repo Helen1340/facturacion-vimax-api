@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
         Users::class,
         ElectronicInvoiceseeder::class,
         ServiceSeeder::class,
+        Products::class,
         
         
     ]);

@@ -8,23 +8,14 @@ use Illuminate\Http\Request;
 
 class InvoiceDetailController extends Controller
 {
-    /**
-     * Listado (GET /api/invoice-details)
-     */
+    
     public function index()
     {
         $details = InvoiceDetail::with(['item','electronicInvoice'])->get();
         return response()->json($details);
     }
 
-    /**
-     * Store (POST /api/invoice-details)
-     * Espera:
-     *  - electronic_invoice_id
-     *  - item_type: 'product' o 'service'
-     *  - item_id (opcional, si se pasa, se usa ese)
-     *  - cantidad, precio_unitario, descripcion, etc.
-     */
+    
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -80,18 +71,14 @@ class InvoiceDetailController extends Controller
         return response()->json($detail->load('item'), 201);
     }
 
-    /**
-     * Mostrar detalle (GET /api/invoice-details/{id})
-     */
+
     public function show($id)
     {
         $detail = InvoiceDetail::with(['item','electronicInvoice'])->findOrFail($id);
         return response()->json($detail);
     }
 
-    /**
-     * Actualizar (PUT/PATCH /api/invoice-details/{id})
-     */
+    
     public function update(Request $request, $id)
     {
         $detail = InvoiceDetail::findOrFail($id);
@@ -125,9 +112,7 @@ class InvoiceDetailController extends Controller
         return response()->json($detail->load('item'));
     }
 
-    /**
-     * Eliminar (DELETE /api/invoice-details/{id})
-     */
+    
     public function destroy($id)
     {
         $detail = InvoiceDetail::findOrFail($id);
