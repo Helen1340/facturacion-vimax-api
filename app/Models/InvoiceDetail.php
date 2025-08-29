@@ -45,7 +45,7 @@ class InvoiceDetail extends Model
         return $this->belongsTo(ElectronicInvoice::class);
     }
 
-     public function scopeFilter(Builder $query)
+    public function scopeFilter(Builder $query)
     {
 
         if (empty($this->allowFilter) || empty(request('filter'))) {

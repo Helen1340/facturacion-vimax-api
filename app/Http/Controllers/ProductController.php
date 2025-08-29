@@ -31,7 +31,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'measurementunit_id' => ['required', 'integer'], // FK no habilitada
+            'measurement_unit_id' => ['required', 'integer'], // FK no habilitada
             'codigo_estandar' => ['nullable', 'string', 'max:50'],
             'codigo_producto' => ['required', 'string', 'max:50', 'unique:products,codigo_producto'],
             'nombre' => ['required', 'string', 'max:150'],
@@ -58,7 +58,7 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $validated = $request->validate([
-            'measurementunit_id' => ['sometimes', 'integer'],
+            'measurement_unit_id' => ['sometimes', 'integer'],
             'codigo_estandar' => ['sometimes', 'string', 'max:50'],
             'codigo_producto' => ['sometimes', 'string', 'max:50', 'unique:products,codigo_producto,' . $product->id],
             'nombre' => ['sometimes', 'string', 'max:150'],

@@ -47,9 +47,14 @@ class User extends Authenticatable
         return $this->belongsTo(Company::class);
     }
 
-    public function roles()
+    public function role()
     {
-        return $this->belongsTo(Role::class, 'role_id');
+        return $this->belongsTo(Role::class);
+    }
+
+    public function electronicInvoices()
+    {
+        return $this->hasMany(ElectronicInvoice::class);
     }
 
     public function scopeIncluded(Builder $query)

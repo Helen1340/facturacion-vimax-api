@@ -58,7 +58,7 @@ class ElectronicInvoice extends Model
 
     //Relación uno a muchos: Una factura puede tener muchas notas de crédito o débito.
 
-    public function creditDebiNotes()
+    public function creditDebitNotes()
     {
         return $this->hasMany(CreditDebitNote::class);
     }

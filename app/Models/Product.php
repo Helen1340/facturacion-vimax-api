@@ -10,7 +10,7 @@ class Product extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'measurementunit_id',
+    'measurement_unit_id',
         'codigo_estandar',
         'codigo_producto',
         'nombre',
@@ -32,6 +32,16 @@ class Product extends Model
     public function invoiceDetails()
     {
         return $this->morphMany(InvoiceDetail::class, 'item');
+    }
+
+    public function taxes()
+    {
+        return $this->belongsToMany(
+            Tax::class,        // Modelo relacionado
+            'product_tax',     // Tabla pivote
+            'product_id',      // FK en la pivote hacia Product
+            'tax_id'           // FK en la pivote hacia Tax
+        )->withTimestamps();
     }
 
     public function scopeIncluded(Builder $query)

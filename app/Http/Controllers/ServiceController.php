@@ -31,7 +31,7 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'measurementunit_id' => ['required', 'integer'], // FK not enforced yet
+            'measurement_unit_id' => ['required', 'integer'], // FK not enforced yet
             'nombre' => ['required', 'string', 'max:150'],
             'descripcion' => ['nullable', 'string', 'max:150'],
             'codigo_servicio' => ['required', 'string', 'max:50', 'unique:services,codigo_servicio'],
@@ -59,7 +59,7 @@ class ServiceController extends Controller
     public function update(Request $request, Service $service)
     {
         $validated = $request->validate([
-            'measurementunit_id' => ['sometimes', 'integer'],
+            'measurement_unit_id' => ['sometimes', 'integer'],
             'nombre' => ['sometimes', 'string', 'max:150'],
             'descripcion' => ['sometimes', 'string', 'max:150'],
             'codigo_servicio' => ['sometimes', 'string', 'max:50', 'unique:services,codigo_servicio,' . $service->id],

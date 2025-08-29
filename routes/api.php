@@ -16,10 +16,11 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\OrmController;
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-
 
 // routes/api.php
 Route::apiResource('companies',CompanyController::class);
@@ -40,3 +41,7 @@ Route::apiResource('taxes', TaxController::class); // impuesto
 //Route::apiResource('product-taxes', ProductTaxController::class);
 //Route::apiResource('service-taxes', ServiceTaxController::class);
 Route::apiResource('digitalCertificates', DigitalCertificateController::class); // certificado-digital
+
+
+// ORM Testing
+Route::get('test-all', [OrmController::class, 'testAllRelations']);
