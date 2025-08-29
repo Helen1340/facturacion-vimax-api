@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\ElectronicInvoice;
+use App\Models\User; 
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,6 +22,7 @@ class ElectronicInvoiceFactory extends Factory
     {
 
     return [
+        'user_id' => User::factory(),
         'numero_factura' => $this->faker->unique()->numerify('FAC-#####'),
         'fecha_emision' => $this->faker->dateTimeBetween('-5 years', 'now'),
         'sub_total' => $this->faker->randomFloat(2, 10000, 500000),

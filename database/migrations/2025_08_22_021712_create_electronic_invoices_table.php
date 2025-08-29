@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('electronic_invoices', function (Blueprint $table) {
             $table->id();
-            //$table->unsignedBigInteger('user_id');
-            //$table->foreignId('user_id')->constrained('users'); // Relación con la tabla 'users'
+            
+            $table->foreignId('user_id')->constrained('users'); // Relación con la tabla 'users'
             $table->string('numero_factura', 20)->unique();
             $table->timestamp('fecha_emision');
             $table->decimal('sub_total', 15, 2);

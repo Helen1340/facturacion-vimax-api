@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('dian_numberings', function (Blueprint $table) {
-
-            // definicion de llave foranea para company
-            //$table->unsignedBigInteger('company_id'); // Bigint(FK) - Relación con Company
-            //$table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-
             $table->id(); // Bigint(PK)
+            // definicion de llave foranea para company
+            $table->unsignedBigInteger('company_id'); // Bigint(FK) - Relación con Company
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+
+            
             $table->enum('tipo_documento', ['Factura', 'NotaCredito', 'NotaDebito']); // Enum para tipos de documento
             $table->string('prefijo', 10); // Varchar(10)
             $table->unsignedBigInteger('numero_inicio'); // Bigint

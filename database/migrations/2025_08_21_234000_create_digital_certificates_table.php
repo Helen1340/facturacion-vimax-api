@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('digital_certificates', function (Blueprint $table) {
 
             // relacion con la tabla company
-            //$table->unsignedBigInteger('company_id');
-            //$table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->unsignedBigInteger('company_id');
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
 
             $table->id();
             $table->string('nombre_certificado', 225);

@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('product_taxes', function (Blueprint $table) {
 
             // No se define un 'id' propio ya que es una tabla pivote simple
-            // $table->id(); // Por si se va a implementa un ID autoincremental para esta tabla
+             $table->id(); // Por si se va a implementa un ID autoincremental para esta tabla
 
             // Definición de las claves foráneas
             $table->unsignedBigInteger('product_id');
-            //$table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->unsignedBigInteger('tax_id');
-            //$table->foreign('tax_id')->references('id')->on('taxes')->onDelete('cascade');
+            $table->foreign('tax_id')->references('id')->on('taxes')->onDelete('cascade');
 
             $table->timestamps();
         });

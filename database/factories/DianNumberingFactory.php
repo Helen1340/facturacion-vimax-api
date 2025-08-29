@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Factories;
+use App\Models\Company;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,6 +18,7 @@ class DianNumberingFactory extends Factory
     public function definition(): array
     {
         return [
+             'company_id' => Company::factory(),
             'tipo_documento' => $this->faker->randomElement(['Factura', 'NotaCredito', 'NotaDebito']), // Tipo de documento
             'prefijo' => $this->faker->bothify('??##'), // Prefijo con letras y números (ej: FA01)
             'numero_inicio' => $this->faker->numberBetween(1, 1000), // Inicio del rango

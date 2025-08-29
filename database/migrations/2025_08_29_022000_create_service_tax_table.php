@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('service_tax', function (Blueprint $table) {
             $table->id();
 
-           // $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
-           // $table->foreignId('tax_id')->constrained('taxes')->onDelete('cascade');
+           $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
+           $table->foreignId('tax_id')->constrained('taxes')->onDelete('cascade');
 
             $table->timestamps();
         });

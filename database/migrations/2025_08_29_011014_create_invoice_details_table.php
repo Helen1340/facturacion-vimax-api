@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('invoice_details', function (Blueprint $table) {
             $table->id();
              // FK hacia la factura electrónica
-           // $table->foreignId('electronic_invoice_id')
-             //     ->constrained('electronic_invoices')
-             //     ->onDelete('cascade');
+            $table->foreignId('electronic_invoice_id')
+                ->constrained('electronic_invoices')
+               ->onDelete('cascade');
             $table->text('descripcion')->nullable();
             $table->integer('cantidad')->default(1);
             $table->decimal('precio_unitario', 15, 2)->default(0);

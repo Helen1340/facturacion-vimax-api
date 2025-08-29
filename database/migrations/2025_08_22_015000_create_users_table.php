@@ -26,7 +26,7 @@ return new class extends Migration
             $table->enum('tipo_documento', ['NIT', 'CC', 'CE']);
             $table->string('numero_documento', 15);
             $table->string('direccion', 150);
-            $table->string('pais', 50);
+            $table->string('pais', 100);
             $table->string('descripcion', 250);
             $table->string('contrasena', 225);
             $table->string('correo_electronico', 100)->unique();

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\ElectronicDocument;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\RadianEvent>
@@ -17,6 +18,7 @@ class RadianEventFactory extends Factory
     public function definition(): array
     {
         return [
+                'electronic_document_id' => ElectronicDocument::factory(),
                 'codigo' => $this->faker->regexify('[A-Z0-9]{10}'), // Código aleatorio (10 caracteres alfanuméricos)
                 'fecha_evento' => $this->faker->dateTimeBetween('-1 year', 'now'), // Fecha de evento en el último año
                 'tipo_evento' => $this->faker->randomElement(['Recibido', 'Aceptado', 'Rechazado', 'Validado', 'Notificado']), // Tipo de evento simulado

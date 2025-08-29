@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Factories;
+use App\Models\ElectronicInvoice;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -17,6 +18,7 @@ class CreditDebitNoteFactory extends Factory
     public function definition(): array
     {
         return [
+            'electronic_invoice_id' => ElectronicInvoice::factory(),
             'motivo' => $this->faker->sentence(6), // Motivo breve de la nota
             'tipo_documento' => $this->faker->randomElement(['debito', 'credito']), // Tipo de nota
             'descripcion' => $this->faker->sentence(10), // Descripción más detallada

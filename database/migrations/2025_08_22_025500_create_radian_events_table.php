@@ -12,12 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('radian_events', function (Blueprint $table) {
-
-            //definicion de la fk de electronic document
-            //$table->unsignedBigInteger('electronic_document_id'); // Bigint(FK) - Relación con ElectronicDocument
-            //$table->foreign('electronic_document_id')->references('id')->on('electronic_documents')->onDelete('cascade');
-
             $table->id(); // Bigint(PK)
+            //definicion de la fk de electronic document
+            $table->unsignedBigInteger('electronic_document_id'); // Bigint(FK) - Relación con ElectronicDocument
+            $table->foreign('electronic_document_id')->references('id')->on('electronic_documents')->onDelete('cascade');
+
             $table->string('codigo', 20); // Varchar(20)
             $table->timestamp('fecha_evento'); // Timestamp
             $table->string('tipo_evento', 50); // Varchar(50)

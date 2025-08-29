@@ -15,8 +15,8 @@ return new class extends Migration
              $table->id(); // Bigint(PK)
 
             //definicion de llave foranea de electronic invoice(factura electronica)
-            // $table->unsignedBigInteger('electronic_invoice_id'); // Esta FK va en la tabla electronic_invoices
-            // $table->foreign('electronic_invoice_id')->references('id')->on('electronic_invoices')->onDelete('cascade');
+            $table->unsignedBigInteger('electronic_invoice_id'); // Esta FK va en la tabla electronic_invoices
+            $table->foreign('electronic_invoice_id')->references('id')->on('electronic_invoices')->onDelete('cascade');
 
         
             $table->string('motivo', 250); 

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\ElectronicDocument;
 use App\Models\ElectronicInvoice;
+use App\Models\InvoiceDetail;
 use App\Models\Service;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -31,10 +32,11 @@ class DatabaseSeeder extends Seeder
         RadianEventTableSeeder::class,
         ElectronicDocumentsSeeder::class,
         TaxTableSeeder::class,
-        User::class,
+        UsersSeeder::class,
         ElectronicInvoiceSeeder::class,
-        ServicesSeeder::class,
-        Products::class,
+        ServiceSeeder::class,
+        ProductsSeeder::class,
+        InvoiceDetailSeeder::class,
         
         
     ]);

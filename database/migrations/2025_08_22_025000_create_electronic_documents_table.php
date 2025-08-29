@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
 
             // Llaves foráneas
-            $table->unsignedBigInteger('ElectronicInvoice_id')->nullable();
-            //$table->foreignId('ElectronicInvoice_id')->nullable()->constrained('electronic_invoices')->onDelete('cascade');
-            $table->unsignedBigInteger('DianNumbering_id')->nullable();
-            //$table->foreignId('DianNumbering_id')->nullable()->constrained('dian_numberings')->onDelete('cascade');
-            $table->unsignedBigInteger('CreditDebitNote_id')->nullable();
-            //$table->foreignId('CreditDebitNote_id')->nullable()->constrained('credit_debit_notes')->onDelete('cascade');
+        
+            $table->foreignId('electronic_invoice_id')->constrained('electronic_invoices');
+            
+            $table->foreignId('dian_numbering_id')->nullable()->constrained('dian_numberings')->onDelete('cascade');
+            
+            $table->foreignId('credit_debit_note_id')->nullable()->constrained('credit_debit_notes')->onDelete('cascade');
 
             $table->string('cufe', 255)->unique();
             $table->string('cude', 255);

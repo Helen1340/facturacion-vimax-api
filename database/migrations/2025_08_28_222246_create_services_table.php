@@ -17,7 +17,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('measurementunit_id');
             // Restricción de clave foránea
-            //$table->foreign('measurementunit_id')->references('id')->on('measurement_units')->onDelete('cascade');
+            $table->foreign('measurementunit_id')->references('id')->on('measurement_units')->onDelete('cascade');
 
             $table->string('nombre', 150);
             $table->string('descripcion', 150)->nullable();

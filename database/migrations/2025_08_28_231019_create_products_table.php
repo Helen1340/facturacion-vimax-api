@@ -17,7 +17,7 @@ return new class extends Migration
             // FK hacia MeasurementUnit
             $table->unsignedBigInteger('measurementunit_id');
             // Clave foránea
-            //$table->foreign('measurementunit_id')->references('id')->on('measurement_units')->onDelete('cascade');
+            $table->foreign('measurementunit_id')->references('id')->on('measurement_units')->onDelete('cascade');
 
             $table->string('codigo_estandar', 50)->nullable();
             $table->string('codigo_producto', 50)->unique();

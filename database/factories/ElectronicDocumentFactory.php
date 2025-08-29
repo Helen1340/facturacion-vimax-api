@@ -17,9 +17,10 @@ class ElectronicDocumentFactory extends Factory
     public function definition(): array
     {
         return [
-            'ElectronicInvoice_id' => $this->faker->numberBetween(1, 5),
-            'DianNumbering_id' => $this->faker->numberBetween(1, 3),
-            'CreditDebitNote_id' => $this->faker->optional()->numberBetween(1, 2),
+            'electronic_invoice_id' => $this->faker->numberBetween(1, 5),
+            'dian_numbering_id' => $this->faker->numberBetween(1, 3),
+            'credit_debit_note_id' => $this->faker->optional()->numberBetween(1, 2),
+            
             'cufe' => $this->faker->unique()->regexify('CUFE[0-9]{10}'),
             'cude' => $this->faker->unique()->regexify('DOC-[0-9]{3}'),
             'xml_documento' => '<xml>' . $this->faker->sentence(3) . '</xml>',
