@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 class RadianEvent extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
+        'electronic_document_id',
         'codigo',
         'fecha_evento',
         'tipo_evento',

@@ -13,9 +13,9 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $role = Role::included()->filter()->sort()->getOrPaginate();
+        $roles = Role::included()->filter()->sort()->getOrPaginate();
 
-        return response()->json($role);
+        return response()->json($roles);
     }
 
     /**

@@ -17,14 +17,14 @@ class PaymentController extends Controller
     // crear un nuevo pago
     public function store(Request $request)
     {
-        $request->validate([
-            'ElectronicInvoice_id' => 'required|exists:electronic_invoices,identificacion',
-            'PaymentMethod_id'     => 'required|exists:payment_methods,identificacion',
-            'fecha_pago'           => 'required|date',
-            'valor_pagado'         => 'required|numeric|min:0',
-            'moneda'               => 'required|string|max:3',
-            'referencia_pago'      => 'nullable|string|max:255',
-        ]);
+    $request->validate([
+        'electronic_invoice_id' => 'required|exists:electronic_invoices,id',
+        'payment_method_id'     => 'required|exists:payment_methods,id',
+        'fecha_pago'            => 'required|date',
+        'valor_pagado'          => 'required|numeric|min:0',
+        'moneda'                => 'required|string|max:3',
+        'referencia_pago'       => 'nullable|string|max:255',
+    ]);
 
         $payment = Payment::create($request->all());
         return response()->json($payment, 201);
@@ -41,8 +41,8 @@ class PaymentController extends Controller
     public function update(Request $request, Payment $payment)
     {
         $request->validate([
-            'ElectronicInvoice_id' => 'sometimes|exists:electronic_invoices,identificacion',
-            'PaymentMethod_id'     => 'sometimes|exists:payment_methods,identificacion',
+            'electronic_Invoice_id' => 'sometimes|exists:electronic_invoices,identificacion',
+            'payment_Method_id'     => 'sometimes|exists:payment_methods,identificacion',
             'fecha_pago'           => 'sometimes|date',
             'valor_pagado'         => 'sometimes|numeric|min:0',
             'moneda'               => 'sometimes|string|max:3',

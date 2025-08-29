@@ -11,18 +11,18 @@ class Payment extends Model
     use HasFactory;
 
     // Campos que se pueden asignar masivamente
-    protected $fillable = [
-        'ElectronicInvoice_id',
-        'PaymentMethod_id',
+protected $fillable = [
+        'electronic_invoice_id',
+        'payment_method_id',
         'fecha_pago',
         'valor_pagado',
         'moneda',
         'referencia_pago',
-    ];
+];
 
 
     // Las posibles relaciones (includes) que se pueden cargar a través de query parameters en la API
-    protected $allowIncluded = ['electronicInvoice', 'paymentMethod'];
+    protected $allowIncluded = ['Electronic_Invoice', 'Payment_Method'];
     // Campos por los que se puede filtrar la consulta
     protected $allowFilter = ['fecha_pago', 'valor_pagado', 'moneda'];
     // Campos por los que se puede ordenar la consulta
@@ -33,12 +33,12 @@ class Payment extends Model
     // Muchos pagos pertenecen a una factura electrónica (muchos a uno)
     public function electronicInvoice()
     {
-        return $this->belongsTo(ElectronicInvoice::class, 'ElectronicInvoice_id', 'identificacion');
+        return $this->belongsTo(ElectronicInvoice::class, 'electronic_invoice_id');
     }
-    // Muchos pagos pertenecen a un método de pago (muchos a uno)
+
     public function paymentMethod()
     {
-        return $this->belongsTo(PaymentMethod::class, 'PaymentMethod_id');
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
     }
 
     // SCOPES //

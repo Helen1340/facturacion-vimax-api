@@ -15,13 +15,14 @@ class RadianEventController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'codigo'                 => 'required|string|max:20',
-            'fecha_evento'           => 'required|date',
-            'tipo_evento'            => 'required|string|max:50',
-            'xml_respuesta'          => 'required|string',
-            'estado_dian'            => 'required|string|max:50',
-        ]);
+    $request->validate([
+        'electronic_document_id' => 'required|exists:electronic_documents,id',
+        'codigo'                 => 'required|string|max:20',
+        'fecha_evento'           => 'required|date',
+        'tipo_evento'            => 'required|string|max:50',
+        'xml_respuesta'          => 'required|string',
+        'estado_dian'            => 'required|string|max:50',
+    ]);
 
         $radian_event = RadianEvent::create($request->all());
         return response()->json($radian_event, 201);
@@ -33,7 +34,7 @@ class RadianEventController extends Controller
         return response()->json($radian_event);
     }
 
-    public function update(Request $request, RadianEvent $radian_event)
+    public function update(Request $request, RadianEvent $radianEvent)
     {
         $request->validate([
             'codigo'                 => 'sometimes|required|string|max:20',
@@ -43,9 +44,9 @@ class RadianEventController extends Controller
             'estado_dian'            => 'sometimes|required|string|max:50',
         ]);
 
-        $radian_event->update($request->only(array_keys($request->all())));
+        $radianEvent->update($request->only($radianEvent->getFillable()));
 
-        return response()->json($radian_event);
+        return response()->json($radianEvent);
     }
 
     public function destroy($id)
