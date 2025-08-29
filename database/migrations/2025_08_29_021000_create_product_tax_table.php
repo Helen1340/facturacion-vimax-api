@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_taxes', function (Blueprint $table) {
+        Schema::create('product_tax', function (Blueprint $table) {
 
             // No se define un 'id' propio ya que es una tabla pivote simple
              $table->id(); // Por si se va a implementa un ID autoincremental para esta tabla
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_taxes');
+        Schema::dropIfExists('product_tax');
     }
 };
