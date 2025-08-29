@@ -6,7 +6,7 @@ use App\Models\ElectronicInvoice;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class ElectronicInvoiceseeder extends Seeder
+class ElectronicInvoiceSeeder extends Seeder
 {
     /**
      * Run the database seeds.

@@ -31,9 +31,9 @@ class DatabaseSeeder extends Seeder
         RadianEventTableSeeder::class,
         ElectronicDocumentsSeeder::class,
         TaxTableSeeder::class,
-        Users::class,
-        ElectronicInvoiceseeder::class,
-        ServiceSeeder::class,
+        User::class,
+        ElectronicInvoiceSeeder::class,
+        ServicesSeeder::class,
         Products::class,
         
         
