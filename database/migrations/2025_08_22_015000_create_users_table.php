@@ -12,31 +12,29 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+    $table->id();
 
-            // Clave foránea hacia companies
-            $table->unsignedBigInteger('company_id')->nullable();
-            //$table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+    $table->unsignedBigInteger('company_id')->nullable();
+    $table->unsignedBigInteger('role_id')->nullable();
 
-            // Clave foránea hacia roles (tabla separada)
-            $table->unsignedBigInteger('role_id')->nullable();
-            // $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null'); // Agregar cuando roles esté disponible
+    $table->string('nombre', 100);
 
-            $table->string('nombre', 100);
-            $table->enum('tipo_documento', ['NIT', 'CC', 'CE']);
-            $table->string('numero_documento', 15);
-            $table->string('direccion', 150);
-            $table->string('pais', 100);
-            $table->string('descripcion', 250);
-            $table->string('contrasena', 225);
-            $table->string('correo_electronico', 100)->unique();
-            $table->string('telefono', 20);
-            $table->enum('estado', ['Activo', 'Inactivo'])->default('Activo');
-            $table->timestamp('ultimo_acceso');
+    // 👇 ahora permite NULL
+    $table->enum('tipo_documento', ['NIT', 'CC', 'CE'])->nullable();
+    $table->string('numero_documento', 50)->unique();    // antes 15
+    $table->string('direccion', 150)->nullable();
+    $table->string('pais', 100)->nullable();
+    $table->string('descripcion', 250)->nullable();
+    $table->string('contrasena', 225);
+    $table->string('correo_electronico', 150)->unique(); // antes 100
+    $table->string('telefono', 20)->nullable();
+    $table->enum('estado', ['Activo', 'Inactivo'])->default('Activo');
+    $table->timestamp('ultimo_acceso')->nullable();      // antes NOT NULL
 
-            $table->rememberToken();
-            $table->timestamps();
-        });
+    $table->rememberToken();
+    $table->timestamps();
+});
+
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

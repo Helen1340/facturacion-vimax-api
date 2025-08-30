@@ -34,14 +34,39 @@ class User extends Authenticatable
         'ultimo_acceso',
     ];
 
-    protected $AllowIncluded = [ 
-        'company',   // relación con la empresa
-        'role',    // relación con role
-    ];     
+    // 👇 todo en minúsculas
+    protected $allowIncluded = [
+        'company',
+        'role',
+    ];
 
-    protected $AllowFilter = [ 'company_id', 'nombre', 'tipo_documento', 'numero_documento', 'direccion', 'pais', 'descripcion', 'correo_electronico', 'telefono', 'estado', 'ultimo_acceso' ];
-    protected $AllowSort = [ 'company_id', 'nombre', 'tipo_documento', 'numero_documento', 'direccion', 'pais', 'descripcion', 'correo_electronico', 'telefono', 'estado', 'ultimo_acceso' ];
+    protected $allowFilter = [
+        'company_id',
+        'nombre',
+        'tipo_documento',
+        'numero_documento',
+        'direccion',
+        'pais',
+        'descripcion',
+        'correo_electronico',
+        'telefono',
+        'estado',
+        'ultimo_acceso'
+    ];
 
+    protected $allowSort = [
+        'company_id',
+        'nombre',
+        'tipo_documento',
+        'numero_documento',
+        'direccion',
+        'pais',
+        'descripcion',
+        'correo_electronico',
+        'telefono',
+        'estado',
+        'ultimo_acceso'
+    ];
     public function company()
     {
         return $this->belongsTo(Company::class);

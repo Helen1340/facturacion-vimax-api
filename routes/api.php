@@ -15,6 +15,10 @@ use App\Http\Controllers\TaxController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\InvoiceDetailController;
+use App\Http\Controllers\ProductTaxController;
 
 use App\Http\Controllers\OrmController;
 
@@ -26,10 +30,10 @@ Route::get('/user', function (Request $request) {
 Route::apiResource('companies',CompanyController::class);
 Route::apiResource('users', UserController::class);
 Route::apiResource('roles', RoleController::class);
-//Route::apiResource('products', ProductController::class);
-//Route::apiResource('services', ServiceController::class);
+Route::apiResource('products', ProductController::class);
+Route::apiResource('services', ServiceController::class);
 Route::apiResource('measurementUnints', MeasurementUnitController::class); // unidad-medida
-//Route::apiResource('invoiceDetails', ElectronicInvoiceController::class); // detalle-factura
+Route::apiResource('invoiceDetails', ElectronicInvoiceController::class); // detalle-factura
 Route::apiResource('payments', PaymentController::class);
 Route::apiResource('paymentMethods', PaymentMethodController::class); // metodo-pago
 Route::apiResource('creditDebitNotes', CreditDebitNoteController::class); // nota-credito-debito
