@@ -32,9 +32,17 @@ class ElectronicDocument extends Model
         'modo_emision',
     ];
 
-    protected $AllowIncluded = ['ElectronicInvoice', 'DianNumbering', 'CreditDebitNote',]; //relaciones con otras tablas
-    protected $AllowFilter = [ 'ElectronicInvoice_id', 'DianNumbering_id', 'CreditDebitNote_id', 'cufe', 'cude', 'xml_documento', 'estado_dian', 'fecha_validacion', 'firma_digital', 'hash_documento', 'descripcion', 'ambiente', 'tipo_documento', 'qr_codigo', 'cdr', 'modo_emision',];
-    protected $AllowSort = [ 'ElectronicInvoice_id', 'DianNumbering_id', 'CreditDebitNote_id', 'cufe', 'cude', 'xml_documento', 'estado_dian', 'fecha_validacion', 'firma_digital', 'hash_documento', 'descripcion', 'ambiente', 'tipo_documento', 'qr_codigo', 'cdr', 'modo_emision',];
+    protected $allowIncluded = [
+        'dianNumbering',
+        'dianNumbering.company',
+        'electronicInvoice',
+        'creditDebitNote',
+        'radianEvents',
+    ];
+     //relaciones con otras tablas
+    
+    protected $allowFilter = [ 'ElectronicInvoice_id', 'DianNumbering_id', 'CreditDebitNote_id', 'cufe', 'cude', 'xml_documento', 'estado_dian', 'fecha_validacion', 'firma_digital', 'hash_documento', 'descripcion', 'ambiente', 'tipo_documento', 'qr_codigo', 'cdr', 'modo_emision',];
+    protected $allowSort = [ 'ElectronicInvoice_id', 'DianNumbering_id', 'CreditDebitNote_id', 'cufe', 'cude', 'xml_documento', 'estado_dian', 'fecha_validacion', 'firma_digital', 'hash_documento', 'descripcion', 'ambiente', 'tipo_documento', 'qr_codigo', 'cdr', 'modo_emision',];
 
     public function electronicInvoice()
     {

@@ -24,7 +24,14 @@ use HasFactory;
 
 
     // Listas blancas
-    protected $allowIncluded = ['company', 'electronicDocuments']; // Permite incluir la relación 'company' y 'electronicDocuments'
+    protected $allowIncluded = [
+        'company',
+        'company.users',
+        'electronicDocuments',
+        'electronicDocuments.electronicInvoice',
+    ];
+    // Permite incluir la relaciónes
+
     protected $allowFilter = [ 'tipo_documento', 'prefijo', 'numero_resolucion', 'estado_actual'];
     protected $allowSort = [ 'tipo_documento', 'prefijo', 'fecha_resolucion', 'fecha_inicio', 'fecha_fin', 'estado_actual'];
 

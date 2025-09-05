@@ -18,7 +18,14 @@ class Company extends Model
 
     // Las posibles relaciones (includes) que se pueden cargar
      //a través de query parameters en la API//
-      protected $allowIncluded = ['users', 'digitalCertificates','dianNumbering'];
+        protected $allowIncluded = [
+            'users',
+            'users.role',
+            'users.electronicInvoices',
+            'digitalCertificates',
+            'dianNumberings',
+            'documentNumberings',
+        ];
       //Los campos por los que se puede filtrar la consulta.
     protected $allowFilter = ['id','razon_social','tipo_documento','correo_electronico','numero_documento',];
     //Los campos por los que se puede ordenar la consulta.
@@ -47,8 +54,6 @@ class Company extends Model
         return $this->hasMany(DianNumbering::class);
   
     }
-
-
 
 public function scopeIncluded(Builder $query)
     {

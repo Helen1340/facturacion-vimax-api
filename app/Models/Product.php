@@ -19,7 +19,12 @@ class Product extends Model
         'estado',
     ];
 
-    protected $allowIncluded = ['measurementUnit', 'invoiceDetails']; 
+    protected $allowIncluded = [
+        'measurementUnit',
+        'invoiceDetails',
+        'invoiceDetails.electronicInvoice',
+        'taxes',
+    ]; 
     protected $allowFilter = ['id', 'codigo_producto', 'nombre', 'descripcion', 'precio_unitario', 'estado'];
     protected $allowSort = [  'id', 'codigo_producto', 'nombre', 'descripcion', 'precio_unitario', 'estado'];
 

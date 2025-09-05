@@ -14,7 +14,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $user = User::included()->filter()->sort()->paginate();
+        $user = User::included()->filter()->sort()->getOrPaginate();
 
         return response()->json($user);
     }

@@ -19,7 +19,12 @@ class MeasurementUnit extends Model
     ];
 
     // Las posibles relaciones que se pueden cargar vía query parameters en la API
-    protected $allowIncluded = ['products', 'services'];
+    protected $allowIncluded = [
+        'products',
+        'products.invoiceDetails',
+        'services',
+        'services.invoiceDetails',
+    ];
     // Campos por los que se puede filtrar la consulta
     protected $allowFilter = ['id', 'nombre', 'estado', 'codigo_dian', 'tipo_aplicacion'];
     // Campos por los que se puede ordenar la consulta

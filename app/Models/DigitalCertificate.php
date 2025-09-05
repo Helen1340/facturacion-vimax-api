@@ -22,7 +22,11 @@ class DigitalCertificate extends Model
     ];
 
     // Listas blancas
-    protected $allowIncluded = ['company']; // Permite incluir la relación 'company'
+    protected $allowIncluded = [
+        'company',
+        'company.users',
+    ];
+     // Permite incluir la relación 'company'
     protected $allowFilter = ['nombre_certificado', 'numero_serial', 'estado', 'entidad_emisora'];
     protected $allowSort = ['nombre_certificado', 'fecha_inicio', 'fecha_fin', 'estado', 'entidad_emisora'];
 

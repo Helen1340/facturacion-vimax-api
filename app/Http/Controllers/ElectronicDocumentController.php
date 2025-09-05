@@ -13,7 +13,7 @@ class ElectronicDocumentController extends Controller
      */
     public function index()
     {
-        $electronicDocument = ElectronicDocument::included()->filter()->sort()->paginate();
+        $electronicDocument = ElectronicDocument::included()->filter()->sort()->getOrPaginate();
 
         return response()->json($electronicDocument);
     }

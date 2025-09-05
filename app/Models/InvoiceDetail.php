@@ -28,10 +28,16 @@ class InvoiceDetail extends Model
     ];
 
     // listas blancas para la consulta
-             protected $allowIncluded =['item', 'electronicInvoice'];// Las relaciones que se pueden "incluir"
-             protected $allowFilter = ['id', 'descripcion', 'cantidad'];// Los campos que se pueden "filtrar"
-             protected $allowSort =['id', 'descripcion', 'cantidad'];// Los campos por los que se puede "ordenar"
-   
+    protected $allowIncluded =[
+        'electronicInvoice',
+        'electronicInvoice.user',
+        'item',
+        'item.measurementUnit',
+        'item.taxes',
+    ];// Las relaciones que se pueden "incluir"
+    protected $allowFilter = ['id', 'descripcion', 'cantidad'];// Los campos que se pueden "filtrar"
+    protected $allowSort =['id', 'descripcion', 'cantidad'];// Los campos por los que se puede "ordenar"
+
              //Relación polimórfica: devuelve el item que puede ser Product o Service.
     public function item()
     {

@@ -12,14 +12,15 @@ class Role extends Model
     protected $table = 'roles';
 
     protected $fillable = [
-        'nombre',
-        'descripcion',
-        'estado',
+        'users',
+        'users.company',
+        'users.electronicInvoices',
     ];
 
     protected $allowIncluded = [
         'users',
-        'users.company', //incluir la relacion de la tabla users con la de company "scopes anidados"
+        'users.company',
+        'users.electronicInvoices', //incluir la relacion de la tabla users con la de company "scopes anidados"
     ];
 
     protected $allowFilter = [ 'id', 'nombre', 'descripcion', 'estado'];
