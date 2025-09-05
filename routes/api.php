@@ -17,10 +17,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\InvoiceDetailController;
-use App\Http\Controllers\ProductTaxController;
-
 use App\Http\Controllers\OrmController;
+use App\Models\InvoiceDetail;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -33,7 +31,7 @@ Route::apiResource('roles', RoleController::class);
 Route::apiResource('products', ProductController::class);
 Route::apiResource('services', ServiceController::class);
 Route::apiResource('measurementUnints', MeasurementUnitController::class); // unidad-medida
-Route::apiResource('invoiceDetails', ElectronicInvoiceController::class); // detalle-factura
+Route::apiResource('invoiceDetails', InvoiceDetail::class); // detalle-factura
 Route::apiResource('payments', PaymentController::class);
 Route::apiResource('paymentMethods', PaymentMethodController::class); // metodo-pago
 Route::apiResource('creditDebitNotes', CreditDebitNoteController::class); // nota-credito-debito
