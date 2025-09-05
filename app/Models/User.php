@@ -37,7 +37,15 @@ class User extends Authenticatable
     // 👇 todo en minúsculas
     protected $allowIncluded = [
         'company',
+        'company.digitalCertificates',
+        'company.dianNumberings',
+        'electronicInvoices',
+        'electronicInvoices.invoiceDetails',
+        'electronicInvoices.payment',
+        'electronicInvoices.creditDebitNotes',
+        'electronicInvoices.electronicDocuments',
         'role',
+
     ];
 
     protected $allowFilter = [

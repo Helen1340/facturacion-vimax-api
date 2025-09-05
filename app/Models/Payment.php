@@ -22,7 +22,11 @@ protected $fillable = [
 
 
     // Las posibles relaciones (includes) que se pueden cargar a través de query parameters en la API
-    protected $allowIncluded = ['Electronic_Invoice', 'Payment_Method'];
+    protected $allowIncluded = [
+        'electronicInvoice',
+        'electronicInvoice.user',
+        'paymentMethod',
+    ];
     // Campos por los que se puede filtrar la consulta
     protected $allowFilter = ['fecha_pago', 'valor_pagado', 'moneda'];
     // Campos por los que se puede ordenar la consulta

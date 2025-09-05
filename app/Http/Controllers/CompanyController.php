@@ -11,6 +11,7 @@ class CompanyController extends Controller
     public function index()
     {
         $companies=Company::included()->filter()->sort()->getOrPaginate();
+
         return response()->json($companies);
     }
 

@@ -25,7 +25,7 @@ class OrmController extends Controller
 {
     public function showCompany(Company $company): JsonResponse
     {
-        $company->load(['users', 'digitalCertificates', 'documentNumberings']);
+        $company->load(['users', 'digitalCertificates']);
 
         return response()->json([
             'company' => $company

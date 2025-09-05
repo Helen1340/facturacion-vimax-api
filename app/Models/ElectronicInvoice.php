@@ -25,8 +25,19 @@ class ElectronicInvoice extends Model
     //LISTAS BLANCAS
 
     //Las posibles relaciones (includes) que se pueden cargar.
-    protected $allowIncluded = ['user','payment','invoiceDetails','creditDebitNotes',
-    'electronicDocuments'];
+    protected $allowIncluded = [
+        'user',
+        'user.company',
+        'user.role',
+        'invoiceDetails',
+        'invoiceDetails.item',
+        'payment',
+        'payment.paymentMethod',
+        'creditDebitNotes',
+        'creditDebitNotes.electronicDocuments',
+        'electronicDocuments',
+        'electronicDocuments.dianNumbering',
+    ];
     //Los campos por los que se puede filtrar la consulta.
     protected $allowFilter = ['id', 'numero_factura', 'user_id', 'estado_interno', 'fecha_emision'];
     //Los campos por los que se puede ordenar la consulta.

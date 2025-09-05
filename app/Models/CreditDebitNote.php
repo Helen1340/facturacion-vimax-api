@@ -21,7 +21,11 @@ class CreditDebitNote extends Model
     ];
 
     // Listas blancas
-    protected $allowIncluded = ['electronicInvoice', 'electronicDocuments'];
+    protected $allowIncluded = [
+        'electronicInvoice',
+        'electronicInvoice.user',
+        'electronicDocuments',
+    ];
     protected $allowFilter = ['motivo', 'tipo_documento', 'descripcion', 'numero_nota', 'estado'];
     protected $allowSort = ['motivo', 'tipo_documento', 'numero_nota', 'fecha_emision', 'valor_total', 'estado'];
 

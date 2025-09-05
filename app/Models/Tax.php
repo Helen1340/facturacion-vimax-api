@@ -14,7 +14,12 @@ class Tax extends Model
 
     // Las posibles relaciones (includes) que se pueden cargar
     // a través de query parameters en la API
-    protected $allowIncluded = ['products', 'services'];
+    protected $allowIncluded = [
+        'products',
+        'products.measurementUnit',
+        'services',
+        'services.measurementUnit',
+    ];
 
     // Los campos por los que se puede filtrar la consulta
     protected $allowFilter = ['nombre', 'tipo', 'estado'];

@@ -20,7 +20,11 @@ class RadianEvent extends Model
     ];
 
     // Listas blancas
-    protected $allowIncluded = ['electronicDocument']; // Permite incluir la relación 'electronicDocument'
+    protected $allowIncluded = [
+        'electronicDocument',
+        'electronicDocument.dianNumbering',
+        'electronicDocument.electronicInvoice',
+    ]; // Permite incluir la relación 'electronicDocument'
     protected $allowFilter = ['codigo', 'tipo_evento', 'estado_dian'];
     protected $allowSort = ['codigo', 'fecha_evento', 'tipo_evento', 'estado_dian'];
 
