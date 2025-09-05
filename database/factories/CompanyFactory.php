@@ -12,21 +12,26 @@ class CompanyFactory extends Factory
     
     public function definition(): array
     {
-        return [
-            'razon_social' => $this->faker->company,
-            'tipo_documento' => $this->faker->randomElement(['NIT', 'CC', 'CE']),
-            'direccion' => $this->faker->streetAddress,
-            'municipio' => $this->faker->city,
-            'departamento' => $this->faker->state,
-            'pais' => 'Colombia', // O $this->faker->country si lo prefieres
-            'telefono' => $this->faker->phoneNumber,
-            'correo_electronico' => $this->faker->unique()->safeEmail,
-            'regimen' => $this->faker->word,
-            'logo_url' => $this->faker->imageUrl(),
-            'nombre_comercial' => $this->faker->companySuffix,
-            'codigo_ciiu' => $this->faker->regexify('[0-9]{4}'),
-            'numero_documento' => $this->faker->unique()->randomNumber(9),
-    
-        ];
-    }
+        // Generar NIT realista de Colombia
+    $nit = $this->faker->unique()->numerify('#########') . '-' . $this->faker->numberBetween(0, 9);
+
+    // Código CIIU entre 4 dígitos (sectores económicos)
+    $codigo_ciiu = $this->faker->numberBetween(1000, 9999);
+
+    return [
+        'razon_social' => $this->faker->company,
+        'tipo_documento' => 'NIT', // La mayoría de las empresas usan NIT
+        'numero_documento' => $nit,
+        'direccion' => $this->faker->streetAddress,
+        'municipio' => $this->faker->city,
+        'departamento' => $this->faker->state,
+        'pais' => 'Colombia',
+        'telefono' => $this->faker->numerify('3#########'), // Formato celular colombiano
+        'correo_electronico' => $this->faker->unique()->companyEmail,
+        'regimen' => $this->faker->randomElement(['Simplificado', 'Común']),
+        'logo_url' => $this->faker->imageUrl(200, 200, 'business', true),
+        'nombre_comercial' => $this->faker->company,
+        'codigo_ciiu' => $codigo_ciiu,
+    ];
+}
 }

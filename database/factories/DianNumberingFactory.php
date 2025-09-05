@@ -17,17 +17,27 @@ class DianNumberingFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            'company_id' => Company::factory(),
-            'tipo_documento' => $this->faker->randomElement(['Factura', 'NotaCredito', 'NotaDebito']), // Tipo de documento
-            'prefijo' => $this->faker->bothify('??##'), // Prefijo con letras y números (ej: FA01)
-            'numero_inicio' => $this->faker->numberBetween(1, 1000), // Inicio del rango
-            'numero_fin' => $this->faker->numberBetween(1001, 9999), // Fin del rango mayor al inicio
-            'fecha_resolucion' => $this->faker->dateTimeBetween('-2 years', 'now')->format('Y-m-d'), // Fecha de resolución DIAN
-            'numero_resolucion' => $this->faker->numerify('#########'), // Número de resolución de la DIAN
-            'fecha_inicio' => $this->faker->dateTimeBetween('-1 years', 'now')->format('Y-m-d'), // Vigencia inicio
-            'fecha_fin' => $this->faker->dateTimeBetween('now', '+2 years')->format('Y-m-d'), // Vigencia fin
-            'estado_actual' => $this->faker->randomElement(['Activo', 'Inactivo']), // Estado actual
-        ];
-    }
+      
+    // Generamos un rango coherente (inicio < fin)
+    $numero_inicio = $this->faker->numberBetween(1, 5000);
+    $numero_fin = $numero_inicio + $this->faker->numberBetween(500, 5000);
+
+    // Fechas realistas de vigencia
+    $fecha_resolucion = $this->faker->dateTimeBetween('-2 years', 'now');
+    $fecha_inicio = (clone $fecha_resolucion)->modify('+1 day');
+    $fecha_fin = (clone $fecha_inicio)->modify('+2 years');
+
+    return [
+        'company_id' =>Company::inRandomOrder()->first()?->id,
+        'tipo_documento' => $this->faker->randomElement(['Factura', 'NotaCredito', 'NotaDebito']), // Documento DIAN
+        'prefijo' => strtoupper($this->faker->bothify('??##')), // Ejemplo: FA01
+        'numero_inicio' => $numero_inicio, 
+        'numero_fin' => $numero_fin, 
+        'fecha_resolucion' => $fecha_resolucion->format('Y-m-d'), 
+        'numero_resolucion' => $this->faker->numerify('#########'), // Ejemplo: 187600123
+        'fecha_inicio' => $fecha_inicio->format('Y-m-d'), 
+        'fecha_fin' => $fecha_fin->format('Y-m-d'),
+        'estado_actual' => $this->faker->randomElement(['Activo', 'Inactivo']),
+    ];
+}
 }

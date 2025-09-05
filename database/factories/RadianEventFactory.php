@@ -17,13 +17,31 @@ class RadianEventFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-                'electronic_document_id' => ElectronicDocument::factory(),
-                'codigo' => $this->faker->regexify('[A-Z0-9]{10}'), // Código aleatorio (10 caracteres alfanuméricos)
-                'fecha_evento' => $this->faker->dateTimeBetween('-1 year', 'now'), // Fecha de evento en el último año
-                'tipo_evento' => $this->faker->randomElement(['Recibido', 'Aceptado', 'Rechazado', 'Validado', 'Notificado']), // Tipo de evento simulado
-                'xml_respuesta' => '<xml><respuesta>' . $this->faker->sentence . '</respuesta></xml>', // Respuesta en XML simulada
-                'estado_dian' => $this->faker->randomElement(['Enviado', 'Procesado', 'Rechazado', 'Pendiente']), // Estado en la DIAN
-        ];
-    }
+        
+    return [
+        // Vincula a un documento electrónico ya existente
+        'electronic_document_id' =>ElectronicDocument::inRandomOrder()->first()?->id ?? ElectronicDocument::factory(),
+
+        // Código de evento único y aleatorio (10 caracteres alfanuméricos)
+        'codigo' => strtoupper($this->faker->unique()->bothify('EVT-####??')),
+
+        // Fecha del evento dentro del último año
+        'fecha_evento' => $this->faker->dateTimeBetween('-1 year', 'now'),
+
+        // Tipo de evento simulado según la DIAN
+        'tipo_evento' => $this->faker->randomElement([
+            'Recibido',    // Documento recibido por la DIAN
+            'Aceptado',    // Documento aceptado
+            'Rechazado',   // Documento rechazado
+            'Validado',    // Validado para efectos fiscales
+            'Notificado'   // Notificación generada al emisor
+        ]),
+
+        // Respuesta en XML simulada, con contenido más estructurado
+        'xml_respuesta' => '<evento><codigo>' . strtoupper($this->faker->bothify('EVT-###??')) . '</codigo><descripcion>' . $this->faker->sentence(8) . '</descripcion></evento>',
+
+        // Estado en la DIAN
+        'estado_dian' => $this->faker->randomElement(['Enviado', 'Procesado', 'Rechazado', 'Pendiente']),
+    ];
+}
 }

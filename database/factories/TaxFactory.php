@@ -15,10 +15,17 @@ class TaxFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombre' => $this->faker->word . ' ' . $this->faker->numerify('###'), 
+            'nombre' => $this->faker->randomElement([
+                'IVA 19%',
+                'IVA 5%',
+                'IVA 0%',
+                'Retefuente 2.5%',
+                'ICA 9.66 por mil',
+                'ReteIVA 15%',
+            ]),
             'descripcion'   => $this->faker->sentence(6),
             'tipo'          => $this->faker->randomElement(['IVA', 'ReteFuente', 'ICA']),
-            'porcentaje_base'=> $this->faker->randomFloat(2, 0, 100),
+            'porcentaje_base'=> $this->faker->randomElement([19, 5, 0, 2.5, 0.966, 15]),
             'estado'        => $this->faker->randomElement(['Activo', 'Inactivo']),
         ];
     

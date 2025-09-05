@@ -24,19 +24,34 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'company_id' => fake()->numberBetween(1, 3),
-            'role_id' => fake()->numberBetween(1, 4), // Ajusta el rango según los roles existentes
-            'nombre' => fake()->name(),
-            'tipo_documento' => fake()->randomElement(['NIT', 'CC', 'CE']),
-            'numero_documento' => fake()->numerify('##########'),
-            'direccion' => fake()->address(),
-            'pais' => fake()->country(),
-            'descripcion' => fake()->sentence(6),
-            'contrasena' => Hash::make('password'),
-            'correo_electronico' => fake()->unique()->safeEmail(),
-            'telefono' => fake()->numerify('3#########'),
-            'estado' => fake()->randomElement(['Activo', 'Inactivo']),
-            'ultimo_acceso' => now(),
+            // Escoger una empresa existente en lugar de crear una nueva
+            'company_id' => $this->faker->numberBetween(1, 3), // ajusta a la cantidad real de empresas en tu DB
+            'role_id' => $this->faker->numberBetween(1, 4),    // roles existentes (ej: admin, contador, facturador, cliente)
+
+            // Datos personales básicos
+            'nombre' => $this->faker->name(),
+            'tipo_documento' => $this->faker->randomElement(['NIT', 'CC', 'CE']),
+            'numero_documento' => $this->faker->unique()->numerify(
+                $this->faker->randomElement([
+                    '#########',     // CC
+                    '##########',    // CC o CE
+                    '########-#',    // NIT con dígito de verificación
+                ])
+            ),
+
+            // Ubicación realista
+            'direccion' => $this->faker->streetAddress(),
+            'pais' => 'Colombia',
+            'descripcion' => $this->faker->sentence(6),
+
+            // Seguridad
+            'contrasena' => Hash::make('123456'), // contraseña genérica encriptada
+            'correo_electronico' => $this->faker->unique()->safeEmail(),
+            'telefono' => '3' . $this->faker->numerify('########'),
+
+            // Estado
+            'estado' => $this->faker->randomElement(['Activo', 'Inactivo']),
+            'ultimo_acceso' => $this->faker->dateTimeBetween('-1 year', 'now'),
         ];
     }
 

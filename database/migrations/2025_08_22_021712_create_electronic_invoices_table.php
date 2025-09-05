@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('sub_total', 15, 2);
             $table->decimal('total_impuesto', 15, 2);
             $table->decimal('total_factura', 15, 2);
-            $table->enum('estado_interno', ['borrador', 'Emitida']);
+            $table->enum('estado_interno', ['borrador', 'Emitida','anulada']);
             $table->decimal('descuento_total', 15, 2)->nullable();
             $table->string('observacion', 255)->nullable();
             $table->timestamps();
