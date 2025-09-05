@@ -35,21 +35,21 @@ class CreditDebitNoteController extends Controller
         return response()->json($credit_debit_note);
     }
 
-    public function update(Request $request, CreditDebitNote $credit_debit_note)
+    public function update(Request $request, CreditDebitNote $creditDebitNote)
     {
         $request->validate([
             'motivo'           => 'sometimes|required|string|max:250',
             'tipo_documento'   => 'sometimes|required|in:debito,credito',
             'descripcion'      => 'sometimes|required|string|max:250',
-            'numero_nota'      => 'sometimes|required|string|max:50|unique:credit_debit_notes,numero_nota,' . $credit_debit_note->id, // unique ignorando el ID actual
+            'numero_nota'      => 'sometimes|required|string|max:50|unique:credit_debit_notes,numero_nota,' . $creditDebitNote->id, // unique ignorando el ID actual
             'estado'           => 'sometimes|required|in:aceptada,rechazada,pendiente',
             'fecha_emision'    => 'sometimes|required|date',
             'valor_total'      => 'sometimes|required|numeric|min:0|regex:/^\d+(\.\d{1,2})?$/',
         ]);
 
-        $credit_debit_note->update($request->only(array_keys($request->all())));
+        $creditDebitNote->update($request->only(array_keys($request->all())));
 
-        return response()->json($credit_debit_note);
+        return response()->json($creditDebitNote);
     }
 
     public function destroy($id)

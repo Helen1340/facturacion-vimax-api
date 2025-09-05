@@ -16,10 +16,10 @@ class DianNumberingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tipo_documento'     => 'required|in:Factura,notaCredito,notaDebito',
+            'tipo_documento'     => 'required|in:Factura,NotaCredito,NotaDebito',
             'prefijo'            => 'required|string|max:10',
-            'numero_inicio'      => 'required|integer|min:0', // bigInteger en DB se mapea a integer en validación
-            'numero_fin'         => 'required|integer|min:' . ($request->input('numero_inicio') ?? 0), // numero_fin debe ser mayor o igual que numero_inicio
+            'numero_inicio'      => 'required|numeric|min:0', // bigInteger en DB se mapea a integer en validación
+            'numero_fin'         => 'required|numeric|min:' . ($request->input('numero_inicio') ?? 0), // numero_fin debe ser mayor o igual que numero_inicio
             'fecha_resolucion'   => 'required|date',
             'numero_resolucion'  => 'required|string|max:50',
             'fecha_inicio'       => 'required|date',
@@ -37,24 +37,24 @@ class DianNumberingController extends Controller
         return response()->json($dian_numbering);
     }
 
-    public function update(Request $request, DianNumbering $dian_numbering)
+    public function update(Request $request, DianNumbering $dianNumbering)
     {
-        $request->validate([
-            'tipo_documento'     => 'sometimes|required|in:Factura,notaCredito,notaDebito',
-            'prefijo'            => 'sometimes|required|string|max:10',
-            'numero_inicio'      => 'sometimes|required|integer|min:0',
-            'numero_fin'         => 'sometimes|required|integer|min:' . ($request->input('numero_inicio') ?? $dian_numbering->numero_inicio),
-            'fecha_resolucion'   => 'sometimes|required|date',
-            'numero_resolucion'  => 'sometimes|required|string|max:50',
-            'fecha_inicio'       => 'sometimes|required|date',
-            'fecha_fin'          => 'sometimes|required|date|after_or_equal:fecha_inicio',
-            'estado_actual'      => 'sometimes|required|in:Activo,Inactivo',
-        ]);
+    $request->validate([
+        'tipo_documento'     => 'sometimes|in:Factura,NotaCredito,NotaDebito',
+        'prefijo'            => 'sometimes|string|max:10',
+        'numero_inicio'      => 'sometimes|numeric|min:0',
+        'numero_fin'         => 'sometimes|numeric|min:' . ($request->input('numero_inicio') ?? 0),
+        'fecha_resolucion'   => 'sometimes|date',
+        'numero_resolucion'  => 'sometimes|string|max:50',
+        'fecha_inicio'       => 'sometimes|date',
+        'fecha_fin'          => 'sometimes|date|after_or_equal:fecha_inicio',
+        'estado_actual'      => 'sometimes|in:Activo,Inactivo',
+    ]);
 
-        $dian_numbering->update($request->only(array_keys($request->all())));
+    $dianNumbering->update($request->only(array_keys($request->all())));
 
-        return response()->json($dian_numbering);
-    }
+    return response()->json($dianNumbering);
+}
 
     public function destroy($id)
     {

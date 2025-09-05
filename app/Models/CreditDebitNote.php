@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class CreditDebitNote extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
+        'electronic_invoice_id',
         'motivo',
         'tipo_documento',
         'descripcion',
