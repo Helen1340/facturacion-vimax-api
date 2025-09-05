@@ -31,32 +31,35 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
+{
+    $validated = $request->validate([
+        'company_id' => ['nullable', 'integer', 'exists:companies,id'],
+        'role_id' => ['nullable', 'integer'],
+        'nombre' => ['required', 'string', 'max:100'],
 
-        $validated = $request->validate([
-            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
-            'role_id' => ['nullable', 'integer'], // Validar existencia cuando roles esté disponible
-            'nombre' => ['required', 'string', 'max:100'],
-            'tipo_documento' => ['nullable', 'string', 'max:20'],
-            'numero_documento' => ['required', 'string', 'max:50', 'unique:users,numero_documento'],
-            'direccion' => ['nullable', 'string', 'max:255'],
-            'pais' => ['nullable', 'string', 'max:100'],
-            'descripcion' => ['nullable', 'string'],
-            'correo_electronico' => ['required', 'email', 'max:150', 'unique:users,correo_electronico'],
-            'telefono' => ['nullable', 'string', 'max:20'],
-            'estado' => ['nullable', Rule::in(['Activo', 'Inactivo'])],
-            'ultimo_acceso' => ['nullable', 'date'],
-            'contrasena' => ['required', 'string', 'min:8'],
-        ]);
+        // 👇 validación que coincide con el enum
+        'tipo_documento' => ['nullable', Rule::in(['NIT', 'CC', 'CE'])],
+        'numero_documento' => ['required', 'string', 'max:50', 'unique:users,numero_documento'],
+        'direccion' => ['nullable', 'string', 'max:150'],
+        'pais' => ['nullable', 'string', 'max:100'],
+        'descripcion' => ['nullable', 'string', 'max:250'],
 
-        // se usa hash:make para guardar la contrasena encriptada
-        $user = User::create([
-            ...$validated,
-            'contrasena' => Hash::make($validated['contrasena']),
-        ]);
+        // 👇 corregido a 150
+        'correo_electronico' => ['required', 'email', 'max:150', 'unique:users,correo_electronico'],
+        'telefono' => ['nullable', 'string', 'max:20'],
+        'estado' => ['nullable', Rule::in(['Activo', 'Inactivo'])],
+        'ultimo_acceso' => ['nullable', 'date'],
+        'contrasena' => ['required', 'string', 'min:8'],
+    ]);
 
-        return response()->json($user);
-    }
+    $user = User::create([
+        ...$validated,
+        'contrasena' => Hash::make($validated['contrasena']),
+    ]);
+
+    return response()->json($user);
+}
+
 
     /**
      * Display the specified resource.
