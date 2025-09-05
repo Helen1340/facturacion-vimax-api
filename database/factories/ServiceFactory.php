@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\MeasurementUnit;
+use App\Models\Service;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -14,13 +16,20 @@ class ServiceFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+       protected $model = Service::class;     
+   
+
     public function definition(): array
     {
+     
+   
         return [
-            'measurement_unit_id' => $this->faker->numberBetween(1, 10), // Ajusta según los ids válidos
+            'measurement_unit_id' => MeasurementUnit::inRandomOrder()->first()->id,
             'nombre' => $this->faker->words(2, true),
             'descripcion' => $this->faker->sentence(6),
-            'codigo_servicio' => $this->faker->unique()->bothify('SVC-####'),
+            // Generamos un código seguro sin usar unique()
+            'codigo_servicio' => 'SVC-' . $this->faker->numberBetween(10000, 99999),
             'precio_unitario' => $this->faker->randomFloat(2, 10, 1000),
             'estado' => $this->faker->randomElement(['Activo', 'Inactivo']),
         ];

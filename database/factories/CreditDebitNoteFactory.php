@@ -17,15 +17,27 @@ class CreditDebitNoteFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            'electronic_invoice_id' => ElectronicInvoice::factory(),
-            'motivo' => $this->faker->sentence(6), // Motivo breve de la nota
-            'tipo_documento' => $this->faker->randomElement(['debito', 'credito']), // Tipo de nota
-            'descripcion' => $this->faker->sentence(10), // Descripción más detallada
-            'numero_nota' => 'NC-' . $this->faker->numerify('########'), // Número de nota con prefijo (ej: NC-12345678)
-            'estado' => $this->faker->randomElement(['aceptada', 'rechazada', 'pendiente']), // Estado de la nota
-            'fecha_emision' => $this->faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d'), // Fecha de emisión dentro del último año
-            'valor_total' => $this->faker->randomFloat(2, 1000, 5000000), // Valor entre $1.000 y $5.000.000
-        ];
-    }
+
+    // Elegir una factura existente aleatoria
+    $factura = ElectronicInvoice::inRandomOrder()->first() ??ElectronicInvoice::factory()->create();
+    $fecha_emision = $this->faker->dateTimeBetween($factura->fecha_emision, 'now');
+    $tipo_documento = $this->faker->randomElement(['credito', 'debito']);
+    $numero_nota = $tipo_documento === 'credito' 
+        ? 'NC-' . $this->faker->unique()->numerify('########') 
+        : 'ND-' . $this->faker->unique()->numerify('########');
+    $valor_total = $tipo_documento === 'credito' 
+        ? $this->faker->randomFloat(2, 1000, $factura->total_factura) 
+        : $this->faker->randomFloat(2, 1000, 5000000);
+
+    return [
+        'electronic_invoice_id' => $factura->id,
+        'motivo' => $this->faker->sentence(6),
+        'tipo_documento' => $tipo_documento,
+        'descripcion' => $this->faker->sentence(10),
+        'numero_nota' => $numero_nota,
+        'estado' => $this->faker->randomElement(['aceptada', 'rechazada', 'pendiente']),
+        'fecha_emision' => $fecha_emision->format('Y-m-d'),
+        'valor_total' => $valor_total,
+    ];
 }
+    }
