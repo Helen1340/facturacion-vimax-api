@@ -5,9 +5,6 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\MeasurementUnit;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\MeasurementUnit>
- */
 class MeasurementUnitFactory extends Factory
 {
     protected $model = MeasurementUnit::class;
@@ -15,12 +12,11 @@ class MeasurementUnitFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombre' => $this->faker->unique()->word, // Nombre de la unidad
+            'nombre' => ucfirst($this->faker->unique()->word),
             'estado' => $this->faker->randomElement(['Activo', 'Inactivo']),
-            'codigo_dian' => strtoupper($this->faker->unique()->bothify('??###')), // Código tipo DIAN
-            'descripcion' => $this->faker->sentence(6), // Descripción corta
+            'codigo_dian' => 'X' . strtoupper($this->faker->unique()->bothify('??###')), // evita choque con oficiales
+            'descripcion' => $this->faker->sentence(6),
             'tipo_aplicacion' => $this->faker->randomElement(['Producto', 'Servicio']),
         ];
     }
 }
-
