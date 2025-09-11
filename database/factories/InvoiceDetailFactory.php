@@ -1,11 +1,11 @@
 <?php
 
 namespace Database\Factories;
+
 use App\Models\InvoiceDetail;
 use App\Models\ElectronicInvoice;
 use App\Models\Product;
 use App\Models\Service;
-
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -13,11 +13,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class InvoiceDetailFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = InvoiceDetail::class;
+
     public function definition(): array
     {
         // Elegir aleatoriamente entre Product o Service
@@ -26,8 +23,8 @@ class InvoiceDetailFactory extends Factory
             Service::class,
         ]);
 
-        // Tomar un item existente, o crearlo en memoria si no hay
-        $item = $itemClass::inRandomOrder()->first() ?? $itemClass::factory()->make();
+        // Tomar un item existente, o crearlo en la BD si no hay ninguno
+        $item = $itemClass::inRandomOrder()->first() ?? $itemClass::factory()->create();
 
         // Cantidad y precio
         $cantidad = $this->faker->numberBetween(1, 20);
@@ -41,9 +38,9 @@ class InvoiceDetailFactory extends Factory
         $valor_impuesto = $tasaIva > 0 ? round(($subtotal * $tasaIva) / 100, 2) : 0;
 
         // Descuento opcional
-        $descuento = $this->faker->boolean(20) ? round($subtotal * 0.05, 2) : 0; // 20% de probabilidad de descuento
+        $descuento = $this->faker->boolean(20) ? round($subtotal * 0.05, 2) : 0;
 
-        // Total con impuestos y descuentos
+        // Total final
         $valor_total = $subtotal - $descuento + $valor_impuesto;
 
         return [

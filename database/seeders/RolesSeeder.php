@@ -41,7 +41,6 @@ class RolesSeeder extends Seeder
             Role::create($rol);
         }
 
-        // Roles aleatorios
-        Role::factory()->count(50)->create();
+        
     }
 }
