@@ -12,7 +12,7 @@ class Service extends Model
     use HasFactory;
 
     protected $fillable = [
-        'measurement_unit_id',
+        'measurementUnit',
         'nombre',
         'descripcion',
         'codigo_servicio',
@@ -20,7 +20,7 @@ class Service extends Model
         'estado',
     ];
 
-    protected $allowIncluded = [ 'measurementUnit', 'invoiceDetails'];
+    protected $allowIncluded = [ 'measurementUnit', 'invoiceDetails', 'taxes'];
     protected $allowFilter = ['id', 'nombre', 'descripcion', 'codigo_servicio', 'precio_unitario', 'estado'];
     protected $allowSort = ['id', 'nombre', 'descripcion', 'codigo_servicio', 'precio_unitario', 'estado'];
 
