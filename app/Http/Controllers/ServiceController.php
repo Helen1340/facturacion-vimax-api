@@ -12,7 +12,7 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $service = Service::included()->filter()->sort()->paginate();
+        $service = Service::included()->filter()->sort()->getOrPaginate();
 
         return response()->json($service, 200);
     }
