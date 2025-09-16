@@ -1,20 +1,36 @@
 <?php
 
 namespace Database\Seeders;
-use App\Models\Payment;
 
 use Illuminate\Database\Seeder;
-
+use Illuminate\Support\Facades\DB;
+use App\Models\ElectronicInvoice;
+use App\Models\PaymentMethod;
+use Faker\Factory as Faker;
 
 class PaymentTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Usa el factory para crear 50 registros de pagos
-        Payment::factory()->count(50)->create();
+        $faker = Faker::create('es_CO');
+        $invoices = ElectronicInvoice::all();
+        $paymentMethods = PaymentMethod::all();
+
+        // 1. Recorrer TODAS las facturas
+        foreach ($invoices as $invoice) {
+            $paymentMethod = $paymentMethods->random();
+            $valorPagado = $invoice->total_factura;
+            
+            DB::table('payments')->insert([
+                'electronic_invoice_id' => $invoice->id,
+                'payment_method_id' => $paymentMethod->id,
+                'fecha_pago' => $faker->date(),
+                'valor_pagado' => $valorPagado,
+                'moneda' => 'COP',
+                'referencia_pago' => $faker->uuid(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }
-

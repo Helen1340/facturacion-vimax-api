@@ -32,8 +32,8 @@ class MeasurementUnitTableSeeder extends Seeder
         ]);
 
         // 3. Solo en desarrollo: unidades extra ficticias
-        if (app()->environment('local')) {
-            MeasurementUnit::factory()->count(39)->create();
-        }
+       // if (app()->environment('local')) {
+           // MeasurementUnit::factory()->count(39)->create();
+        
     }
 }

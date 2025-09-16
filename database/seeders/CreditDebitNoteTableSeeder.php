@@ -1,20 +1,55 @@
 <?php
 
 namespace Database\Seeders;
-use Illuminate\Support\Facades\DB;
-use App\Models\CreditDebitNote;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\Models\Company;
+use App\Models\ElectronicInvoice;
 
 class CreditDebitNoteTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // usar factory para crear 50 registros de CreditDebitNote
-        CreditDebitNote::factory()->count(50)->create();
+        $companies = Company::all();
+
+        foreach ($companies as $company) {
+            // Obtener dos facturas de esta empresa para crear las notas
+            $invoices = ElectronicInvoice::whereHas('user', function ($query) use ($company) {
+                $query->where('company_id', $company->id);
+            })->inRandomOrder()->take(2)->get();
+            
+            if ($invoices->count() >= 2) {
+                // Nota de crédito para la primera factura seleccionada
+                $invoice1 = $invoices->first();
+                DB::table('credit_debit_notes')->insert([
+                    'electronic_invoice_id' => $invoice1->id,
+                    'motivo' => 'Anulación de la factura',
+                    'tipo_documento' => 'credito',
+                    'descripcion' => 'Anulación total del valor de la factura por error en el registro.',
+                    'numero_nota' => 'NC-' . $invoice1->numero_factura,
+                    'estado' => 'aceptada',
+                    'fecha_emision' => now(),
+                    'valor_total' => $invoice1->total_factura,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                // Nota de débito para la segunda factura seleccionada
+                $invoice2 = $invoices->last();
+                DB::table('credit_debit_notes')->insert([
+                    'electronic_invoice_id' => $invoice2->id,
+                    'motivo' => 'Ajuste por recargo',
+                    'tipo_documento' => 'debito',
+                    'descripcion' => 'Ajuste por costos adicionales de envío no incluidos en el valor original.',
+                    'numero_nota' => 'ND-' . $invoice2->numero_factura,
+                    'estado' => 'aceptada',
+                    'fecha_emision' => now(),
+                    'valor_total' => 50000.00, // Ajuste manual
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
     }
 }

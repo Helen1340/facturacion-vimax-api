@@ -21,22 +21,24 @@ class DatabaseSeeder extends Seeder
         
     $this->call([
         // Agrega aquí el seeder de la empresa
-        MeasurementUnitTableSeeder::class,
+        RolesSeeder::class,
         CompanyTableSeeder::class,
+        MeasurementUnitTableSeeder::class,
         UsersSeeder::class,
         DianNumberingTableSeeder::class,
-        PaymentMethodTableSeeder::class,
-        ElectronicInvoiceseeder::class,
-        CreditDebitNoteTableSeeder::class,
         DigitalCertificateTableSeeder::class,
-        ElectronicDocumentsSeeder::class,
+        PaymentMethodTableSeeder::class,
         TaxTableSeeder::class,
+        ElectronicInvoiceseeder::class,
         ServiceSeeder::class,
         ProductsSeeder::class,
+        ProductTaxSeeder::class,
+        ServiceTaxSeeder::class,
         InvoiceDetailSeeder::class,
+        CreditDebitNoteTableSeeder::class,
         PaymentTableSeeder::class,
+        ElectronicDocumentsSeeder::class,
         RadianEventTableSeeder::class,
-        RolesSeeder::class,
         
     
     ]);

@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class RolesSeeder extends Seeder
 {
@@ -13,34 +12,11 @@ class RolesSeeder extends Seeder
      */
     public function run(): void
     {
-        // recomiendo mantener los roles fijos. Así aseguras que siempre existan los 4 roles principales
-        $rolesFijos = [
-            [
-                'nombre' => 'administrador',
-                'descripcion' => 'Acceso total al sistema',
-                'estado' => 'activo',
-            ],
-            [
-                'nombre' => 'facturador',
-                'descripcion' => 'Genera facturas',
-                'estado' => 'activo',
-            ],
-            [
-                'nombre' => 'contador',
-                'descripcion' => 'Gestiona la contabilidad',
-                'estado' => 'activo',
-            ],
-            [
-                'nombre' => 'cliente',
-                'descripcion' => 'Acceso como cliente',
-                'estado' => 'activo',
-            ],
-        ];
-
-        foreach ($rolesFijos as $rol) {
-            Role::create($rol);
-        }
-
-        
+        DB::table('roles')->insert([
+            ['nombre' => 'administrador', 'descripcion' => 'Administrador del sistema', 'estado' => 'activo'],
+            ['nombre' => 'facturador', 'descripcion' => 'Usuario para emitir documentos', 'estado' => 'activo'],
+            ['nombre' => 'contador', 'descripcion' => 'Usuario para reportes contables', 'estado' => 'activo'],
+            ['nombre' => 'cliente', 'descripcion' => 'Usuario que recibe documentos', 'estado' => 'activo'],
+        ]);
     }
 }
