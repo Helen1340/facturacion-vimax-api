@@ -11,10 +11,11 @@ class Company extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['razon_social','tipo_documento','direccion','municipio',
-    'departamento','pais','telefono','correo_electronico','regimen','logo_url',
-    'nombre_comercial','codigo_ciiu', 'numero_documento',
-    ];
+    protected $fillable = [
+  'razon_social','nit','nombre_comercial','direccion','ciudad','departamento','pais',
+  'telefono','correo_electronico','regimen','codigo_ciiu','logo_url',
+  'representante_nombre','representante_tipo_documento','representante_numero_documento'
+];
 
     // Las posibles relaciones (includes) que se pueden cargar
      //a través de query parameters en la API//

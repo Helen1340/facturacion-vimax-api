@@ -9,9 +9,7 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
         $user = User::included()->filter()->sort()->getOrPaginate();
@@ -19,17 +17,8 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    
+    
     public function store(Request $request)
 {
     $validated = $request->validate([
@@ -37,14 +26,14 @@ class UserController extends Controller
         'role_id' => ['nullable', 'integer'],
         'nombre' => ['required', 'string', 'max:100'],
 
-        // 👇 validación que coincide con el enum
+        // validación que coincide con el enum
         'tipo_documento' => ['nullable', Rule::in(['NIT', 'CC', 'CE'])],
         'numero_documento' => ['required', 'string', 'max:50', 'unique:users,numero_documento'],
         'direccion' => ['nullable', 'string', 'max:150'],
         'pais' => ['nullable', 'string', 'max:100'],
         'descripcion' => ['nullable', 'string', 'max:250'],
 
-        // 👇 corregido a 150
+        // corregido a 150
         'correo_electronico' => ['required', 'email', 'max:150', 'unique:users,correo_electronico'],
         'telefono' => ['nullable', 'string', 'max:20'],
         'estado' => ['nullable', Rule::in(['Activo', 'Inactivo'])],

@@ -17,11 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users'); // Relación con la tabla 'users'
             $table->string('numero_factura', 20)->unique();
             $table->timestamp('fecha_emision');
-            $table->decimal('sub_total', 15, 2);
-            $table->decimal('total_impuesto', 15, 2);
-            $table->decimal('total_factura', 15, 2);
             $table->enum('estado_interno', ['borrador', 'Emitida','anulada']);
-            $table->decimal('descuento_total', 15, 2)->nullable();
             $table->string('observacion', 255)->nullable();
             $table->timestamps();
         });
