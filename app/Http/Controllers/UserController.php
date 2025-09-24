@@ -20,34 +20,34 @@ class UserController extends Controller
     
     
     public function store(Request $request)
-{
-    $validated = $request->validate([
-        'company_id' => ['nullable', 'integer', 'exists:companies,id'],
-        'role_id' => ['nullable', 'integer'],
-        'nombre' => ['required', 'string', 'max:100'],
+    {
+        $validated = $request->validate([
+            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
+            'role_id' => ['nullable', 'integer'],
+            'nombre' => ['required', 'string', 'max:100'],
 
-        // validación que coincide con el enum
-        'tipo_documento' => ['nullable', Rule::in(['NIT', 'CC', 'CE'])],
-        'numero_documento' => ['required', 'string', 'max:50', 'unique:users,numero_documento'],
-        'direccion' => ['nullable', 'string', 'max:150'],
-        'pais' => ['nullable', 'string', 'max:100'],
-        'descripcion' => ['nullable', 'string', 'max:250'],
+            // validación que coincide con el enum
+            'tipo_documento' => ['nullable', Rule::in(['NIT', 'CC', 'CE'])],
+            'numero_documento' => ['required', 'string', 'max:50', 'unique:users,numero_documento'],
+            'direccion' => ['nullable', 'string', 'max:150'],
+            'pais' => ['nullable', 'string', 'max:100'],
+            'descripcion' => ['nullable', 'string', 'max:250'],
 
-        // corregido a 150
-        'correo_electronico' => ['required', 'email', 'max:150', 'unique:users,correo_electronico'],
-        'telefono' => ['nullable', 'string', 'max:20'],
-        'estado' => ['nullable', Rule::in(['Activo', 'Inactivo'])],
-        'ultimo_acceso' => ['nullable', 'date'],
-        'contrasena' => ['required', 'string', 'min:8'],
-    ]);
+            // corregido a 150
+            'correo_electronico' => ['required', 'email', 'max:150', 'unique:users,correo_electronico'],
+            'telefono' => ['nullable', 'string', 'max:20'],
+            'estado' => ['nullable', Rule::in(['Activo', 'Inactivo'])],
+            'ultimo_acceso' => ['nullable', 'date'],
+            'password' => ['required', 'string', 'min:8'],
+        ]);
 
-    $user = User::create([
-        ...$validated,
-        'contrasena' => Hash::make($validated['contrasena']),
-    ]);
+        $user = User::create([
+            ...$validated,
+            'password' => Hash::make($validated['password']),
+        ]);
 
-    return response()->json($user);
-}
+        return response()->json($user);
+    }
 
 
     /**
@@ -90,12 +90,12 @@ class UserController extends Controller
             'telefono' => ['sometimes', 'string', 'max:20'],
             'estado' => ['sometimes', Rule::in(['Activo', 'Inactivo'])],
             'ultimo_acceso' => ['sometimes', 'date'],
-            'contrasena' => ['sometimes', 'string', 'min:8'],
+            'password' => ['sometimes', 'string', 'min:8'],
         ]);
 
-        // Si se envía la contrasena, se encripta
-        if (isset($validated['contrasena'])) {
-            $validated['contrasena'] = Hash::make($validated['contrasena']);
+        // Si se envía la password, se encripta
+        if (isset($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
         }
 
         $user->update($validated);

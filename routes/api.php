@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrmController;
-
+use App\Http\Controllers\ReportController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -66,3 +66,10 @@ Route::apiResource('invoiceDetails', InvoiceDetailController::class);
 Route::apiResource('products', ProductController::class);
 Route::apiResource('services', ServiceController::class);
 Route::apiResource('electronicInvoices', ElectronicInvoiceController::class); // electronic-invoice-seeder
+
+Route::prefix('reportes')->group(function () {
+    Route::get('/facturas', [ReportController::class, 'reporteFacturas']);
+    Route::get('/pagos', [ReportController::class, 'reportePagos']);
+    Route::get('/clientes', [ReportController::class, 'reporteClientes']);
+    Route::get('/usuarios', [ReportController::class, 'reporteUsuarios']);
+});
