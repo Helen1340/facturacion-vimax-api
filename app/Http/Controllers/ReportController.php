@@ -9,19 +9,19 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-     // REPORTE DE FACTURAS
+    // REPORTE DE FACTURAS (JSON para Angular)
     public function reporteFacturas(Request $request)
     {
         $query = ElectronicInvoice::with(['user', 'payment'])
             ->join('users', 'electronic_invoices.user_id', '=', 'users.id');
 
-        // Filtros
+        // filtros desde query params
         if ($request->numero_factura) {
             $query->where('numero_factura', 'like', '%' . $request->numero_factura . '%');
         }
 
         if ($request->cliente) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('users.nombre', 'like', '%' . $request->cliente . '%')
                     ->orWhere('users.numero_documento', 'like', '%' . $request->cliente . '%');
             });
@@ -39,10 +39,13 @@ class ReportController extends Controller
             $query->where('estado_interno', $request->estado);
         }
 
-        $facturas = $query->select('electronic_invoices.*', 'users.nombre as cliente_nombre', 
-                                    'users.numero_documento as cliente_nit')
-                            ->orderBy('fecha_emision', 'desc')
-                            ->get();
+        $facturas = $query->select(
+            'electronic_invoices.*',
+            'users.nombre as cliente_nombre',
+            'users.numero_documento as cliente_nit'
+        )
+            ->orderBy('fecha_emision', 'desc')
+            ->get();
 
         return response()->json($facturas);
     }
