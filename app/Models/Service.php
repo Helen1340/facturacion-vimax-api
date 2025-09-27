@@ -12,7 +12,7 @@ class Service extends Model
     use HasFactory;
 
     protected $fillable = [
-        'measurementUnit',
+        'measurement_unit_id',
         'nombre',
         'descripcion',
         'codigo_servicio',

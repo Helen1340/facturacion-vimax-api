@@ -14,13 +14,11 @@ class ElectronicInvoice extends Model
         'user_id',
         'numero_factura',
         'fecha_emision',
-        'sub_total',
-        'total_impuesto',
-        'total_factura',
         'estado_interno',
-        'descuento_total',
         'observacion',
     ];
+
+    
 
     //LISTAS BLANCAS
 
@@ -41,7 +39,7 @@ class ElectronicInvoice extends Model
     //Los campos por los que se puede filtrar la consulta.
     protected $allowFilter = ['id', 'numero_factura', 'user_id', 'estado_interno', 'fecha_emision'];
     //Los campos por los que se puede ordenar la consulta.
-    protected $allowSort = ['id', 'fecha_emision', 'total_factura',];
+    protected $allowSort = ['id', 'fecha_emision',];
 
 
     //RELACIONES CON OTRAS TABLAS
@@ -167,4 +165,62 @@ class ElectronicInvoice extends Model
         return $query->get(); //sino se pasa el valor de $perPage en la URL se pasan todos los registros.
         //http://api.codersfree1.test/v1/categories?perPage=2
     }
+
+    
+    // (cálculos)
+    
+
+    /**
+     * Subtotal = SUM(cantidad * precio_unitario)
+     * Usamos suma en DB si la relación no está cargada (mejor performance en listados).
+     */
+    public function getSubTotalAttribute()
+    {
+        // si la relación ya está cargada (eager loaded), usar la colección
+        if ($this->relationLoaded('invoiceDetails')) {
+            $sum = $this->invoiceDetails->sum(function ($detail) {
+                return (float) $detail->cantidad * (float) $detail->precio_unitario;
+            });
+            return round($sum, 2);
+        }
+
+        // si no está cargada, calcular en DB (evita traer todos los detalles)
+        $value = $this->invoiceDetails()
+            ->selectRaw('COALESCE(SUM(cantidad * precio_unitario),0) as total')
+            ->value('total');
+
+        return round((float) $value, 2);
+    }
+
+    /**
+     * Total impuesto = SUM(valor_impuesto) (tomamos el campo 'valor_impuesto' del detalle)
+     */
+    public function getTotalImpuestoAttribute()
+    {
+        if ($this->relationLoaded('invoiceDetails')) {
+            $sum = $this->invoiceDetails->sum(function ($detail) {
+                // preferimos valor_impuesto; si no existe, fallback a 0
+                return (float) ($detail->valor_impuesto ?? 0);
+            });
+            return round($sum, 2);
+        }
+
+        $value = $this->invoiceDetails()->sum('valor_impuesto');
+        return round((float) $value, 2);
+    }
+
+    /**
+     * Total factura = subtotal - descuento_total + total_impuesto
+     * (descuento_total puede estar almacenado o ser 0)
+     */
+    public function getTotalFacturaAttribute()
+    {
+        $subtotal = (float) $this->sub_total;
+        $impuestos = (float) $this->total_impuesto;
+        $descuento = (float) ($this->descuento_total ?? 0);
+
+        return round($subtotal - $descuento + $impuestos, 2);
+    }
 }
+
+

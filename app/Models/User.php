@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
+use Laravel\Sanctum\HasApiTokens; // <-- Paso 1: Activar el trait
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable; // <-- Paso 1: Usar el trait
 
     /**
      * The attributes that are mass assignable.
@@ -27,14 +27,13 @@ class User extends Authenticatable
         'direccion',
         'pais',
         'descripcion',
-        'contrasena',
+        'password', 
         'correo_electronico',
         'telefono',
         'estado',
         'ultimo_acceso',
     ];
 
-    // 👇 todo en minúsculas
     protected $allowIncluded = [
         'company',
         'company.digitalCertificates',
@@ -45,7 +44,6 @@ class User extends Authenticatable
         'electronicInvoices.creditDebitNotes',
         'electronicInvoices.electronicDocuments',
         'role',
-
     ];
 
     protected $allowFilter = [
@@ -70,11 +68,12 @@ class User extends Authenticatable
         'direccion',
         'pais',
         'descripcion',
-        'correo_electronico',
+        'correo_electronico', 
         'telefono',
         'estado',
         'ultimo_acceso'
     ];
+
     public function company()
     {
         return $this->belongsTo(Company::class);
@@ -172,29 +171,23 @@ class User extends Authenticatable
      * @var list<string>
      */
 
-    //esto oculta la contraseña "contrasena" cuando devuelve el json
-    /*
+    //Paso 2: Ocultar la contraseÃ±a en el JSON.
     protected $hidden = [
-        'contrasena',
-        'remember_token',
+        'password',
+        // 'remember_token', si lo estas usando
     ];
-    */
 
     /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
-
-
-    // esto encripta la contraseña "contrasena"
-    /*
+    // Paso 3: Encriptar la contraseÃ±a automÃ¡ticamente.
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'contraseña' => 'hashed',
+            'password' => 'hashed',
         ];
     }
-    */
 }

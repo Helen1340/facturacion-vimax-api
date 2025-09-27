@@ -19,13 +19,13 @@ return new class extends Migration
 
     $table->string('nombre', 100);
 
-    // 👇 ahora permite NULL
+    // ahora permite NULL
     $table->enum('tipo_documento', ['NIT', 'CC', 'CE'])->nullable();
     $table->string('numero_documento', 50)->unique();    // antes 15
     $table->string('direccion', 150)->nullable();
     $table->string('pais', 100)->nullable();
     $table->string('descripcion', 250)->nullable();
-    $table->string('contrasena', 225);
+    $table->string('password', 255);
     $table->string('correo_electronico', 150)->unique(); // antes 100
     $table->string('telefono', 20)->nullable();
     $table->enum('estado', ['Activo', 'Inactivo'])->default('Activo');
