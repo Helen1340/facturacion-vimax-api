@@ -82,47 +82,68 @@ class ReportController extends Controller
         return response()->json($pagos);
     }
 
-    // REPORTE DE CLIENTES
-    public function reporteClientes(Request $request)
-    {
-        $query = User::whereHas('role', function($q) {
-            $q->where('nombre', 'cliente');
+    // ReportController.php
+public function reporteUsuarios(Request $request)
+{
+    $query = User::with('role:id,nombre'); // solo traemos lo necesario del rol
+
+    // 🔎 Filtro por nombre/correo/documento
+    if ($request->filled('usuario')) {
+        $search = $request->usuario;
+        $query->where(function ($q) use ($search) {
+            $q->where('nombre', 'like', '%' . $search . '%')
+                ->orWhere('correo_electronico', 'like', '%' . $search . '%')
+                ->orWhere('numero_documento', 'like', '%' . $search . '%');
         });
-
-        if ($request->cliente) {
-            $query->where(function($q) use ($request) {
-                $q->where('nombre', 'like', '%' . $request->cliente . '%')
-                    ->orWhere('numero_documento', 'like', '%' . $request->cliente . '%');
-            });
-        }
-
-        if ($request->estado && $request->estado != 'Todos') {
-            $query->where('estado', $request->estado);
-        }
-
-        $clientes = $query->orderBy('nombre')->get();
-
-        return response()->json($clientes);
     }
 
-    // REPORTE DE USUARIOS
-    public function reporteUsuarios(Request $request)
-    {
-        $query = User::with('role');
-
-        if ($request->usuario) {
-            $query->where(function($q) use ($request) {
-                $q->where('nombre', 'like', '%' . $request->usuario . '%')
-                    ->orWhere('correo_electronico', 'like', '%' . $request->usuario . '%');
-            });
-        }
-
-        if ($request->estado && $request->estado != 'Todos') {
-            $query->where('estado', $request->estado);
-        }
-
-        $usuarios = $query->orderBy('nombre')->get();
-
-        return response()->json($usuarios);
+    // 🔎 Filtro por estado (Activo/Inactivo)
+    if ($request->filled('estado') && $request->estado !== 'Todos') {
+        $query->where('estado', $request->estado);
     }
+
+    // 🔎 Filtro por rol (administrador, facturador, contador, cliente)
+    if ($request->filled('rol') && $request->rol !== 'Todos') {
+        $query->whereHas('role', function ($q) use ($request) {
+            $q->where('nombre', $request->rol);
+        });
+    }
+
+    // 🔎 Filtro por fechas (opcional: creación entre rango)
+    if ($request->filled('fecha_inicio')) {
+        $query->whereDate('created_at', '>=', $request->fecha_inicio);
+    }
+    if ($request->filled('fecha_fin')) {
+        $query->whereDate('created_at', '<=', $request->fecha_fin);
+    }
+
+    $usuarios = $query->orderBy('nombre')->get([
+        'id',
+        'nombre',
+        'correo_electronico',
+        'numero_documento',
+        'estado',
+        'created_at',
+        'ultimo_acceso',
+        'role_id'
+    ]);
+
+    // Estructura más limpia para Angular
+    $usuarios = $usuarios->map(function ($u) {
+        return [
+            'id' => $u->id,
+            'nombre' => $u->nombre,
+            'correo' => $u->correo_electronico,
+            'documento' => $u->numero_documento,
+            'estado' => $u->estado,
+            'fecha_creacion' => $u->created_at?->format('Y-m-d H:i:s'),
+
+            'ultimo_acceso' => $u->ultimo_acceso ? $u->ultimo_acceso->format('Y-m-d H:i') : null,
+            'rol' => $u->role?->nombre ?? 'Sin rol',
+        ];
+    });
+
+    return response()->json($usuarios);
+}
+
 }
