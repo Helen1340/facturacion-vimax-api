@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
     $table->id();
 
-    $table->unsignedBigInteger('company_id')->nullable();
-    $table->unsignedBigInteger('role_id')->nullable();
+    
 
     $table->string('nombre', 100);
 
@@ -30,6 +29,12 @@ return new class extends Migration
     $table->string('telefono', 20)->nullable();
     $table->enum('estado', ['Activo', 'Inactivo'])->default('Activo');
     $table->timestamp('ultimo_acceso')->nullable();      // antes NOT NULL
+
+    $table->unsignedBigInteger('company_id');
+    $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+
+    $table->unsignedBigInteger('role_id');
+    $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
 
     $table->rememberToken();
     $table->timestamps();
