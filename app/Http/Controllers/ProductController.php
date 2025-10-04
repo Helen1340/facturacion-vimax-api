@@ -64,7 +64,7 @@ class ProductController extends Controller
             'codigo_estandar' => ['sometimes', 'string', 'max:50'],
             'codigo_producto' => ['sometimes', 'string', 'max:50', 'unique:products,codigo_producto,' . $product->id],
             'nombre' => ['sometimes', 'string', 'max:150'],
-            'descripcion' => ['sometimes', 'string', 'max:150'],
+            'descripcion' => ['nullable', 'string', 'max:150'],
             'precio_unitario' => ['sometimes', 'numeric', 'min:0'],
             'estado' => ['sometimes', 'in:Activo,Inactivo'],
         ]);

@@ -61,7 +61,7 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'measurement_unit_id' => ['sometimes', 'integer'],
             'nombre' => ['sometimes', 'string', 'max:150'],
-            'descripcion' => ['sometimes', 'string', 'max:150'],
+            'descripcion' => ['nullable', 'string', 'max:150'],
             'codigo_servicio' => ['sometimes', 'string', 'max:50', 'unique:services,codigo_servicio,' . $service->id],
             'precio_unitario' => ['sometimes', 'numeric', 'min:0'],
             'estado' => ['sometimes', 'in:Activo,Inactivo'],

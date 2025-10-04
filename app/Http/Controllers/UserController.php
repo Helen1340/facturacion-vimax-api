@@ -80,7 +80,7 @@ class UserController extends Controller
             ],
             'direccion' => ['sometimes', 'string', 'max:255'],
             'pais' => ['sometimes', 'string', 'max:100'],
-            'descripcion' => ['sometimes', 'string'],
+            'descripcion' => ['nullable', 'string'],
             'correo_electronico' => [
                 'sometimes',
                 'email',
