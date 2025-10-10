@@ -18,11 +18,16 @@ class TaxController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:100',
-            'descripcion' => 'nullable|string',
-            'tipo' => 'required|string|max:50',
-            'porcentaje_base' => 'required|numeric|between:0,999.99',
-            'estado' => 'required|in:Activo,Inactivo',
+            'tax_code'       => 'required|string|max:50',   // Código único del tributo
+            'name'           => 'required|string|max:100',  // Nombre del tributo
+            'description'    => 'nullable|string',          // Descripción del tributo
+            'type'           => 'required|string|max:50',   // Tipo: impuesto, retención, contribución
+            'percentage'     => 'nullable|numeric|between:0,999.99', // Porcentaje aplicado si aplica
+            'fixed_value'    => 'nullable|numeric|min:0',   // Valor fijo si aplica
+            'application_type'=> 'required|string|in:Percentage,FixedValue,Retention', // Tipo de aplicación
+            'min_value'      => 'nullable|numeric|min:0',   // Valor mínimo aplicable
+            'max_value'      => 'nullable|numeric|min:0',   // Valor máximo aplicable
+            'status'         => 'required|in:Active,Inactive', // Estado del tributo
         ]);
 
         $tax = Tax::create($request->all());
@@ -40,11 +45,16 @@ class TaxController extends Controller
     public function update(Request $request, Tax $tax)
     {
         $request->validate([
-            'nombre' => 'sometimes|string|max:100',
-            'descripcion' => 'sometimes|nullable|string',
-            'tipo' => 'sometimes|string|max:50',
-            'porcentaje_base' => 'sometimes|numeric|between:0,999.99',
-            'estado' => 'sometimes|in:Activo,Inactivo',
+            'tax_code'       => 'sometimes|string|max:50',
+            'name'           => 'sometimes|string|max:100',
+            'description'    => 'sometimes|nullable|string',
+            'type'           => 'sometimes|string|max:50',
+            'percentage'     => 'sometimes|numeric|between:0,999.99',
+            'fixed_value'    => 'sometimes|numeric|min:0',
+            'application_type'=> 'sometimes|string|in:Percentage,FixedValue,Retention',
+            'min_value'      => 'sometimes|numeric|min:0',
+            'max_value'      => 'sometimes|numeric|min:0',
+            'status'         => 'sometimes|in:Active,Inactive',
         ]);
 
         // Actualiza solo los campos presentes en la request

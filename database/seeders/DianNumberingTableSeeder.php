@@ -15,34 +15,40 @@ class DianNumberingTableSeeder extends Seeder
         $companies = Company::all();
 
         foreach ($companies as $company) {
-            // Primer rango de numeración para Factura
+            // Rango de numeración para Factura
             DB::table('dian_numberings')->insert([
                 'company_id' => $company->id,
-                'tipo_documento' => 'Factura',
-                'prefijo' => strtoupper($faker->lexify('F?')),
-                'numero_inicio' => 1,
-                'numero_fin' => 5000,
-                'fecha_resolucion' => $faker->date(),
-                'numero_resolucion' => $faker->unique()->numerify('##########'),
-                'fecha_inicio' => $faker->date(),
-                'fecha_fin' => $faker->date('Y-m-d', '+2 years'),
-                'estado_actual' => 'Activo',
+                'document_type' => 'Factura',
+                'document_type_code' => '01',
+                'prefix' => strtoupper($faker->lexify('F?')),
+                'start_number' => 1,
+                'end_number' => 5000,
+                'resolution_date' => $faker->date(),
+                'resolution_number' => $faker->unique()->numerify('##########'),
+                'validity_start_date' => $faker->date(),
+                'validity_end_date' => $faker->date('Y-m-d', '+2 years'),
+                'current_status' => 'Activo',
+                'environment' => 'Pruebas',
+                'description' => 'Numeración autorizada para pruebas DIAN',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            // Segundo rango de numeración para NotaCredito
+            // Rango de numeración para Nota de Crédito
             DB::table('dian_numberings')->insert([
                 'company_id' => $company->id,
-                'tipo_documento' => 'NotaCredito',
-                'prefijo' => strtoupper($faker->lexify('NC?')),
-                'numero_inicio' => 1,
-                'numero_fin' => 500,
-                'fecha_resolucion' => $faker->date(),
-                'numero_resolucion' => $faker->unique()->numerify('##########'),
-                'fecha_inicio' => $faker->date(),
-                'fecha_fin' => $faker->date('Y-m-d', '+1 year'),
-                'estado_actual' => 'Activo',
+                'document_type' => 'NotaCredito',
+                'document_type_code' => '91',
+                'prefix' => strtoupper($faker->lexify('NC?')),
+                'start_number' => 1,
+                'end_number' => 500,
+                'resolution_date' => $faker->date(),
+                'resolution_number' => $faker->unique()->numerify('##########'),
+                'validity_start_date' => $faker->date(),
+                'validity_end_date' => $faker->date('Y-m-d', '+1 year'),
+                'current_status' => 'Activo',
+                'environment' => 'Pruebas',
+                'description' => 'Numeración para notas crédito DIAN',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

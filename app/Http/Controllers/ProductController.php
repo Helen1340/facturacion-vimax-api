@@ -31,13 +31,13 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'measurement_unit_id' => ['required', 'integer'], // FK no habilitada
-            'codigo_estandar' => ['nullable', 'string', 'max:50'],
-            'codigo_producto' => ['required', 'string', 'max:50', 'unique:products,codigo_producto'],
-            'nombre' => ['required', 'string', 'max:150'],
-            'descripcion' => ['nullable', 'string', 'max:150'],
-            'precio_unitario' => ['required', 'numeric', 'min:0'],
-            'estado' => ['required', 'in:Activo,Inactivo'],
+            'measurement_unit_id' => ['required', 'integer'], // unidad de medida (FK)
+            'standard_code'       => ['nullable', 'string', 'max:50'], // código estándar
+            'product_code'        => ['required', 'string', 'max:50', 'unique:products,product_code'], // código interno
+            'name'                => ['required', 'string', 'max:150'], // nombre
+            'description'         => ['nullable', 'string', 'max:150'], // descripción
+            'unit_price'          => ['required', 'numeric', 'min:0'], // precio unitario
+            'status'              => ['required', 'in:Activo,Inactivo'], // estado
         ]);
 
         $product = Product::create($validated);
@@ -61,12 +61,12 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'measurement_unit_id' => ['sometimes', 'integer'],
-            'codigo_estandar' => ['sometimes', 'string', 'max:50'],
-            'codigo_producto' => ['sometimes', 'string', 'max:50', 'unique:products,codigo_producto,' . $product->id],
-            'nombre' => ['sometimes', 'string', 'max:150'],
-            'descripcion' => ['sometimes', 'string', 'max:150'],
-            'precio_unitario' => ['sometimes', 'numeric', 'min:0'],
-            'estado' => ['sometimes', 'in:Activo,Inactivo'],
+            'standard_code'       => ['sometimes', 'string', 'max:50'],
+            'product_code'        => ['sometimes', 'string', 'max:50', 'unique:products,product_code,' . $product->id],
+            'name'                => ['sometimes', 'string', 'max:150'],
+            'description'         => ['sometimes', 'string', 'max:150'],
+            'unit_price'          => ['sometimes', 'numeric', 'min:0'],
+            'status'              => ['sometimes', 'in:Activo,Inactivo'],
         ]);
 
         $product->update($validated);

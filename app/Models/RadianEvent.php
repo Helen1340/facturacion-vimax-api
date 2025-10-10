@@ -11,12 +11,13 @@ class RadianEvent extends Model
     use HasFactory;
 
     protected $fillable = [
-        'electronic_document_id',
-        'codigo',
-        'fecha_evento',
-        'tipo_evento',
-        'xml_respuesta',
-        'estado_dian',
+        'electronic_document_id', // ID del documento electrónico
+        'event_code',             // Código del evento RADIAN
+        'event_name',             // Nombre del evento
+        'event_date',             // Fecha del evento
+        'event_uuid',             // UUID del evento (CUFE)
+        'response_xml',           // XML de respuesta de la DIAN
+        'dian_status',            // Estado devuelto por la DIAN
     ];
 
     // Listas blancas
@@ -25,8 +26,8 @@ class RadianEvent extends Model
         'electronicDocument.dianNumbering',
         'electronicDocument.electronicInvoice',
     ]; // Permite incluir la relación 'electronicDocument'
-    protected $allowFilter = ['codigo', 'tipo_evento', 'estado_dian'];
-    protected $allowSort = ['codigo', 'fecha_evento', 'tipo_evento', 'estado_dian'];
+    protected $allowFilter = ['event_code', 'event_name', 'dian_status'];
+    protected $allowSort = ['event_code', 'event_date', 'event_name', 'dian_status'];
 
 
     // Cardinalidad: Muchos Eventos Radian (M) pertenecen a un Documento Electrónico (1)

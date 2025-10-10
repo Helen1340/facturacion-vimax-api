@@ -33,22 +33,22 @@ class ElectronicDocumentController extends Controller
     {
 
         $validated = $request->validate([
-                'ElectronicInvoice_id' => 'required|exists:electronic_invoices,id',
-                'DianNumbering_id'     => 'required|exists:dian_numberings,id',
-                'CreditDebitNote_id'   => 'nullable|exists:credit_debit_notes,id',
-                'cufe'                 => 'required|string|max:255|unique:electronic_documents,cufe',
-                'cude'                 => 'required|string|max:50',
-                'xml_documento'        => 'required|string',
-                'estado_dian'          => 'required|string|max:50',
-                'fecha_validacion'     => 'nullable|date',
-                'firma_digital'        => 'nullable|string',
-                'hash_documento'       => 'nullable|string|max:255',
-                'descripcion'          => 'nullable|string',
-                'ambiente'             => ['required', Rule::in(['Pruebas', 'Producción'])],
-                'tipo_documento'       => 'required|string|max:50',
-                'qr_codigo'            => 'nullable|string',
-                'cdr'                  => 'nullable|string',
-                'modo_emision'         => ['required', Rule::in(['normal', 'en contingencia'])],
+                'electronic_invoice_id' => 'required|exists:electronic_invoices,id', // FK a la factura electrónica
+            'dian_numbering_id'     => 'required|exists:dian_numberings,id',      // FK a la numeración DIAN
+            'credit_debit_note_id'  => 'nullable|exists:credit_debit_notes,id',   // FK a nota crédito/débito
+            'cufe'                  => 'required|string|max:255|unique:electronic_documents,cufe', // Código Único de Factura Electrónica
+            'cude'                  => 'required|string|max:50',                  // Código Único de Documento Electrónico
+            'xml_document'          => 'required|string',                         // XML del documento electrónico
+            'dian_status'           => 'required|string|max:50',                 // Estado del documento ante la DIAN
+            'validation_date'       => 'nullable|date',                           // Fecha de validación del documento
+            'digital_signature'     => 'nullable|string',                         // Firma digital del documento
+            'document_hash'         => 'nullable|string|max:255',                // Hash del documento electrónico
+            'description'           => 'nullable|string',                         // Descripción del documento
+            'environment'           => ['required', Rule::in(['Pruebas', 'Producción'])], // Ambiente: Pruebas o Producción
+            'document_type'         => 'required|string|max:50',                  // Tipo de documento (Factura, Nota Crédito, etc.)
+            'qr_code'               => 'nullable|string',                         // Código QR del documento
+            'cdr'                   => 'nullable|string',                         // Código de Respuesta de la DIAN
+            'emission_mode'         => ['required', Rule::in(['normal', 'en contingencia'])], // Modo de emisión
         ]);
 
         $electronicDocument = ElectronicDocument::create($validated);
@@ -73,22 +73,22 @@ class ElectronicDocumentController extends Controller
     public function update(Request $request, ElectronicDocument $electronicDocument)
     {
         $validated = $request->validate([
-                'ElectronicInvoice_id' => 'sometimes|required|exists:electronic_invoices,id',
-                'DianNumbering_id'     => 'sometimes|required|exists:dian_numberings,id',
-                'CreditDebitNote_id'   => 'nullable|exists:credit_debit_notes,id',
-                'cufe'                 => 'sometimes|required|string|max:255|unique:electronic_documents,cufe,' . $electronicDocument->id,
-                'cude'                 => 'sometimes|required|string|max:50',
-                'xml_documento'        => 'sometimes|required|string',
-                'estado_dian'          => 'sometimes|required|string|max:50',
-                'fecha_validacion'     => 'nullable|date',
-                'firma_digital'        => 'nullable|string',
-                'hash_documento'       => 'nullable|string|max:255',
-                'descripcion'          => 'nullable|string',
-                'ambiente'             => ['sometimes', Rule::in(['Pruebas', 'Producción'])],
-                'tipo_documento'       => 'sometimes|required|string|max:50',
-                'qr_codigo'            => 'nullable|string',
-                'cdr'                  => 'nullable|string',
-                'modo_emision'         => ['sometimes', Rule::in(['normal', 'en contingencia'])],
+            'electronic_invoice_id' => 'sometimes|required|exists:electronic_invoices,id', // FK a la factura electrónica
+            'dian_numbering_id'     => 'sometimes|required|exists:dian_numberings,id',     // FK a la numeración DIAN
+            'credit_debit_note_id'  => 'nullable|exists:credit_debit_notes,id',           // FK a nota crédito/débito
+            'cufe'                  => 'sometimes|required|string|max:255|unique:electronic_documents,cufe,' . $electronicDocument->id, // CUFE
+            'cude'                  => 'sometimes|required|string|max:50',                // CUDE
+            'xml_document'          => 'sometimes|required|string',                        // XML del documento
+            'dian_status'           => 'sometimes|required|string|max:50',                // Estado DIAN
+            'validation_date'       => 'nullable|date',                                     // Fecha de validación
+            'digital_signature'     => 'nullable|string',                                   // Firma digital
+            'document_hash'         => 'nullable|string|max:255',                            // Hash
+            'description'           => 'nullable|string',                                    // Descripción
+            'environment'           => ['sometimes', Rule::in(['Pruebas', 'Producción'])], // Ambiente
+            'document_type'         => 'sometimes|required|string|max:50',                  // Tipo de documento
+            'qr_code'               => 'nullable|string',                                    // Código QR
+            'cdr'                   => 'nullable|string',                                    // CDR
+            'emission_mode'         => ['sometimes', Rule::in(['normal', 'en contingencia'])], // Modo de emisión
         ]);
 
         $electronicDocument->update($validated);

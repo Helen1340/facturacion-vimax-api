@@ -18,15 +18,18 @@ return new class extends Migration
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
 
             $table->id();
-            $table->string('nombre_certificado', 225);
-            $table->text('ruta_certificado');
-            $table->string('numero_serial', 100);
-            $table->string('contrasena', 150);
-            $table->date('fecha_inicio');
-            $table->date('fecha_fin');
-            $table->enum('estado', ['Vigente', 'Vencido', 'Revocado']);
-            $table->string('entidad_emisora', 100);
-
+            $table->string('certificate_name', 225); // Nombre del certificado digital
+            $table->text('certificate_path');        // Ruta del archivo .p12/.pfx
+            $table->string('serial_number', 100);    // Número serial emitido por la entidad certificadora
+            $table->string('password', 150);         // Contraseña del archivo del certificado
+            $table->date('start_date');              // Fecha de inicio de vigencia
+            $table->date('end_date');                // Fecha de expiración
+            $table->enum('status', ['Vigente', 'Vencido', 'Revocado']); // Estado actual
+            $table->string('issuer', 100);           // Entidad emisora
+            $table->enum('certificate_type', ['Producción', 'Pruebas'])->default('Pruebas'); // Tipo de certificado
+            $table->string('signature_algorithm', 50)->nullable(); // Algoritmo de firma (SHA256withRSA)
+            $table->string('uuid', 100)->nullable(); // Identificador único externo (opcional)
+            $table->text('description')->nullable(); // Descripción opcional
             $table->timestamps();
         });
     }

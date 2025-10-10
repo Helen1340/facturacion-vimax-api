@@ -10,13 +10,13 @@ class Product extends Model
 {
     use HasFactory;
     protected $fillable = [
-    'measurement_unit_id',
-        'codigo_estandar',
-        'codigo_producto',
-        'nombre',
-        'descripcion',
-        'precio_unitario',
-        'estado',
+    'measurement_unit_id', // unidad de medida
+        'standard_code',       // código estándar (UNECE o GTIN)
+        'product_code',        // código interno del producto
+        'name',                // nombre del producto
+        'description',         // descripción
+        'unit_price',          // precio unitario
+        'status',              // estado (Activo/Inactivo)
     ];
 
     protected $allowIncluded = [
@@ -25,8 +25,18 @@ class Product extends Model
         'invoiceDetails.electronicInvoice',
         'taxes',
     ]; 
-    protected $allowFilter = ['id', 'codigo_producto', 'nombre', 'descripcion', 'precio_unitario', 'estado'];
-    protected $allowSort = [  'id', 'codigo_producto', 'nombre', 'descripcion', 'precio_unitario', 'estado'];
+    protected $allowFilter = ['id',
+        'product_code',
+        'name',
+        'description',
+        'unit_price',
+        'status' ];
+    protected $allowSort = ['id',
+        'product_code',
+        'name',
+        'description',
+        'unit_price',
+        'status'];
 
 
     public function measurementUnit()

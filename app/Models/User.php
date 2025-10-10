@@ -19,19 +19,19 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'company_id',
-        'role_id',
-        'nombre',
-        'tipo_documento',
-        'numero_documento',
-        'direccion',
-        'pais',
-        'descripcion',
-        'password', 
-        'correo_electronico',
-        'telefono',
-        'estado',
-        'ultimo_acceso',
+        'company_id',          // ID de la empresa a la que pertenece el usuario
+        'role_id',             // ID del rol del usuario
+        'name',                // Nombre completo del usuario
+        'document_type',       // Tipo de documento (NIT, CC, CE)
+        'document_number',     // Número del documento de identificación
+        'address',             // Dirección del usuario
+        'country',             // País del usuario
+        'description',         // Descripción o información adicional
+        'password',            // Contraseña del usuario
+        'email',               // Correo electrónico del usuario
+        'phone',               // Número de teléfono
+        'status',              // Estado del usuario (Activo, Inactivo)
+        'last_access',         // Fecha del último acceso
     ];
 
     protected $allowIncluded = [
@@ -47,31 +47,13 @@ class User extends Authenticatable
     ];
 
     protected $allowFilter = [
-        'company_id',
-        'nombre',
-        'tipo_documento',
-        'numero_documento',
-        'direccion',
-        'pais',
-        'descripcion',
-        'correo_electronico',
-        'telefono',
-        'estado',
-        'ultimo_acceso'
+        'company_id', 'name', 'document_type', 'document_number', 'address',
+        'country', 'description', 'email', 'phone', 'status', 'last_access'
     ];
 
     protected $allowSort = [
-        'company_id',
-        'nombre',
-        'tipo_documento',
-        'numero_documento',
-        'direccion',
-        'pais',
-        'descripcion',
-        'correo_electronico', 
-        'telefono',
-        'estado',
-        'ultimo_acceso'
+        'company_id', 'name', 'document_type', 'document_number', 'address',
+        'country', 'description', 'email', 'phone', 'status', 'last_access'
     ];
 
     public function company()

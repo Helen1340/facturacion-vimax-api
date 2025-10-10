@@ -18,16 +18,19 @@ return new class extends Migration
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
 
             
-            $table->enum('tipo_documento', ['Factura', 'NotaCredito', 'NotaDebito']); // Enum para tipos de documento
-            $table->string('prefijo', 10); // Varchar(10)
-            $table->unsignedBigInteger('numero_inicio'); // Bigint
-            $table->unsignedBigInteger('numero_fin'); // Bigint
-            $table->date('fecha_resolucion'); // Date
-            $table->string('numero_resolucion', 50); // Varchar(50)
-            $table->date('fecha_inicio'); // Date
-            $table->date('fecha_fin'); // Date
-            $table->enum('estado_actual', ['Activo', 'Inactivo']); // Enum para estado actual
-
+           // Información de la numeración según DIAN
+            $table->enum('document_type', ['Factura', 'NotaCredito', 'NotaDebito']); // Tipo de documento
+            $table->string('document_type_code', 2)->nullable(); // Código del tipo de documento según DIAN (opcional)
+            $table->string('prefix', 10); // Prefijo de numeración
+            $table->unsignedBigInteger('start_number'); // Número inicial autorizado
+            $table->unsignedBigInteger('end_number'); // Número final autorizado
+            $table->date('resolution_date'); // Fecha de resolución DIAN
+            $table->string('resolution_number', 50); // Número de resolución DIAN
+            $table->date('validity_start_date'); // Fecha inicio de vigencia de la resolución
+            $table->date('validity_end_date'); // Fecha fin de vigencia de la resolución
+            $table->enum('current_status', ['Activo', 'Inactivo']); // Estado actual de la numeración
+            $table->enum('environment', ['Pruebas', 'Producción'])->default('Pruebas'); // Ambiente de uso de la numeración
+            $table->string('description', 255)->nullable(); // Descripción opcional para referencia interna
             $table->timestamps();
         });
     }

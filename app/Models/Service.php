@@ -13,16 +13,16 @@ class Service extends Model
 
     protected $fillable = [
         'measurement_unit_id',
-        'nombre',
-        'descripcion',
-        'codigo_servicio',
-        'precio_unitario',
-        'estado',
+        'name',                // nombre del servicio
+        'description',         // descripción
+        'service_code',        // código del servicio
+        'unit_price',          // precio unitario
+        'status',              // estado (Activo/Inactivo)
     ];
 
     protected $allowIncluded = [ 'measurementUnit', 'invoiceDetails', 'taxes'];
-    protected $allowFilter = ['id', 'nombre', 'descripcion', 'codigo_servicio', 'precio_unitario', 'estado'];
-    protected $allowSort = ['id', 'nombre', 'descripcion', 'codigo_servicio', 'precio_unitario', 'estado'];
+    protected $allowFilter = ['id', 'name', 'description', 'service_code', 'unit_price', 'status'];
+    protected $allowSort = ['id', 'name', 'description', 'service_code', 'unit_price', 'status'];
 
     public function measurementUnit()
     {

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\DianNumbering;
 use App\Models\ElectronicDocument;
 use App\Models\ElectronicInvoice;
 use App\Models\InvoiceDetail;

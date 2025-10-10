@@ -20,63 +20,65 @@ class InvoiceDetailSeeder extends Seeder
         $services = Service::all();
         $taxRate = 0.19;
 
-        // Obtener la primera empresa para la excepción de 5 facturas
+        // Obtener la primera empresa para la excepción
         $specialCompany = Company::first();
 
-        // 1. Manejar la excepción: 5 facturas para una empresa específica con 2 ítems
+        // Excepción: 5 facturas con 2 ítems (producto + servicio)
         if ($specialCompany) {
-            // Primero, obtener los IDs de los usuarios de esa empresa
             $userIds = $specialCompany->users()->pluck('id');
-
-            // Luego, usar esos IDs en el whereIn
             $specialInvoices = $allInvoices->whereIn('user_id', $userIds)->take(5);
 
             foreach ($specialInvoices as $invoice) {
-                // Agregar un producto
+                // Producto
                 $product = $products->random();
-                $cantidadProd = $faker->numberBetween(1, 3);
-                $this->createDetail($invoice, $product, $cantidadProd, Product::class);
+                $quantityProd = $faker->numberBetween(1, 3);
+                $this->createDetail($invoice, $product, $quantityProd, Product::class, $taxRate);
 
-                // Agregar un servicio
+                // Servicio
                 $service = $services->random();
-                $cantidadServ = $faker->numberBetween(1, 2);
-                $this->createDetail($invoice, $service, $cantidadServ, Service::class);
+                $quantityServ = $faker->numberBetween(1, 2);
+                $this->createDetail($invoice, $service, $quantityServ, Service::class, $taxRate);
             }
         }
-        
-        // 2. Manejar el caso general: 1 ítem por factura para el resto
+
+        // Resto de facturas: solo un ítem
         $regularInvoices = $allInvoices->diff($specialInvoices ?? []);
         foreach ($regularInvoices as $invoice) {
             $isProduct = $faker->boolean();
             $item = $isProduct ? $products->random() : $services->random();
             $itemType = $isProduct ? Product::class : Service::class;
-            $cantidad = $faker->numberBetween(1, 5);
+            $quantity = $faker->numberBetween(1, 5);
 
-            $this->createDetail($invoice, $item, $cantidad, $itemType);
+            $this->createDetail($invoice, $item, $quantity, $itemType, $taxRate);
         }
     }
 
-    private function createDetail($invoice, $item, $cantidad, $itemType): void
+    /**
+     * Inserta el detalle de la factura con estructura UBL 2.1 (DIAN)
+     */
+    private function createDetail($invoice, $item, $quantity, $itemType, $taxRate): void
     {
         $faker = Faker::create('es_CO');
-        $precioUnitario = $item->precio_unitario; // Usar el nombre de columna correcto
-        $subtotal = $precioUnitario * $cantidad;
-        $descuento = $faker->boolean(20) ? $subtotal * $faker->randomFloat(2, 0.05, 0.15) : 0;
-        $valorImpuesto = ($subtotal - $descuento) * 0.19;
-        $valorTotal = $subtotal - $descuento + $valorImpuesto;
+
+        // Usar nombres correctos de campos según tus modelos
+        $unitPrice = $item->unit_price ?? $item->precio_unitario ?? $faker->randomFloat(2, 5000, 200000);
+
+        $lineExtensionAmount = $unitPrice * $quantity; // Subtotal sin impuestos
+        $discountAmount = $faker->boolean(20) ? $lineExtensionAmount * $faker->randomFloat(2, 0.05, 0.15) : 0;
+        $taxAmount = ($lineExtensionAmount - $discountAmount) * $taxRate;
+        $totalLineAmount = $lineExtensionAmount - $discountAmount + $taxAmount;
 
         DB::table('invoice_details')->insert([
             'electronic_invoice_id' => $invoice->id,
             'item_type' => $itemType,
             'item_id' => $item->id,
-            'descripcion' => $item->nombre,
-            'cantidad' => $cantidad,
-            'precio_unitario' => $precioUnitario,
-            'subtotal' => $subtotal,
-            'descuento' => $descuento,
-            'valor_impuesto' => $valorImpuesto,
-            'valor_total' => $valorTotal,
-            'impuestos_aplicados' => json_encode(['IVA' => $valorImpuesto]),
+            'description' => $item->name ?? $item->nombre ?? 'Item sin descripción',
+            'quantity' => $quantity,
+            'unit_price' => $unitPrice,
+            'line_extension_amount' => $lineExtensionAmount,
+            'discount_amount' => $discountAmount,
+            'tax_amount' => $taxAmount,
+            'total_line_amount' => $totalLineAmount,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

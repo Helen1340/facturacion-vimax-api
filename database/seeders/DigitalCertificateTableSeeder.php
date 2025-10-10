@@ -16,34 +16,43 @@ class DigitalCertificateTableSeeder extends Seeder
         $companies = Company::all();
 
         foreach ($companies as $company) {
-            // Primer certificado (Vigente)
+
+            // 🔹 Certificado vigente (Producción)
             DB::table('digital_certificates')->insert([
-                'company_id' => $company->id,
-                'nombre_certificado' => 'Certificado Principal ' . $company->id,
-                'ruta_certificado' => '/certs/' . Str::slug($company->razon_social) . '-principal.p12',
-                'numero_serial' => $faker->unique()->sha1(),
-                'contrasena' => bcrypt('test_password'),
-                'fecha_inicio' => $faker->date('Y-m-d', '-1 year'),
-                'fecha_fin' => $faker->date('Y-m-d', '+1 year'),
-                'estado' => 'Vigente',
-                'entidad_emisora' => 'DIAN',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'company_id'            => $company->id,
+                'certificate_name'      => 'Primary Digital Certificate - ' . $company->id,
+                'certificate_path'      => '/certs/' . Str::slug($company->business_name) . '-primary.p12',
+                'serial_number'         => strtoupper(Str::random(20)),
+                'password'              => bcrypt('Prod@12345'),
+                'start_date'            => $faker->date('Y-m-d', '-6 months'),
+                'end_date'              => $faker->date('Y-m-d', '+1 year'),
+                'status'                => 'Vigente',
+                'issuer'                => 'Entidad Certificadora DIAN',
+                'certificate_type'      => 'Producción',
+                'signature_algorithm'   => 'SHA256withRSA',
+                'uuid'                  => (string) Str::uuid(),
+                'description'           => 'Certificado principal activo utilizado para la emisión de facturas electrónicas.',
+                'created_at'            => now(),
+                'updated_at'            => now(),
             ]);
-            
-            // Segundo certificado (Vencido)
+
+            // 🔹 Certificado vencido (Pruebas)
             DB::table('digital_certificates')->insert([
-                'company_id' => $company->id,
-                'nombre_certificado' => 'Certificado Secundario ' . $company->id,
-                'ruta_certificado' => '/certs/' . Str::slug($company->razon_social) . '-secundario.p12',
-                'numero_serial' => $faker->unique()->sha1(),
-                'contrasena' => bcrypt('old_password'),
-                'fecha_inicio' => $faker->date('Y-m-d', '-2 years'),
-                'fecha_fin' => $faker->date('Y-m-d', '-1 month'),
-                'estado' => 'Vencido',
-                'entidad_emisora' => 'DIAN',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'company_id'            => $company->id,
+                'certificate_name'      => 'Test Digital Certificate - ' . $company->id,
+                'certificate_path'      => '/certs/' . Str::slug($company->business_name) . '-test.pfx',
+                'serial_number'         => strtoupper(Str::random(20)),
+                'password'              => bcrypt('Test@12345'),
+                'start_date'            => $faker->date('Y-m-d', '-2 years'),
+                'end_date'              => $faker->date('Y-m-d', '-2 months'),
+                'status'                => 'Vencido',
+                'issuer'                => 'Entidad Certificadora DIAN',
+                'certificate_type'      => 'Pruebas',
+                'signature_algorithm'   => 'SHA256withRSA',
+                'uuid'                  => (string) Str::uuid(),
+                'description'           => 'Certificado de pruebas vencido utilizado en entorno de homologación.',
+                'created_at'            => now(),
+                'updated_at'            => now(),
             ]);
         }
     }

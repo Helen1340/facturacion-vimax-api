@@ -32,9 +32,9 @@ class RoleController extends Controller
     public function store(Request $request)
     {
             $validated = $request->validate([
-                'nombre' => ['required', Rule::in(['administrador', 'facturador', 'contador', 'cliente'])],
-                'descripcion' => ['nullable', 'string', 'max:255'],
-                'estado' => ['required', Rule::in(['activo', 'inactivo'])],
+                'role_name'   => ['required', Rule::in(['administrador', 'facturador', 'contador', 'cliente'])], // Nombre del rol
+            'description' => ['nullable', 'string', 'max:255'], // Descripción del rol
+            'status'      => ['required', Rule::in(['activo', 'inactivo'])], // Estado del rol
             ]);
 
             $role = Role::create($validated);
@@ -58,9 +58,9 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
             $validated = $request->validate([
-                'nombre' => ['sometimes', Rule::in(['administrador', 'facturador', 'contador', 'cliente'])],
-                'descripcion' => ['sometimes', 'string', 'max:255'],
-                'estado' => ['sometimes', Rule::in(['activo', 'inactivo'])],
+                'role_name'   => ['sometimes', Rule::in(['administrador', 'facturador', 'contador', 'cliente'])], // Nombre del rol
+            'description' => ['sometimes', 'string', 'max:255'], // Descripción del rol
+            'status'      => ['sometimes', Rule::in(['activo', 'inactivo'])], // Estado del rol
             ]);
 
             $role->update($validated);

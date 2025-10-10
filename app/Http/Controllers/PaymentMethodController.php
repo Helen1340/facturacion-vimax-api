@@ -18,9 +18,9 @@ class PaymentMethodController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre'      => 'required|string|max:100',
-            'codigo_dian' => 'required|string|max:10|unique:payment_methods,codigo_dian',
-            'descripcion' => 'nullable|string|max:250',
+            'name'       => 'required|string|max:100', // nombre
+            'dian_code'  => 'required|string|max:10|unique:payment_methods,dian_code', // código DIAN
+            'description'=> 'nullable|string|max:250', // descripción
         ]);
 
         $method = PaymentMethod::create($request->all());
@@ -38,9 +38,9 @@ class PaymentMethodController extends Controller
     public function update(Request $request, PaymentMethod $paymentMethod)
     {
         $request->validate([
-            'nombre'      => 'sometimes|string|max:100',
-            'codigo_dian' => 'sometimes|string|max:10|unique:payment_methods,codigo_dian,' . $paymentMethod->id,
-            'descripcion' => 'nullable|string|max:250',
+            'name'       => 'sometimes|string|max:100', // nombre
+            'dian_code'  => 'sometimes|string|max:10|unique:payment_methods,dian_code,' . $paymentMethod->id, // código DIAN
+            'description'=> 'nullable|string|max:250', // descripción
         ]);
 
         $paymentMethod->update($request->only(array_keys($request->all())));

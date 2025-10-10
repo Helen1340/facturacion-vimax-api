@@ -14,22 +14,22 @@ class ElectronicDocument extends Model
     protected   $model = 'electronic_documents';
 
     protected $fillable = [
-        'ElectronicInvoice_id',
-        'DianNumbering_id',
-        'CreditDebitNote_id',
-        'cufe',
-        'cude',
-        'xml_documento',
-        'estado_dian',
-        'fecha_validacion',
-        'firma_digital',
-        'hash_documento',
-        'descripcion',
-        'ambiente',
-        'tipo_documento',
-        'qr_codigo',
-        'cdr',
-        'modo_emision',
+        'electronic_invoice_id', // FK a la factura electrónica
+        'dian_numbering_id',     // FK a numeración DIAN
+        'credit_debit_note_id',  // FK a nota crédito/débito
+        'cufe',                  // Código Único de Factura Electrónica
+        'cude',                  // Código Único de Documento Electrónico
+        'xml_document',          // XML del documento electrónico
+        'dian_status',           // Estado ante la DIAN
+        'validation_date',       // Fecha de validación del documento
+        'digital_signature',     // Firma digital del documento
+        'document_hash',         // Hash del documento electrónico
+        'description',           // Descripción del documento
+        'environment',           // Ambiente de emisión: Pruebas o Producción
+        'document_type',         // Tipo de documento (Factura, Nota Crédito, etc.)
+        'qr_code',               // Código QR del documento
+        'cdr',                   // Código de Respuesta de la DIAN
+        'emission_mode',         // Modo de emisión: normal o en contingencia
     ];
 
     protected $allowIncluded = [
@@ -41,8 +41,15 @@ class ElectronicDocument extends Model
     ];
      //relaciones con otras tablas
     
-    protected $allowFilter = [ 'ElectronicInvoice_id', 'DianNumbering_id', 'CreditDebitNote_id', 'cufe', 'cude', 'xml_documento', 'estado_dian', 'fecha_validacion', 'firma_digital', 'hash_documento', 'descripcion', 'ambiente', 'tipo_documento', 'qr_codigo', 'cdr', 'modo_emision',];
-    protected $allowSort = [ 'ElectronicInvoice_id', 'DianNumbering_id', 'CreditDebitNote_id', 'cufe', 'cude', 'xml_documento', 'estado_dian', 'fecha_validacion', 'firma_digital', 'hash_documento', 'descripcion', 'ambiente', 'tipo_documento', 'qr_codigo', 'cdr', 'modo_emision',];
+    protected $allowFilter = [ 'electronic_invoice_id', 'dian_numbering_id', 'credit_debit_note_id',
+        'cufe', 'cude', 'xml_document', 'dian_status', 'validation_date',
+        'digital_signature', 'document_hash', 'description', 'environment',
+        'document_type', 'qr_code', 'cdr', 'emission_mode',];
+        
+    protected $allowSort = [ 'electronic_invoice_id', 'dian_numbering_id', 'credit_debit_note_id',
+        'cufe', 'cude', 'xml_document', 'dian_status', 'validation_date',
+        'digital_signature', 'document_hash', 'description', 'environment',
+        'document_type', 'qr_code', 'cdr', 'emission_mode',];
 
     public function electronicInvoice()
     {

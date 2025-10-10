@@ -18,11 +18,11 @@ class MeasurementUnitController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre'          => 'required|string|max:100',
-            'estado'          => 'required|in:Activo,Inactivo',
-            'codigo_dian'     => 'required|string|max:10|unique:measurement_units,codigo_dian',
-            'descripcion'     => 'nullable|string',
-            'tipo_aplicacion' => 'required|in:Producto,Servicio',
+            'name'             => 'required|string|max:100',          // Nombre
+            'status'           => 'required|in:Active,Inactive',       // Estado
+            'dian_code'        => 'required|string|max:10|unique:measurement_units,dian_code', // Código DIAN
+            'description'      => 'nullable|string',                   // Descripción
+            'application_type' => 'required|in:Product,Service',       // Tipo de aplicación
         ]);
 
         $unit = MeasurementUnit::create($request->all());
@@ -40,11 +40,11 @@ class MeasurementUnitController extends Controller
     public function update(Request $request, MeasurementUnit $measurementUnit)
     {
         $request->validate([
-            'nombre'          => 'sometimes|string|max:100',
-            'estado'          => 'sometimes|in:Activo,Inactivo',
-            'codigo_dian'     => 'sometimes|string|max:10|unique:measurement_units,codigo_dian,' . $measurementUnit->id,
-            'descripcion'     => 'nullable|string',
-            'tipo_aplicacion' => 'sometimes|in:Producto,Servicio',
+            'name'             => 'sometimes|string|max:100',          // Nombre
+            'status'           => 'sometimes|in:Active,Inactive',       // Estado
+            'dian_code'        => 'sometimes|string|max:10|unique:measurement_units,dian_code,' . $measurementUnit->id, // Código DIAN
+            'description'      => 'nullable|string',                   // Descripción
+            'application_type' => 'sometimes|in:Product,Service',       // Tipo de aplicación
         ]);
 
         $measurementUnit->update($request->only(array_keys($request->all())));

@@ -16,15 +16,18 @@ class DianNumberingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tipo_documento'     => 'required|in:Factura,NotaCredito,NotaDebito',
-            'prefijo'            => 'required|string|max:10',
-            'numero_inicio'      => 'required|numeric|min:0', // bigInteger en DB se mapea a integer en validación
-            'numero_fin'         => 'required|numeric|min:' . ($request->input('numero_inicio') ?? 0), // numero_fin debe ser mayor o igual que numero_inicio
-            'fecha_resolucion'   => 'required|date',
-            'numero_resolucion'  => 'required|string|max:50',
-            'fecha_inicio'       => 'required|date',
-            'fecha_fin'          => 'required|date|after_or_equal:fecha_inicio',
-            'estado_actual'      => 'required|in:Activo,Inactivo',
+            'document_type'        => 'required|in:Factura,NotaCredito,NotaDebito', // Tipo de documento DIAN
+            'document_type_code'   => 'nullable|string|max:10',                       // Código oficial DIAN
+            'prefix'               => 'required|string|max:10',                       // Prefijo de numeración
+            'start_number'         => 'required|numeric|min:0',                       // Número inicial autorizado
+            'end_number'           => 'required|numeric|min:' . ($request->input('start_number') ?? 0), // Número final autorizado
+            'resolution_date'      => 'required|date',                                 // Fecha resolución DIAN
+            'resolution_number'    => 'required|string|max:50',                        // Número resolución DIAN
+            'validity_start_date'  => 'required|date',                                  // Fecha inicio vigencia
+            'validity_end_date'    => 'required|date|after_or_equal:validity_start_date', // Fecha fin vigencia
+            'current_status'       => 'required|in:Activo,Inactivo',                  // Estado actual
+            'environment'          => 'nullable|in:Pruebas,Producción',               // Ambiente
+            'description'          => 'nullable|string|max:255',                      // Descripción opcional
         ]);
 
         $dian_numbering = DianNumbering::create($request->all());
@@ -40,15 +43,18 @@ class DianNumberingController extends Controller
     public function update(Request $request, DianNumbering $dianNumbering)
     {
     $request->validate([
-        'tipo_documento'     => 'sometimes|in:Factura,NotaCredito,NotaDebito',
-        'prefijo'            => 'sometimes|string|max:10',
-        'numero_inicio'      => 'sometimes|numeric|min:0',
-        'numero_fin'         => 'sometimes|numeric|min:' . ($request->input('numero_inicio') ?? 0),
-        'fecha_resolucion'   => 'sometimes|date',
-        'numero_resolucion'  => 'sometimes|string|max:50',
-        'fecha_inicio'       => 'sometimes|date',
-        'fecha_fin'          => 'sometimes|date|after_or_equal:fecha_inicio',
-        'estado_actual'      => 'sometimes|in:Activo,Inactivo',
+         'document_type'        => 'sometimes|in:Factura,NotaCredito,NotaDebito',
+            'document_type_code'   => 'sometimes|string|max:10',
+            'prefix'               => 'sometimes|string|max:10',
+            'start_number'         => 'sometimes|numeric|min:0',
+            'end_number'           => 'sometimes|numeric|min:' . ($request->input('start_number') ?? 0),
+            'resolution_date'      => 'sometimes|date',
+            'resolution_number'    => 'sometimes|string|max:50',
+            'validity_start_date'  => 'sometimes|date',
+            'validity_end_date'    => 'sometimes|date|after_or_equal:validity_start_date',
+            'current_status'       => 'sometimes|in:Activo,Inactivo',
+            'environment'          => 'sometimes|in:Pruebas,Producción',
+            'description'          => 'sometimes|string|max:255',
     ]);
 
     $dianNumbering->update($request->only(array_keys($request->all())));

@@ -12,10 +12,33 @@ class ElectronicInvoice extends Model
 
     protected $fillable = [
         'user_id',
-        'numero_factura',
-        'fecha_emision',
-        'estado_interno',
-        'observacion',
+        'invoice_number',
+        'issue_date',
+        'internal_status',
+        'observation',
+
+        // --- Campos DIAN / UBL ---
+        'ubl_version',
+        'customization_id',
+        'profile_id',
+        'uuid',
+        'document_currency_code',
+        'invoice_type_code',
+
+        // --- Totales principales ---
+        'line_extension_amount',
+        'tax_exclusive_amount',
+        'tax_inclusive_amount',
+        'payable_amount',
+
+        // --- Control de estado DIAN ---
+        'estado_dian',
+        'sent_at',
+        'received_at',
+
+        // --- Información de pago ---
+        'payment_means_code',
+        'payment_terms',
     ];
 
     
@@ -37,9 +60,46 @@ class ElectronicInvoice extends Model
         'electronicDocuments.dianNumbering',
     ];
     //Los campos por los que se puede filtrar la consulta.
-    protected $allowFilter = ['id', 'numero_factura', 'user_id', 'estado_interno', 'fecha_emision'];
+    protected $allowFilter = [
+    // Identificación
+    'user_id',
+    'invoice_number',
+    'issue_date',
+
+    // Estados
+    'internal_status',
+    'estado_dian',
+
+    // DIAN / UBL básicos
+    'uuid',
+    'document_currency_code',
+    'invoice_type_code',
+
+    // Auditoría
+    'sent_at',
+    'received_at',
+
+    // Totales (opcional si usarás reportes)
+    // 'payable_amount',
+    // 'tax_inclusive_amount',
+
+    // Información de pago (solo si aplica)
+    // 'payment_means_code',
+];
+
     //Los campos por los que se puede ordenar la consulta.
-    protected $allowSort = ['id', 'fecha_emision',];
+    protected $allowSort = ['id',
+    'invoice_number',
+    'issue_date',
+    'internal_status',
+    'estado_dian',
+    'payable_amount',
+    'sent_at',
+    'received_at',
+    // opcionales
+    // 'document_currency_code',
+    // 'invoice_type_code',
+    ];
 
 
     //RELACIONES CON OTRAS TABLAS
@@ -174,53 +234,53 @@ class ElectronicInvoice extends Model
      * Subtotal = SUM(cantidad * precio_unitario)
      * Usamos suma en DB si la relación no está cargada (mejor performance en listados).
      */
-    public function getSubTotalAttribute()
-    {
-        // si la relación ya está cargada (eager loaded), usar la colección
-        if ($this->relationLoaded('invoiceDetails')) {
-            $sum = $this->invoiceDetails->sum(function ($detail) {
-                return (float) $detail->cantidad * (float) $detail->precio_unitario;
-            });
-            return round($sum, 2);
-        }
+        public function getSubTotalAttribute()
+{
+     // si la relación ya está cargada (eager loaded), usar la colección
+    if ($this->relationLoaded('invoiceDetails')) {
+        $sum = $this->invoiceDetails->sum(function ($detail) {
+            return (float) $detail->quantity * (float) $detail->unit_price;
+        });
+
+        return round($sum, 2);
+    }
 
         // si no está cargada, calcular en DB (evita traer todos los detalles)
         $value = $this->invoiceDetails()
-            ->selectRaw('COALESCE(SUM(cantidad * precio_unitario),0) as total')
-            ->value('total');
+        ->selectRaw('COALESCE(SUM(quantity * unit_price),0) as total')
+        ->value('total');
 
-        return round((float) $value, 2);
-    }
+    return round((float) $value, 2);
+}
 
     /**
      * Total impuesto = SUM(valor_impuesto) (tomamos el campo 'valor_impuesto' del detalle)
      */
-    public function getTotalImpuestoAttribute()
-    {
-        if ($this->relationLoaded('invoiceDetails')) {
-            $sum = $this->invoiceDetails->sum(function ($detail) {
-                // preferimos valor_impuesto; si no existe, fallback a 0
-                return (float) ($detail->valor_impuesto ?? 0);
-            });
-            return round($sum, 2);
-        }
-
-        $value = $this->invoiceDetails()->sum('valor_impuesto');
-        return round((float) $value, 2);
+    public function getTotalTaxAttribute()
+{
+    if ($this->relationLoaded('invoiceDetails')) {
+        $sum = $this->invoiceDetails->sum(function ($detail) {
+            return (float) ($detail->tax_amount ?? 0);
+        });
+        return round($sum, 2);
     }
+
+    $value = $this->invoiceDetails()->sum('tax_amount');
+    return round((float) $value, 2);
+}
 
     /**
      * Total factura = subtotal - descuento_total + total_impuesto
      * (descuento_total puede estar almacenado o ser 0)
      */
-    public function getTotalFacturaAttribute()
-    {
-        $subtotal = (float) $this->sub_total;
-        $impuestos = (float) $this->total_impuesto;
-        $descuento = (float) ($this->descuento_total ?? 0);
+    public function getTotalInvoiceAttribute()
+{
+    $subtotal = (float) $this->sub_total;
+    $taxes = (float) $this->total_tax;
+    $discount = (float) ($this->total_discount ?? 0);
 
-        return round($subtotal - $descuento + $impuestos, 2);
-    }
+    return round($subtotal - $discount + $taxes, 2);
+}
 }
 
 

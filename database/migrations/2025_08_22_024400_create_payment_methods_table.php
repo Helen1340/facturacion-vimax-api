@@ -12,10 +12,12 @@ class CreatePaymentMethodsTable extends Migration
     public function up(): void
     {
         Schema::create('payment_methods', function (Blueprint $table) {
-            $table->bigIncrements('id'); // PK
-            $table->string('nombre', 100);
-            $table->string('codigo_dian', 10)->unique(); // código DIAN único
-            $table->string('descripcion', 250)->nullable();
+            $table->bigIncrements('id'); // id
+
+            $table->string('name', 100); // nombre
+            $table->string('dian_code', 10)->unique(); // código dian
+            $table->string('description', 250)->nullable(); // descripción
+
 
             $table->timestamps(); // created_at y updated_at
         });

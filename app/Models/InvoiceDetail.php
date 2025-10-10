@@ -15,17 +15,19 @@ class InvoiceDetail extends Model
 
     protected $fillable = [
         'electronic_invoice_id',
-        'descripcion',
-        'cantidad',
-        'precio_unitario',
-        'valor_total',
-        'subtotal',
-        'descuento',
-        'impuestos_aplicados',
-        'valor_impuesto',
         'item_id',
         'item_type',
+
+        // --- Campos específicos del detalle UBL ---
+        'description',           // Descripción del ítem
+        'quantity',              // Cantidad
+        'unit_price',            // Precio unitario
+        'line_extension_amount', // Subtotal sin impuestos
+        'discount_amount',       // Descuento aplicado
+        'tax_amount',            // Valor de impuestos
+        'total_line_amount',     // Total línea (subtotal + impuestos)
     ];
+
 
     // listas blancas para la consulta
     protected $allowIncluded =[
@@ -35,9 +37,28 @@ class InvoiceDetail extends Model
         'item.measurementUnit',
         'item.taxes',
     ];// Las relaciones que se pueden "incluir"
-    protected $allowFilter = ['id', 'descripcion', 'cantidad'];// Los campos que se pueden "filtrar"
-    protected $allowSort =['id', 'descripcion', 'cantidad'];// Los campos por los que se puede "ordenar"
 
+    //Campos permitidos para filtrar resultados
+     protected $allowFilter = [
+        'id',
+        'description',
+        'quantity',
+        'unit_price',
+        'tax_amount',
+    ];
+
+    //Campos permitidos para ordenar resultados
+     
+    protected $allowSort = [
+        'id',
+        'description',
+        'quantity',
+        'unit_price',
+        'line_extension_amount',
+        'tax_amount',
+        'total_line_amount',
+    ];
+    
              //Relación polimórfica: devuelve el item que puede ser Product o Service.
     public function item()
     {

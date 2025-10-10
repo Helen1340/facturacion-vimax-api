@@ -6,74 +6,47 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-
-class Company extends Model
+class DianStatusResponse extends Model
 {
     use HasFactory;
 
+    // campos asignables (ingles) - comentarios simples en español
     protected $fillable = [
-        'legal_name',                    // razon_social: Nombre o razón social de la empresa
-        'tax_id',                         // nit: Número de identificación tributaria (NIT)
-        'trade_name',                     // nombre_comercial: Nombre comercial de la empresa
-        'address',                         // direccion: Dirección física
-        'city',                            // ciudad: Ciudad de la empresa
-        'department',                      // departamento: Departamento o región
-        'country',                          // pais: País de la empresa
-        'phone',                            // telefono: Número de contacto
-        'email',                            // correo_electronico: Correo electrónico principal
-        'tax_regime',                       // regimen: Régimen tributario
-        'ciiu_code',                        // codigo_ciiu: Código CIIU
-        'logo_url',                         // logo_url: URL del logo de la empresa
-        'legal_representative_name',        // representante_nombre: Nombre del representante legal
-        'legal_representative_document_type', // representante_tipo_documento: Tipo de documento del representante legal
-        'legal_representative_document_number', // representante_numero_documento: Número de documento del representante legal
+        'electronic_document_id', // documento electrónico asociado
+        'status_code',            // código de estado DIAN
+        'status_description',     // descripción corta
+        'status_message',         // mensaje detallado
+        'response_xml',           // XML de respuesta
+        'protocol_number',        // número / protocolo (opcional)
+        'received_at',            // fecha/hora recibido
     ];
 
-    // Las posibles relaciones (includes) que se pueden cargar
-    //a través de query parameters en la API//
+    // Relaciones permitidas para include (listas blancas)
     protected $allowIncluded = [
-        'users',
-        'users.role',
-        'users.electronicInvoices',
-        'digitalCertificates',
-        'dianNumberings',
-        'documentNumberings',
+        'electronicDocument',                 // documento electrónico
+        'electronicDocument.electronicInvoice'// (opcional) factura asociada via electronic_document
     ];
-    //Los campos por los que se puede filtrar la consulta.
+
+    // Campos permitidos para filtrar
     protected $allowFilter = [
         'id',
-        'legal_name',                        // razon_social
-        'email',                             // correo_electronico
-        'tax_id',                             // numero_documento / NIT
+        'status_code',
+        'status_description',
+        'received_at'
     ];
-    //Los campos por los que se puede ordenar la consulta.
+
+    // Campos permitidos para ordenar
     protected $allowSort = [
         'id',
-        'legal_name',                         // razon_social
-        'tax_id',
+        'status_code',
+        'received_at',
+        'created_at'
     ];
 
-    //RELACIONES CON OTRAS TABLAS//
-
-    //Relación uno a muchos con la tabla 'users'.Una empresa puede tener muchos usuarios.
-
-    public function users()
+    // RELACIONES
+    public function electronicDocument()
     {
-        return $this->hasMany(User::class);
-    }
-
-    // Relación uno a muchos con la tabla 'digital_certificates'.Una empresa puede tener muchos certificados digitales.
-    public function digitalCertificates()
-    {
-        return $this->hasMany(DigitalCertificate::class);
-    }
-
-    //Relación uno a muchos con la tabla 
-    //Una empresa tiene muchas numeraciones DIAN.
-
-    public function dianNumberings()
-    {
-        return $this->hasMany(DianNumbering::class);
+        return $this->belongsTo(ElectronicDocument::class, 'electronic_document_id');
     }
 
     public function scopeIncluded(Builder $query)
@@ -162,4 +135,6 @@ class Company extends Model
         return $query->get(); //sino se pasa el valor de $perPage en la URL se pasan todos los registros.
         //http://api.codersfree1.test/v1/categories?perPage=2
     }
+
+
 }

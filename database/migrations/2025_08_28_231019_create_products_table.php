@@ -19,13 +19,12 @@ return new class extends Migration
             // Clave foránea
             $table->foreign('measurement_unit_id')->references('id')->on('measurement_units')->onDelete('cascade');
 
-            $table->string('codigo_estandar', 50)->nullable();
-            $table->string('codigo_producto', 50)->unique();
-            $table->string('nombre', 150);
-            $table->string('descripcion', 150)->nullable();
-            $table->decimal('precio_unitario', 18, 6);
-            $table->enum('estado', ['Activo', 'Inactivo'])->default('Activo');
-
+            $table->string('standard_code', 50)->nullable(); // código estándar (UNECE / GTIN)
+            $table->string('product_code', 50)->unique(); // código interno del producto
+            $table->string('name', 150); // nombre del producto
+            $table->string('description', 150)->nullable(); // descripción del producto
+            $table->decimal('unit_price', 18, 6); // precio unitario
+            $table->enum('status', ['Active', 'Inactive'])->default('Active'); // estado
             $table->timestamps();
 
             

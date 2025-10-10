@@ -10,7 +10,7 @@ class PaymentMethod extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'codigo_dian', 'descripcion'];
+    protected $fillable = ['name', 'dian_code', 'description'];
 
     // Las posibles relaciones (includes) que se pueden cargar a través de query parameters en la API
     protected $allowIncluded = [
@@ -18,9 +18,9 @@ class PaymentMethod extends Model
         'payments.electronicInvoice',
     ];
     // Los campos por los que se puede filtrar la consulta
-    protected $allowFilter = ['id', 'nombre', 'codigo_dian'];
+    protected $allowFilter = ['id', 'name', 'dian_code'];
     // Los campos por los que se puede ordenar la consulta
-    protected $allowSort = ['id', 'nombre', 'codigo_dian'];
+    protected $allowSort = ['id', 'name', 'dian_code'];
 
 
     // CARDINALIDAD //

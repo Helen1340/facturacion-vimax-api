@@ -10,15 +10,19 @@ class DigitalCertificate extends Model
     use HasFactory;
 
     protected $fillable = [
-        'company_id',
-        'nombre_certificado',
-        'ruta_certificado',
-        'numero_serial',
-        'contrasena',
-        'fecha_inicio',
-        'fecha_fin',
-        'estado',
-        'entidad_emisora',
+        'company_id',             // FK: empresa propietaria
+        'certificate_name',       // Nombre del certificado digital
+        'certificate_path',       // Ruta del archivo .p12/.pfx
+        'serial_number',          // Número serial emitido por la entidad certificadora
+        'password',               // Contraseña del archivo del certificado
+        'start_date',             // Fecha de inicio de vigencia
+        'end_date',               // Fecha de expiración
+        'status',                 // Estado actual: Vigente, Vencido, Revocado
+        'issuer',                 // Entidad emisora
+        'certificate_type',       // Tipo de certificado: Producción o Pruebas
+        'signature_algorithm',    // Algoritmo de firma (SHA256withRSA)
+        'uuid',                   // Identificador único externo (opcional)
+        'description',            // Descripción o notas adicionales
     ];
 
     // Listas blancas
@@ -27,8 +31,17 @@ class DigitalCertificate extends Model
         'company.users',
     ];
      // Permite incluir la relación 'company'
-    protected $allowFilter = ['nombre_certificado', 'numero_serial', 'estado', 'entidad_emisora'];
-    protected $allowSort = ['nombre_certificado', 'fecha_inicio', 'fecha_fin', 'estado', 'entidad_emisora'];
+    protected $allowFilter = ['certificate_name',
+        'serial_number',
+        'status',
+        'issuer',
+        'certificate_type'];
+    protected $allowSort = ['certificate_name',
+        'start_date',
+        'end_date',
+        'status',
+        'issuer',
+        'certificate_type'];
 
     // Cardinalidad: Un certificado digital (M) pertenece a una compañía (1)
     public function company()

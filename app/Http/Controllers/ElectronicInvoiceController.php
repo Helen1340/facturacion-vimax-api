@@ -21,11 +21,35 @@ class ElectronicInvoiceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'user_id'        => 'required|exists:users,id',
-            'numero_factura' => 'required|string|max:20|unique:electronic_invoices',
-            'fecha_emision'  => 'required|date',
-            'estado_interno' => 'required|string|max:50',
-            'observacion'    => 'nullable|string|max:255',
+            // --- Relación y datos base ---
+            'user_id'               => 'required|exists:users,id',
+            'invoice_number'        => 'required|string|max:20|unique:electronic_invoices,invoice_number',
+            'issue_date'            => 'required|date',
+            'internal_status'       => 'required|string|max:50',
+            'observation'           => 'nullable|string|max:255',
+
+            // --- Campos DIAN / UBL ---
+            'ubl_version'           => 'nullable|string|max:10',
+            'customization_id'      => 'nullable|string|max:50',
+            'profile_id'            => 'nullable|string|max:50',
+            'uuid'                  => 'nullable|string|max:100',
+            'document_currency_code'=> 'nullable|string|max:10',
+            'invoice_type_code'     => 'nullable|string|max:10',
+
+            // --- Totales principales ---
+            'line_extension_amount' => 'nullable|numeric|min:0',
+            'tax_exclusive_amount'  => 'nullable|numeric|min:0',
+            'tax_inclusive_amount'  => 'nullable|numeric|min:0',
+            'payable_amount'        => 'nullable|numeric|min:0',
+
+            // --- Control de estado DIAN ---
+            'estado_dian'           => 'nullable|string|max:50',
+            'sent_at'               => 'nullable|date',
+            'received_at'           => 'nullable|date',
+
+            // --- Información de pago ---
+            'payment_means_code'    => 'nullable|string|max:10',
+            'payment_terms'         => 'nullable|string|max:255',
         ]);
 
         $invoice = ElectronicInvoice::create($request->all());
@@ -48,10 +72,35 @@ class ElectronicInvoiceController extends Controller
     public function update(Request $request, ElectronicInvoice $electronicInvoice)
     {
         $request->validate([
-            'numero_factura' => 'sometimes|string|max:20|unique:electronic_invoices,numero_factura,' . $electronicInvoice->id,
-            'fecha_emision'  => 'sometimes|date',
-            'estado_interno' => 'sometimes|string|max:50',
-            'observacion'    => 'nullable|string|max:255',
+            // --- Relación y datos base ---
+            'user_id'               => 'sometimes|exists:users,id',
+            'invoice_number'        => 'sometimes|string|max:20|unique:electronic_invoices,invoice_number,' . $electronicInvoice->id,
+            'issue_date'            => 'sometimes|date',
+            'internal_status'       => 'sometimes|string|max:50',
+            'observation'           => 'nullable|string|max:255',
+
+            // --- Campos DIAN / UBL ---
+            'ubl_version'           => 'nullable|string|max:10',
+            'customization_id'      => 'nullable|string|max:50',
+            'profile_id'            => 'nullable|string|max:50',
+            'uuid'                  => 'nullable|string|max:100',
+            'document_currency_code'=> 'nullable|string|max:10',
+            'invoice_type_code'     => 'nullable|string|max:10',
+
+            // --- Totales principales ---
+            'line_extension_amount' => 'nullable|numeric|min:0',
+            'tax_exclusive_amount'  => 'nullable|numeric|min:0',
+            'tax_inclusive_amount'  => 'nullable|numeric|min:0',
+            'payable_amount'        => 'nullable|numeric|min:0',
+
+            // --- Control de estado DIAN ---
+            'estado_dian'           => 'nullable|string|max:50',
+            'sent_at'               => 'nullable|date',
+            'received_at'           => 'nullable|date',
+
+            // --- Información de pago ---
+            'payment_means_code'    => 'nullable|string|max:10',
+            'payment_terms'         => 'nullable|string|max:255',
         ]);
 
         $electronicInvoice->update($request->all());
