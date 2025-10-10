@@ -13,18 +13,20 @@ class ServiceSeeder extends Seeder
     public function run(): void
     {
         $faker = Faker::create('es_CO');
-        // Obtener solo las unidades de medida para servicios
-        $serviceUnits = MeasurementUnit::where('tipo_aplicacion', 'Servicio')->get();
+
+        // Obtener solo las unidades de medida aplicables a servicios
+        $serviceUnits = MeasurementUnit::where('application_type', 'Service')->get();
 
         for ($i = 1; $i <= 10; $i++) {
             DB::table('services')->insert([
-                // Asignar una unidad de medida aleatoria solo de las de servicios
-                'measurement_unit_id' => $serviceUnits->random()->id,
-                'nombre' => $faker->unique()->sentence(2),
-                'descripcion' => $faker->sentence(5),
-                'codigo_servicio' => Str::upper(Str::random(5)),
-                'precio_unitario' => $faker->randomFloat(2, 10000, 1000000),
-                'estado' => 'Activo',
+                'measurement_unit_id' => $serviceUnits->random()->id, // Unidad de medida
+
+                'service_code' => strtoupper(Str::random(8)), // Código interno del servicio (único)
+                'name' => ucfirst($faker->words(2, true)), // Nombre del servicio
+                'description' => $faker->sentence(6), // Descripción del servicio
+                'unit_price' => $faker->randomFloat(2, 20000, 1500000), // Precio unitario
+                'status' => 'Active', // Estado
+
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

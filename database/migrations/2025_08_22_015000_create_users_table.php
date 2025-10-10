@@ -14,26 +14,27 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
     $table->id();
 
-    $table->unsignedBigInteger('company_id')->nullable();
-    $table->unsignedBigInteger('role_id')->nullable();
+    // Relaciones
+            $table->unsignedBigInteger('company_id')->nullable(); // FK a la compañía
+            $table->unsignedBigInteger('role_id')->nullable();    // FK al rol del usuario
 
-    $table->string('nombre', 100);
+            // Datos personales
+            $table->string('first_name', 100); // Nombre del usuario
+            $table->enum('document_type', ['NIT', 'CC', 'CE'])->nullable(); // Tipo de documento
+            $table->string('document_number', 50)->unique(); // Número de documento único
+            $table->string('address', 150)->nullable(); // Dirección
+            $table->string('country', 100)->nullable(); // País de residencia
+            $table->string('description', 250)->nullable(); // Descripción opcional
+            $table->string('password', 255); // Contraseña encriptada
+            $table->string('email', 150)->unique(); // Correo electrónico único
+            $table->string('phone', 20)->nullable(); // Teléfono de contacto
+            $table->enum('status', ['Active', 'Inactive'])->default('Active'); // Estado del usuario
+            $table->timestamp('last_access')->nullable(); // Último acceso al sistema
 
-    // ahora permite NULL
-    $table->enum('tipo_documento', ['NIT', 'CC', 'CE'])->nullable();
-    $table->string('numero_documento', 50)->unique();    // antes 15
-    $table->string('direccion', 150)->nullable();
-    $table->string('pais', 100)->nullable();
-    $table->string('descripcion', 250)->nullable();
-    $table->string('password', 255);
-    $table->string('correo_electronico', 150)->unique(); // antes 100
-    $table->string('telefono', 20)->nullable();
-    $table->enum('estado', ['Activo', 'Inactivo'])->default('Activo');
-    $table->timestamp('ultimo_acceso')->nullable();      // antes NOT NULL
+            $table->rememberToken(); // Token para "recordar sesión"
+            $table->timestamps();    // created_at y updated_at
+        });
 
-    $table->rememberToken();
-    $table->timestamps();
-});
 
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

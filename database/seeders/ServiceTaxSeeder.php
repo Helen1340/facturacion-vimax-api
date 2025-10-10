@@ -14,13 +14,20 @@ class ServiceTaxSeeder extends Seeder
      */
     public function run(): void
     {
-        // Obtener todos los servicios que se han sembrado
+        // 1. Obtener todos los servicios
         $services = Service::all();
-        // Obtener todos los impuestos aplicables a servicios (IVA e INC)
-        $serviceTaxes = Tax::whereIn('tipo', ['IVA', 'INC'])->get();
 
+        // 2. Obtener los impuestos aplicables (IVA e INC)
+        $serviceTaxes = Tax::whereIn('type', ['IVA', 'INC'])->get();
+
+        // 3. Validar que existan datos antes de continuar
+        if ($services->isEmpty() || $serviceTaxes->isEmpty()) {
+            echo "⚠️ No se encontraron servicios o impuestos aplicables (IVA/INC).\n";
+            return;
+        }
+
+        // 4. Asignar un impuesto aleatorio a cada servicio
         foreach ($services as $service) {
-            // Asignar un impuesto aleatorio de la lista de impuestos de servicio
             DB::table('service_tax')->insert([
                 'service_id' => $service->id,
                 'tax_id' => $serviceTaxes->random()->id,
@@ -28,5 +35,7 @@ class ServiceTaxSeeder extends Seeder
                 'updated_at' => now(),
             ]);
         }
+
+        echo "✅ Seeder de relación servicio-impuesto ejecutado correctamente.\n";
     }
 }

@@ -11,11 +11,11 @@ class MeasurementUnit extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre',
-        'estado',
-        'codigo_dian',
-        'descripcion',
-        'tipo_aplicacion',
+        'name',              // Nombre
+        'status',            // Estado
+        'dian_code',         // Código DIAN
+        'description',       // Descripción
+        'application_type',  // Tipo de aplicación
     ];
 
     // Las posibles relaciones que se pueden cargar vía query parameters en la API
@@ -26,9 +26,9 @@ class MeasurementUnit extends Model
         'services.invoiceDetails',
     ];
     // Campos por los que se puede filtrar la consulta
-    protected $allowFilter = ['id', 'nombre', 'estado', 'codigo_dian', 'tipo_aplicacion'];
+    protected $allowFilter = ['id', 'name', 'status', 'dian_code', 'application_type'];
     // Campos por los que se puede ordenar la consulta
-    protected $allowSort = ['id', 'nombre', 'estado', 'codigo_dian'];
+    protected $allowSort = ['id', 'name', 'status', 'dian_code'];
 
 
     // Cardinalidad //

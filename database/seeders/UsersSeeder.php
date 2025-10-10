@@ -12,83 +12,147 @@ class UsersSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create('es_CO'); // Usar Faker para datos de prueba
+        $faker = Faker::create('es_CO');
 
-        $adminRole = Role::where('nombre', 'administrador')->first()->id;
-        $facturadorRole = Role::where('nombre', 'facturador')->first()->id;
-        $contadorRole = Role::where('nombre', 'contador')->first()->id;
-        $clienteRole = Role::where('nombre', 'cliente')->first()->id;
+        // Buscar roles según el nuevo nombre en inglés (role_name)
+        $adminRole = Role::where('role_name', 'administrator')->first()?->id;
+        $billingRole = Role::where('role_name', 'billing')->first()?->id;
+        $accountantRole = Role::where('role_name', 'accountant')->first()?->id;
+        $clientRole = Role::where('role_name', 'client')->first()?->id;
 
         $companies = Company::all();
 
         foreach ($companies as $company) {
-            // Admin, Facturador y Contador (valores de prueba consistentes)
+
+            // Usuarios internos: administradores, facturadores, contadores
             $users = [
                 // 2 administradores
                 [
-                    'company_id' => $company->id, 'role_id' => $adminRole, 'nombre' => 'Admin 1 - ' . $company->razon_social,
-                    'tipo_documento' => 'CC', 'numero_documento' => '1000' . $company->id . '001',
-                    'correo_electronico' => 'admin1_' . $company->id . '@example.com', 'password' => bcrypt('password'),
-                    'direccion' => $faker->streetAddress, 'pais' => 'Colombia', 'telefono' => $faker->phoneNumber,
-                    'descripcion' => 'Administrador principal', 'estado' => 'Activo',
+                    'company_id' => $company->id,
+                    'role_id' => $adminRole,
+                    'first_name' => 'Admin 1 - ' . $company->business_name,
+                    'document_type' => 'CC',
+                    'document_number' => '1000' . $company->id . '001',
+                    'email' => 'admin1_' . $company->id . '@example.com',
+                    'password' => bcrypt('password'),
+                    'address' => $faker->streetAddress,
+                    'country' => 'Colombia',
+                    'phone' => $faker->phoneNumber,
+                    'description' => 'System administrator',
+                    'status' => 'Active',
+                    'last_access' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 [
-                    'company_id' => $company->id, 'role_id' => $adminRole, 'nombre' => 'Admin 2 - ' . $company->razon_social,
-                    'tipo_documento' => 'CC', 'numero_documento' => '1000' . $company->id . '002',
-                    'correo_electronico' => 'admin2_' . $company->id . '@example.com', 'password' => bcrypt('password'),
-                    'direccion' => $faker->streetAddress, 'pais' => 'Colombia', 'telefono' => $faker->phoneNumber,
-                    'descripcion' => 'Administrador secundario', 'estado' => 'Activo',
+                    'company_id' => $company->id,
+                    'role_id' => $adminRole,
+                    'first_name' => 'Admin 2 - ' . $company->business_name,
+                    'document_type' => 'CC',
+                    'document_number' => '1000' . $company->id . '002',
+                    'email' => 'admin2_' . $company->id . '@example.com',
+                    'password' => bcrypt('password'),
+                    'address' => $faker->streetAddress,
+                    'country' => 'Colombia',
+                    'phone' => $faker->phoneNumber,
+                    'description' => 'System administrator',
+                    'status' => 'Active',
+                    'last_access' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 // 3 facturadores
                 [
-                    'company_id' => $company->id, 'role_id' => $facturadorRole, 'nombre' => 'Facturador 1 - ' . $company->razon_social,
-                    'tipo_documento' => 'CC', 'numero_documento' => '2000' . $company->id . '001',
-                    'correo_electronico' => 'facturador1_' . $company->id . '@example.com', 'password' => bcrypt('password'),
-                    'direccion' => $faker->streetAddress, 'pais' => 'Colombia', 'telefono' => $faker->phoneNumber,
-                    'descripcion' => 'Encargado de facturación', 'estado' => 'Activo',
+                    'company_id' => $company->id,
+                    'role_id' => $billingRole,
+                    'first_name' => 'Billing 1 - ' . $company->business_name,
+                    'document_type' => 'CC',
+                    'document_number' => '2000' . $company->id . '001',
+                    'email' => 'billing1_' . $company->id . '@example.com',
+                    'password' => bcrypt('password'),
+                    'address' => $faker->streetAddress,
+                    'country' => 'Colombia',
+                    'phone' => $faker->phoneNumber,
+                    'description' => 'Invoice manager',
+                    'status' => 'Active',
+                    'last_access' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 [
-                    'company_id' => $company->id, 'role_id' => $facturadorRole, 'nombre' => 'Facturador 2 - ' . $company->razon_social,
-                    'tipo_documento' => 'CC', 'numero_documento' => '2000' . $company->id . '002',
-                    'correo_electronico' => 'facturador2_' . $company->id . '@example.com', 'password' => bcrypt('password'),
-                    'direccion' => $faker->streetAddress, 'pais' => 'Colombia', 'telefono' => $faker->phoneNumber,
-                    'descripcion' => 'Encargado de facturación', 'estado' => 'Activo',
+                    'company_id' => $company->id,
+                    'role_id' => $billingRole,
+                    'first_name' => 'Billing 2 - ' . $company->business_name,
+                    'document_type' => 'CC',
+                    'document_number' => '2000' . $company->id . '002',
+                    'email' => 'billing2_' . $company->id . '@example.com',
+                    'password' => bcrypt('password'),
+                    'address' => $faker->streetAddress,
+                    'country' => 'Colombia',
+                    'phone' => $faker->phoneNumber,
+                    'description' => 'Invoice manager',
+                    'status' => 'Active',
+                    'last_access' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 [
-                    'company_id' => $company->id, 'role_id' => $facturadorRole, 'nombre' => 'Facturador 3 - ' . $company->razon_social,
-                    'tipo_documento' => 'CC', 'numero_documento' => '2000' . $company->id . '003',
-                    'correo_electronico' => 'facturador3_' . $company->id . '@example.com', 'password' => bcrypt('password'),
-                    'direccion' => $faker->streetAddress, 'pais' => 'Colombia', 'telefono' => $faker->phoneNumber,
-                    'descripcion' => 'Encargado de facturación', 'estado' => 'Activo',
+                    'company_id' => $company->id,
+                    'role_id' => $billingRole,
+                    'first_name' => 'Billing 3 - ' . $company->business_name,
+                    'document_type' => 'CC',
+                    'document_number' => '2000' . $company->id . '003',
+                    'email' => 'billing3_' . $company->id . '@example.com',
+                    'password' => bcrypt('password'),
+                    'address' => $faker->streetAddress,
+                    'country' => 'Colombia',
+                    'phone' => $faker->phoneNumber,
+                    'description' => 'Invoice manager',
+                    'status' => 'Active',
+                    'last_access' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 // 1 contador
                 [
-                    'company_id' => $company->id, 'role_id' => $contadorRole, 'nombre' => 'Contador - ' . $company->razon_social,
-                    'tipo_documento' => 'CC', 'numero_documento' => '3000' . $company->id . '001',
-                    'correo_electronico' => 'contador_' . $company->id . '@example.com', 'password' => bcrypt('password'),
-                    'direccion' => $faker->streetAddress, 'pais' => 'Colombia', 'telefono' => $faker->phoneNumber,
-                    'descripcion' => 'Encargado de contabilidad', 'estado' => 'Activo',
+                    'company_id' => $company->id,
+                    'role_id' => $accountantRole,
+                    'first_name' => 'Accountant - ' . $company->business_name,
+                    'document_type' => 'CC',
+                    'document_number' => '3000' . $company->id . '001',
+                    'email' => 'accountant_' . $company->id . '@example.com',
+                    'password' => bcrypt('password'),
+                    'address' => $faker->streetAddress,
+                    'country' => 'Colombia',
+                    'phone' => $faker->phoneNumber,
+                    'description' => 'Responsible for accounting and reports',
+                    'status' => 'Active',
+                    'last_access' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
             ];
 
-            // Insertar los usuarios con valores de prueba consistentes
             DB::table('users')->insert($users);
 
-            // Clientes (10 por empresa, con datos aleatorios)
+            // 10 clientes por empresa
             for ($i = 1; $i <= 10; $i++) {
                 DB::table('users')->insert([
                     'company_id' => $company->id,
-                    'role_id' => $clienteRole,
-                    'nombre' => $faker->name,
-                    'tipo_documento' => $faker->randomElement(['CC', 'CE']),
-                    'numero_documento' => $faker->unique()->numerify('##########'),
-                    'correo_electronico' => $faker->unique()->safeEmail,
+                    'role_id' => $clientRole,
+                    'first_name' => $faker->name,
+                    'document_type' => $faker->randomElement(['CC', 'CE']),
+                    'document_number' => $faker->unique()->numerify('##########'),
+                    'email' => $faker->unique()->safeEmail,
                     'password' => bcrypt('password'),
-                    'direccion' => $faker->streetAddress,
-                    'pais' => 'Colombia',
-                    'telefono' => $faker->phoneNumber,
-                    'descripcion' => 'Usuario cliente',
-                    'estado' => 'Activo',
+                    'address' => $faker->streetAddress,
+                    'country' => 'Colombia',
+                    'phone' => $faker->phoneNumber,
+                    'description' => 'Client user',
+                    'status' => 'Active',
+                    'last_access' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
             }
         }

@@ -26,21 +26,21 @@ class CompanyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'razon_social' => 'required|string|max:150',
-            'nit' => 'required|string|max:50|unique:companies,nit',
-            'nombre_comercial' => 'nullable|string|max:150',
-            'direccion' => 'required|string|max:150',
-            'ciudad' => 'required|string|max:100',
-            'departamento' => 'required|string|max:100',
-            'pais' => 'required|string|max:50',
-            'telefono' => 'required|string|max:20',
-            'correo_empresa' => 'required|string|email|max:100|unique:companies,correo_electronico',
-            'regimen' => 'required|string|max:50',
-            'logo_url' => 'nullable|url|max:1000', //  campo opcional
-            'codigo_ciiu' => 'nullable|string|max:10',
-            'representante_nombre' => 'nullable|string|max:150',
-            'representante_tipo_documento' => 'nullable|in:CC,CE,NIT,PAS',
-            'representante_numero_documento' => 'nullable|string|max:20',
+            'company_name' => 'required|string|max:150', // Razón social de la empresa
+            'identification_number' => 'required|string|max:50|unique:companies,nit', // NIT o número de identificación
+            'trade_name' => 'nullable|string|max:150', // Nombre comercial
+            'address' => 'required|string|max:150', // Dirección principal
+            'city' => 'required|string|max:100', // Ciudad o municipio
+            'department' => 'required|string|max:100', // Departamento
+            'country' => 'required|string|max:50', // País
+            'phone' => 'required|string|max:20', // Teléfono de contacto
+            'email' => 'required|string|email|max:100|unique:companies,correo_electronico', // Correo electrónico oficial
+            'tax_regime' => 'required|string|max:50', // Régimen tributario (común, simplificado, etc.)
+            'logo_url' => 'nullable|url|max:1000', // URL del logotipo
+            'ciiu_code' => 'nullable|string|max:10', // Código CIIU de actividad económica
+            'legal_representative_name' => 'nullable|string|max:150', // Nombre del representante legal
+            'legal_representative_document_type' => 'nullable|in:CC,CE,NIT,PAS', // Tipo de documento del representante
+            'legal_representative_document_number' => 'nullable|string|max:20', // Número de documento del representante
 
         ]);
 
@@ -54,22 +54,21 @@ class CompanyController extends Controller
         $company = Company::findOrFail($id);
 
         $request->validate([
-            'razon_social' => 'sometimes|required|string|max:150',
-    'nit' => 'sometimes|required|string|max:50|unique:companies,nit',
-    'nombre_comercial' => 'nullable|string|max:150',
-    'direccion' => 'sometimes|required|string|max:150',
-    'ciudad' => 'sometimes|required|string|max:100',
-    'departamento' => 'sometimes|required|string|max:100',
-    'pais' => 'sometimes|required|string|max:50',
-    'telefono' => 'sometimes|required|string|max:20',
-    'correo_empresa' => 'sometimes|required|string|email|max:100|unique:companies,correo_electronico',
-    'regimen' => 'sometimes|required|string|max:50',
-    'logo_url' => 'nullable|url|max:1000',
-    'codigo_ciiu' => 'nullable|string|max:10',
-    'representante_nombre' => 'sometimes|required|string|max:150',
-    'representante_tipo_documento' => 'sometimes|required|in:CC,CE,NIT,PAS',
-     'representante_numero_documento' => 'sometimes|required|string|max:20',
-
+            'company_name' => 'sometimes|required|string|max:150',
+            'identification_number' => 'sometimes|required|string|max:50|unique:companies,nit,' . $id,
+            'trade_name' => 'nullable|string|max:150',
+            'address' => 'sometimes|required|string|max:150',
+            'city' => 'sometimes|required|string|max:100',
+            'department' => 'sometimes|required|string|max:100',
+            'country' => 'sometimes|required|string|max:50',
+            'phone' => 'sometimes|required|string|max:20',
+            'email' => 'sometimes|required|string|email|max:100|unique:companies,correo_electronico,' . $id,
+            'tax_regime' => 'sometimes|required|string|max:50',
+            'logo_url' => 'nullable|url|max:1000',
+            'ciiu_code' => 'nullable|string|max:10',
+            'legal_representative_name' => 'nullable|string|max:150',
+            'legal_representative_document_type' => 'nullable|in:CC,CE,NIT,PAS',
+            'legal_representative_document_number' => 'nullable|string|max:20',
         ]);
 
         $company->update($request->all());

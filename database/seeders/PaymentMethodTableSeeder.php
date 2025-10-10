@@ -9,36 +9,45 @@ class PaymentMethodTableSeeder extends Seeder
 {
     public function run(): void
     {
+        // 1️⃣ Limpiar la tabla para evitar duplicados (opcional en producción)
+        DB::table('payment_methods')->delete();
+
+        // 2️⃣ Insertar métodos de pago oficiales según la DIAN (Anexo Técnico 1.9)
         DB::table('payment_methods')->insert([
             [
-                'nombre' => 'Efectivo',
-                'codigo_dian' => '10',
-                'descripcion' => 'Pago en efectivo',
-                'created_at' => now(), 'updated_at' => now(),
+                'name' => 'Cash',
+                'dian_code' => '10',
+                'description' => 'Payment in cash',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'nombre' => 'Tarjeta de Crédito',
-                'codigo_dian' => '42',
-                'descripcion' => 'Pago con tarjeta de crédito',
-                'created_at' => now(), 'updated_at' => now(),
+                'name' => 'Credit Card',
+                'dian_code' => '42',
+                'description' => 'Payment using credit card',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'nombre' => 'Tarjeta Débito',
-                'codigo_dian' => '41',
-                'descripcion' => 'Pago con tarjeta débito',
-                'created_at' => now(), 'updated_at' => now(),
+                'name' => 'Debit Card',
+                'dian_code' => '41',
+                'description' => 'Payment using debit card',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'nombre' => 'Transferencia Bancaria',
-                'codigo_dian' => '47',
-                'descripcion' => 'Transferencia a cuenta bancaria',
-                'created_at' => now(), 'updated_at' => now(),
+                'name' => 'Bank Transfer',
+                'dian_code' => '47',
+                'description' => 'Transfer to bank account',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'nombre' => 'Cheque',
-                'codigo_dian' => '21',
-                'descripcion' => 'Pago con cheque',
-                'created_at' => now(), 'updated_at' => now(),
+                'name' => 'Check',
+                'dian_code' => '21',
+                'description' => 'Payment by check',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ]);
     }

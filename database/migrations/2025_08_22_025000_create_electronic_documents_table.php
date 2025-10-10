@@ -22,21 +22,22 @@ return new class extends Migration
             
             $table->foreignId('credit_debit_note_id')->nullable()->constrained('credit_debit_notes')->onDelete('cascade');
 
-            $table->string('cufe', 255)->unique();
-            $table->string('cude', 255);
-            $table->longText('xml_documento');
-            $table->string('estado_dian', 50);
-            $table->date('fecha_validacion');
-            $table->string('firma_digital', 50);
-            $table->string('hash_documento', 150);
-            $table->string('descripcion', 250);
-            $table->enum('ambiente', ['Pruebas', 'Producción'])->default('Pruebas');
-            $table->string('tipo_documento', 50);
-            $table->longText('qr_codigo');
-            $table->longText('cdr');
-            $table->enum('modo_emision', ['normal', 'en contingencia'])->default('normal');
+            // Identifiers / Identificadores únicos
+            $table->string('cufe', 255)->unique(); // Código Único de Factura Electrónica (CUFE)
+            $table->string('cude', 255); // Código Único de Documento Electrónico (CUDE)
+            $table->longText('xml_document'); // XML del documento electrónico
+            $table->string('dian_status', 50); // Estado del documento según la DIAN
+            $table->date('validation_date'); // Fecha de validación del documento
+            $table->string('digital_signature', 50); // Firma digital del documento
+            $table->string('document_hash', 150); // Hash del documento electrónico
+            $table->string('description', 250); // Descripción del documento
+            $table->enum('environment', ['Pruebas', 'Producción'])->default('Pruebas'); // Ambiente de emisión: Pruebas o Producción
+            $table->string('document_type', 50); // Tipo de documento (Factura, Nota Crédito, Nota Débito, etc.)
+            $table->longText('qr_code'); // Código QR del documento
+            $table->longText('cdr'); // Código de Respuesta de la DIAN
+            $table->enum('emission_mode', ['normal', 'en contingencia'])->default('normal'); // Modo de emisión del documento
 
-            $table->timestamps();
+            $table->timestamps(); // created_at y updated_at
         });
     }
 

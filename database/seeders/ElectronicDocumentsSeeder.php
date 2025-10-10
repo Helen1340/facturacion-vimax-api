@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\ElectronicInvoice;
 use App\Models\CreditDebitNote;
+use App\Models\DianNumbering;
 use Faker\Factory as Faker;
 use Illuminate\Support\Str;
 
@@ -14,45 +15,65 @@ class ElectronicDocumentsSeeder extends Seeder
     public function run(): void
     {
         $faker = Faker::create('es_CO');
-        
-        // Get all invoices that were created by a previous seeder
-        $invoices = ElectronicInvoice::all();
 
-        // --- Create Electronic Documents for each Invoice ---
+        // 🔹 Obtener numeraciones DIAN (por si se requiere asociar)
+        $numberings = DianNumbering::all();
+
+        // 🔹 Obtener facturas y notas existentes
+        $invoices = ElectronicInvoice::all();
+        $notes = CreditDebitNote::all();
+
+        // --- Crear documentos electrónicos para facturas ---
         foreach ($invoices as $invoice) {
-            $this->createElectronicDocumentEntry($invoice->id, null, 'Factura Electrónica');
+            $dianNumbering = $numberings->random() ?? null;
+            $this->createElectronicDocumentEntry(
+                $invoice->id,
+                null,
+                $dianNumbering?->id,
+                'Factura Electrónica'
+            );
         }
 
-        // --- Create Electronic Documents for each Credit/Debit Note ---
-        $notes = CreditDebitNote::all();
+        // --- Crear documentos electrónicos para notas crédito/débito ---
         foreach ($notes as $note) {
-            $this->createElectronicDocumentEntry($note->electronic_invoice_id, $note->id, "Nota de " . ucfirst($note->tipo_documento));
+            $dianNumbering = $numberings->random() ?? null;
+            $this->createElectronicDocumentEntry(
+                $note->electronic_invoice_id,
+                $note->id,
+                $dianNumbering?->id,
+                "Nota de " . ucfirst($note->document_type)
+            );
         }
     }
 
-    private function createElectronicDocumentEntry($invoiceId, $noteId, $docType)
+    private function createElectronicDocumentEntry($invoiceId, $noteId, $dianNumberingId, $docType)
     {
         $faker = Faker::create('es_CO');
         $cufe = Str::uuid()->toString();
-        $xmlContent = '<DocumentoXML><CUFE>' . $cufe . '</CUFE></DocumentoXML>';
-        $qrCode = "https://dian.gov.co/qr/" . $cufe;
+        $cude = Str::uuid()->toString();
+
+        // Simular contenido XML y CDR
+        $xmlContent = '<ElectronicDocument><CUFE>' . $cufe . '</CUFE></ElectronicDocument>';
+        $cdrContent = '<CDR><Estado>Aprobado</Estado><CUFE>' . $cufe . '</CUFE></CDR>';
+        $qrCode = "https://catalogo-vpfe.dian.gov.co/document/" . $cufe;
 
         DB::table('electronic_documents')->insert([
             'electronic_invoice_id' => $invoiceId,
             'credit_debit_note_id' => $noteId,
+            'dian_numbering_id' => $dianNumberingId,
             'cufe' => $cufe,
-            'cude' => Str::uuid()->toString(),
-            'xml_documento' => $xmlContent,
-            'estado_dian' => $faker->randomElement(['Aprobado', 'Rechazado']),
-            'fecha_validacion' => now(),
-            'firma_digital' => Str::random(50),
-            'hash_documento' => Str::random(150),
-            'descripcion' => "Documento electrónico para " . $docType,
-            'ambiente' => 'Pruebas',
-            'tipo_documento' => $docType,
-            'qr_codigo' => $qrCode,
-            'cdr' => '<CDR><Estado>Aprobado</Estado></CDR>',
-            'modo_emision' => 'normal',
+            'cude' => $cude,
+            'xml_document' => $xmlContent,
+            'dian_status' => $faker->randomElement(['Aprobado', 'Rechazado', 'En Proceso']),
+            'validation_date' => now(),
+            'digital_signature' => Str::random(50),
+            'document_hash' => hash('sha256', $xmlContent),
+            'description' => "Documento electrónico generado automáticamente para " . $docType,
+            'environment' => $faker->randomElement(['Pruebas', 'Producción']),
+            'document_type' => $docType,
+            'qr_code' => $qrCode,
+            'cdr' => $cdrContent,
+            'emission_mode' => $faker->randomElement(['normal', 'en contingencia']),
             'created_at' => now(),
             'updated_at' => now(),
         ]);

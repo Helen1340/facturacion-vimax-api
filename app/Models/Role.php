@@ -12,9 +12,9 @@ class Role extends Model
     protected $table = 'roles';
 
     protected $fillable = [
-        'users',
-        'users.company',
-        'users.electronicInvoices',
+        'role_name',      // Nombre del rol
+        'description',    // Descripción del rol
+        'status',         // Estado del rol (activo/inactivo)
     ];
 
     protected $allowIncluded = [
@@ -23,8 +23,14 @@ class Role extends Model
         'users.electronicInvoices', //incluir la relacion de la tabla users con la de company "scopes anidados"
     ];
 
-    protected $allowFilter = [ 'id', 'nombre', 'descripcion', 'estado'];
-    protected $allowSort = ['id', 'nombre', 'descripcion', 'estado'];
+    protected $allowFilter = [ 'id',
+        'role_name',
+        'description',
+        'status', ];
+    protected $allowSort = ['id',
+        'role_name',
+        'description',
+        'status', ];
 
     public function users()
     {

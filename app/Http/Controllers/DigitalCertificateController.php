@@ -23,14 +23,19 @@ class DigitalCertificateController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre_certificado' => 'required|string|max:255',
-            'ruta_certificado'   => 'required|string',
-            'numero_serial'      => 'required|string|max:100',
-            'contrasena'         => 'required|string|max:150',
-            'fecha_inicio'       => 'required|date',
-            'fecha_fin'          => 'required|date|after_or_equal:fecha_inicio',
-            'estado'             => 'required|in:Vigente,Vencido,Revocado',
-            'entidad_emisora'    => 'required|string|max:100',
+            'company_id'            => 'required|exists:companies,id', // ID de la compañía propietaria del certificado
+            'certificate_name'      => 'required|string|max:255',       // Nombre del certificado
+            'certificate_path'      => 'required|string',               // Ruta del archivo del certificado
+            'serial_number'         => 'required|string|max:100',       // Número de serie del certificado
+            'password'              => 'required|string|max:150',       // Contraseña del certificado
+            'start_date'            => 'required|date',                 // Fecha de inicio de vigencia
+            'end_date'              => 'required|date|after_or_equal:start_date', // Fecha de fin de vigencia
+            'status'                => 'required|in:Vigente,Vencido,Revocado', // Estado actual del certificado
+            'issuer'                => 'required|string|max:100',       // Entidad emisora del certificado
+            'certificate_type'      => 'sometimes|in:Producción,Pruebas', // Tipo de certificado (producción o pruebas)
+            'signature_algorithm'   => 'sometimes|string|max:50',       // Algoritmo de firma digital
+            'uuid'                  => 'sometimes|string|max:100',      // UUID del certificado (opcional)
+            'description'           => 'sometimes|string|max:255',      // Descripción opcional del certificado
         ]);
 
         $digital_certificate = DigitalCertificate::create($request->all());
@@ -52,14 +57,19 @@ class DigitalCertificateController extends Controller
     public function update(Request $request, DigitalCertificate $digitalCertificate)
     {
         $request->validate([
-            'nombre_certificado' => 'sometimes|required|string|max:225',
-            'ruta_certificado'   => 'sometimes|required|string',
-            'numero_serial'      => 'sometimes|required|string|max:100',
-            'contrasena'         => 'sometimes|required|string|max:150',
-            'fecha_inicio'       => 'sometimes|required|date',
-            'fecha_fin'          => 'sometimes|required|date|after_or_equal:fecha_inicio',
-            'estado'             => 'sometimes|required|in:Vigente,Vencido,Revocado',
-            'entidad_emisora'    => 'sometimes|required|string|max:100',
+            'company_id'            => 'sometimes|exists:companies,id', 
+            'certificate_name'      => 'sometimes|required|string|max:255',
+            'certificate_path'      => 'sometimes|required|string',
+            'serial_number'         => 'sometimes|required|string|max:100',
+            'password'              => 'sometimes|required|string|max:150',
+            'start_date'            => 'sometimes|required|date',
+            'end_date'              => 'sometimes|required|date|after_or_equal:start_date',
+            'status'                => 'sometimes|required|in:Vigente,Vencido,Revocado',
+            'issuer'                => 'sometimes|required|string|max:100',
+            'certificate_type'      => 'sometimes|in:Producción,Pruebas',
+            'signature_algorithm'   => 'sometimes|string|max:50',
+            'uuid'                  => 'sometimes|string|max:100',
+            'description'           => 'sometimes|string|max:255',
         ]);
 
         // Actualiza solo los campos que vienen en el request

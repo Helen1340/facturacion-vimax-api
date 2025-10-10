@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\InvoiceDetail;
 use App\Models\Product;
 use App\Models\Service;
@@ -8,116 +9,119 @@ use Illuminate\Http\Request;
 
 class InvoiceDetailController extends Controller
 {
-    
+    /**
+     * Listar todos los detalles de factura.
+     */
     public function index()
     {
-        $details = InvoiceDetail::with(['item','electronicInvoice'])->get();
+        $details = InvoiceDetail::with(['item', 'electronicInvoice'])->get();
         return response()->json($details);
     }
 
-    
+    /**
+     * Registrar un nuevo detalle de factura.
+     */
     public function store(Request $request)
     {
         $data = $request->validate([
             'electronic_invoice_id' => 'required|exists:electronic_invoices,id',
             'item_type' => 'required|string|in:product,service',
-            'item_id' => 'nullable|integer',
-            'cantidad' => 'required|integer|min:1',
-            'precio_unitario' => 'nullable|numeric|min:0',
-            'descripcion' => 'nullable|string',
-            'descuento' => 'nullable|numeric|min:0',
+            'item_id' => 'required|integer', // ahora obligatorio
+            'description' => 'nullable|string',
+            'quantity' => 'required|numeric|min:1',
+            'unit_price' => 'nullable|numeric|min:0',
+            'discount_amount' => 'nullable|numeric|min:0',
+            'tax_amount' => 'nullable|numeric|min:0',
         ]);
 
-        // Mapear short name a clase
+        // Mapear tipo de ítem al modelo correspondiente
         $map = [
             'product' => Product::class,
             'service' => Service::class,
         ];
 
         $itemClass = $map[$data['item_type']];
+        $item = $itemClass::find($data['item_id']);
 
-        // Si no proveen item_id, crear uno nuevo
-        if (empty($data['item_id'])) {
-            // Podemos crear un item básico
-            $item = $itemClass::factory()->create([
-                'name' => $data['descripcion'] ?? 'Item creado por API',
-            ]);
-        } else {
-            $item = $itemClass::find($data['item_id']);
-            if (!$item) {
-                return response()->json(['message' => 'Item no encontrado'], 404);
-            }
+        if (!$item) {
+            return response()->json(['message' => 'El ítem especificado no existe.'], 404);
         }
 
-        // Precio unitario: si no viene lo tomamos del item (asumiendo columna precio_unitario o price)
-        $precio_unitario = $data['precio_unitario'] ?? ($item->precio_unitario ?? ($item->price ?? 0));
-        $cantidad = $data['cantidad'];
-        $valor_total = round($precio_unitario * $cantidad, 2);
+        // Determinar precio unitario
+        $unit_price = $data['unit_price'] ?? ($item->unit_price ?? ($item->price ?? 0));
+        $quantity = $data['quantity'];
+        $discount = $data['discount_amount'] ?? 0;
+        $tax = $data['tax_amount'] ?? 0;
 
+        // Calcular totales conforme al estándar UBL 2.1
+        $line_extension_amount = round($unit_price * $quantity, 2) - $discount;
+        $total_line_amount = $line_extension_amount + $tax;
+
+        // Crear el detalle
         $detail = InvoiceDetail::create([
             'electronic_invoice_id' => $data['electronic_invoice_id'],
-            'descripcion' => $data['descripcion'] ?? $item->name ?? null,
-            'cantidad' => $cantidad,
-            'precio_unitario' => $precio_unitario,
-            'valor_total' => $valor_total,
-            'subtotal' => $valor_total,
-            'descuento' => $data['descuento'] ?? null,
-            'impuestos_aplicados' => null,
-            'valor_impuesto' => null,
             'item_id' => $item->id,
             'item_type' => $itemClass,
+            'description' => $data['description'] ?? $item->name,
+            'quantity' => $quantity,
+            'unit_price' => $unit_price,
+            'line_extension_amount' => $line_extension_amount,
+            'discount_amount' => $discount,
+            'tax_amount' => $tax,
+            'total_line_amount' => $total_line_amount,
         ]);
 
-        return response()->json($detail->load('item'), 201);
+        return response()->json($detail->load(['item', 'electronicInvoice']), 201);
     }
 
-
+    /**
+     * Mostrar un detalle específico.
+     */
     public function show($id)
     {
-        $detail = InvoiceDetail::with(['item','electronicInvoice'])->findOrFail($id);
+        $detail = InvoiceDetail::with(['item', 'electronicInvoice'])->findOrFail($id);
         return response()->json($detail);
     }
 
-    
+    /**
+     * Actualizar un detalle existente.
+     */
     public function update(Request $request, $id)
     {
         $detail = InvoiceDetail::findOrFail($id);
 
         $data = $request->validate([
-            'cantidad' => 'nullable|integer|min:1',
-            'precio_unitario' => 'nullable|numeric|min:0',
-            'descripcion' => 'nullable|string',
-            'descuento' => 'nullable|numeric|min:0',
+            'description' => 'nullable|string',
+            'quantity' => 'nullable|numeric|min:1',
+            'unit_price' => 'nullable|numeric|min:0',
+            'discount_amount' => 'nullable|numeric|min:0',
+            'tax_amount' => 'nullable|numeric|min:0',
         ]);
 
-        if (isset($data['precio_unitario'])) {
-            $detail->precio_unitario = $data['precio_unitario'];
-        }
-        if (isset($data['cantidad'])) {
-            $detail->cantidad = $data['cantidad'];
-        }
-        if (isset($data['descripcion'])) {
-            $detail->descripcion = $data['descripcion'];
-        }
-        if (isset($data['descuento'])) {
-            $detail->descuento = $data['descuento'];
-        }
+        // Actualización de campos
+        if (isset($data['description'])) $detail->description = $data['description'];
+        if (isset($data['quantity'])) $detail->quantity = $data['quantity'];
+        if (isset($data['unit_price'])) $detail->unit_price = $data['unit_price'];
+        if (isset($data['discount_amount'])) $detail->discount_amount = $data['discount_amount'];
+        if (isset($data['tax_amount'])) $detail->tax_amount = $data['tax_amount'];
 
-        // recalcular valor_total/subtotal
-        $detail->valor_total = round($detail->precio_unitario * $detail->cantidad, 2);
-        $detail->subtotal = $detail->valor_total;
+        // Recalcular totales UBL
+        $detail->line_extension_amount = round($detail->unit_price * $detail->quantity, 2) - ($detail->discount_amount ?? 0);
+        $detail->total_line_amount = $detail->line_extension_amount + ($detail->tax_amount ?? 0);
 
         $detail->save();
 
-        return response()->json($detail->load('item'));
+        return response()->json($detail->load(['item', 'electronicInvoice']));
     }
 
-    
+    /**
+     * Eliminar un detalle.
+     */
     public function destroy($id)
     {
         $detail = InvoiceDetail::findOrFail($id);
         $detail->delete();
-        return response()->json(['message' => 'Detalle eliminado']);
-    }
 
+        return response()->json(['message' => 'Detalle de factura eliminado correctamente.']);
+    }
 }

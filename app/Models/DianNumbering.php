@@ -10,16 +10,19 @@ class DianNumbering extends Model
 use HasFactory;
 
     protected $fillable = [
-        'company_id',
-        'tipo_documento',
-        'prefijo',
-        'numero_inicio',
-        'numero_fin',
-        'fecha_resolucion',
-        'numero_resolucion',
-        'fecha_inicio',
-        'fecha_fin',
-        'estado_actual',
+        'company_id',           // Id de la compañía
+        'document_type',        // Tipo de documento: Factura, NotaCredito, NotaDebito
+        'document_type_code',   // Código oficial del tipo de documento DIAN
+        'prefix',               // Prefijo de numeración
+        'start_number',         // Número inicial autorizado
+        'end_number',           // Número final autorizado
+        'resolution_date',      // Fecha de resolución DIAN
+        'resolution_number',    // Número de resolución DIAN
+        'validity_start_date',  // Fecha inicio de vigencia
+        'validity_end_date',    // Fecha fin de vigencia
+        'current_status',       // Estado actual de la numeración: Activo/Inactivo
+        'environment',          // Ambiente de uso: Pruebas/Producción
+        'description',          // Descripción opcional para referencia interna
     ];
 
 
@@ -32,8 +35,21 @@ use HasFactory;
     ];
     // Permite incluir la relaciónes
 
-    protected $allowFilter = [ 'tipo_documento', 'prefijo', 'numero_resolucion', 'estado_actual'];
-    protected $allowSort = [ 'tipo_documento', 'prefijo', 'fecha_resolucion', 'fecha_inicio', 'fecha_fin', 'estado_actual'];
+    protected $allowFilter = [ 'document_type',
+        'document_type_code',
+        'prefix',
+        'resolution_number',
+        'current_status',
+        'environment', ];
+    protected $allowSort = [ 'document_type',
+        'prefix',
+        'start_number',
+        'end_number',
+        'resolution_date',
+        'validity_start_date',
+        'validity_end_date',
+        'current_status',
+        'environment',];
 
     // Cardinalidad: Un numero de numeración DIAN (1) puede tener muchos Documentos Electrónicos (M)
     public function electronicDocuments()

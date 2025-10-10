@@ -19,13 +19,13 @@ return new class extends Migration
             $table->foreign('electronic_invoice_id')->references('id')->on('electronic_invoices')->onDelete('cascade');
 
         
-            $table->string('motivo', 250); 
-            $table->enum('tipo_documento', ['debito', 'credito']); // Enum para tipo de documento
-            $table->string('descripcion', 250); // Varchar(250)
-            $table->string('numero_nota', 50); // Varchar(50)
-            $table->enum('estado', ['aceptada', 'rechazada', 'pendiente']); // Enum para estado
-            $table->date('fecha_emision'); // Date
-            $table->decimal('valor_total', 18, 2); // Decimal(18,2)
+            // Campos específicos de la nota
+            $table->string('reason', 250); // Motivo de la nota crédito/débito
+            $table->enum('note_type', ['debit', 'credit']); // Tipo de documento: débito o crédito
+            $table->string('note_number', 50); // Número de la nota
+            $table->enum('status', ['accepted', 'rejected', 'pending']); // Estado de la nota
+            $table->date('issue_date'); // Fecha de emisión
+            $table->decimal('total_amount', 18, 2); // Valor total de la nota
 
             $table->timestamps();
         });

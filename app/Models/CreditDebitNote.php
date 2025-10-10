@@ -10,14 +10,14 @@ class CreditDebitNote extends Model
     use HasFactory;
 
     protected $fillable = [
-        'electronic_invoice_id',
-        'motivo',
-        'tipo_documento',
-        'descripcion',
-        'numero_nota',
-        'estado',
-        'fecha_emision',
-        'valor_total',
+        'electronic_invoice_id', // FK a la factura electrónica asociada
+        'reason',                // Motivo de la nota crédito/débito
+        'note_type',             // Tipo de nota: 'debit' o 'credit'
+        'description',           // Descripción adicional
+        'note_number',           // Número de la nota
+        'status',                // Estado de la nota: 'accepted', 'rejected', 'pending'
+        'issue_date',            // Fecha de emisión
+        'total_amount',          // Valor total de la nota
     ];
 
     // Listas blancas
@@ -26,8 +26,8 @@ class CreditDebitNote extends Model
         'electronicInvoice.user',
         'electronicDocuments',
     ];
-    protected $allowFilter = ['motivo', 'tipo_documento', 'descripcion', 'numero_nota', 'estado'];
-    protected $allowSort = ['motivo', 'tipo_documento', 'numero_nota', 'fecha_emision', 'valor_total', 'estado'];
+    protected $allowFilter = ['reason', 'note_type', 'description', 'note_number', 'status'];
+    protected $allowSort = ['reason', 'note_type', 'note_number', 'issue_date', 'total_amount', 'status'];
 
 
     // Cardinalidad: Una Nota Crédito/Débito (1) puede tener muchos Documentos Electrónicos (M)

@@ -14,14 +14,15 @@ class CreateMeasurementUnitsTable extends Migration
     public function up()
     {
         Schema::create('measurement_units', function (Blueprint $table) {
-            $table->bigIncrements('id'); // PK
-            $table->string('nombre', 100);
-            $table->enum('estado', ['Activo', 'Inactivo'])->default('Activo');
-            $table->string('codigo_dian', 10)->unique(); // Código único de la DIAN
-            $table->text('descripcion')->nullable();
-            $table->enum('tipo_aplicacion', ['Producto', 'Servicio']);
 
-            $table->timestamps(); // created_at y updated_at
+            $table->id(); // Identificador
+            $table->string('name', 100); // Nombre
+            $table->enum('status', ['Active', 'Inactive'])->default('Active'); // Estado
+            $table->string('dian_code', 10)->unique(); // Código DIAN
+            $table->text('description')->nullable(); // Descripción
+            $table->enum('application_type', ['Product', 'Service']); // Tipo de aplicación
+            $table->timestamps(); // Fechas de creación y actualización
+
         });
     }
 

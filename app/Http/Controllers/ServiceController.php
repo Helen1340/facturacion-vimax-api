@@ -31,12 +31,12 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'measurement_unit_id' => ['required', 'integer'], // FK not enforced yet
-            'nombre' => ['required', 'string', 'max:150'],
-            'descripcion' => ['nullable', 'string', 'max:150'],
-            'codigo_servicio' => ['required', 'string', 'max:50', 'unique:services,codigo_servicio'],
-            'precio_unitario' => ['required', 'numeric', 'min:0'],
-            'estado' => ['required', 'in:Activo,Inactivo'],
+            'measurement_unit_id' => ['required', 'integer'], // unidad de medida (FK)
+            'name'                => ['required', 'string', 'max:150'], // nombre del servicio
+            'description'         => ['nullable', 'string', 'max:150'], // descripción
+            'service_code'        => ['required', 'string', 'max:50', 'unique:services,service_code'], // código del servicio
+            'unit_price'          => ['required', 'numeric', 'min:0'], // precio unitario
+            'status'              => ['required', 'in:Active,Inactive'], // estado
         ]);
 
         $service = Service::create($validated);
@@ -59,12 +59,12 @@ class ServiceController extends Controller
     public function update(Request $request, Service $service)
     {
         $validated = $request->validate([
-            'measurement_unit_id' => ['sometimes', 'integer'],
-            'nombre' => ['sometimes', 'string', 'max:150'],
-            'descripcion' => ['sometimes', 'string', 'max:150'],
-            'codigo_servicio' => ['sometimes', 'string', 'max:50', 'unique:services,codigo_servicio,' . $service->id],
-            'precio_unitario' => ['sometimes', 'numeric', 'min:0'],
-            'estado' => ['sometimes', 'in:Activo,Inactivo'],
+            'measurement_unit_id' => ['sometimes', 'integer'], // unidad de medida (FK)
+            'name'                => ['sometimes', 'string', 'max:150'], // nombre del servicio
+            'description'         => ['sometimes', 'string', 'max:150'], // descripción
+            'service_code'        => ['sometimes', 'string', 'max:50', 'unique:services,service_code,' . $service->id], // código del servicio
+            'unit_price'          => ['sometimes', 'numeric', 'min:0'], // precio unitario
+            'status'              => ['sometimes', 'in:Active,Inactive'], // estado
         ]);
 
         $service->update($validated);

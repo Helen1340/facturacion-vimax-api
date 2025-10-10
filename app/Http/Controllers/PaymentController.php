@@ -18,12 +18,12 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
     $request->validate([
-        'electronic_invoice_id' => 'required|exists:electronic_invoices,id',
-        'payment_method_id'     => 'required|exists:payment_methods,id',
-        'fecha_pago'            => 'required|date',
-        'valor_pagado'          => 'required|numeric|min:0',
-        'moneda'                => 'required|string|max:3',
-        'referencia_pago'       => 'nullable|string|max:255',
+        'electronic_invoice_id' => 'required|exists:electronic_invoices,id', // FK factura
+            'payment_method_id'     => 'required|exists:payment_methods,id',     // FK método
+            'payment_date'          => 'required|date',                         // fecha de pago
+            'amount_paid'           => 'required|numeric|min:0',                // valor pagado
+            'currency'              => 'required|string|max:3',                 // moneda
+            'payment_reference'     => 'nullable|string|max:255',               // referencia
     ]);
 
         $payment = Payment::create($request->all());
@@ -41,12 +41,12 @@ class PaymentController extends Controller
     public function update(Request $request, Payment $payment)
     {
         $request->validate([
-            'electronic_Invoice_id' => 'sometimes|exists:electronic_invoices,identificacion',
-            'payment_Method_id'     => 'sometimes|exists:payment_methods,identificacion',
-            'fecha_pago'           => 'sometimes|date',
-            'valor_pagado'         => 'sometimes|numeric|min:0',
-            'moneda'               => 'sometimes|string|max:3',
-            'referencia_pago'      => 'nullable|string|max:255',
+            'electronic_invoice_id' => 'sometimes|exists:electronic_invoices,id',
+            'payment_method_id'     => 'sometimes|exists:payment_methods,id',
+            'payment_date'          => 'sometimes|date',
+            'amount_paid'           => 'sometimes|numeric|min:0',
+            'currency'              => 'sometimes|string|max:3',
+            'payment_reference'     => 'nullable|string|max:255',
         ]);
 
         $payment->update($request->only(array_keys($request->all())));

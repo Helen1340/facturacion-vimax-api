@@ -18,17 +18,17 @@ return new class extends Migration
 
             // Llaves foráneas
             $table->unsignedBigInteger('electronic_invoice_id'); // FK hacia factura electrónica
-             $table->unsignedBigInteger('payment_method_id'); // FK hacia método de pago
+            $table->unsignedBigInteger('payment_method_id'); // FK hacia método de pago
 
             // Relaciones (foreign keys)
             $table->foreign('electronic_invoice_id')->references('id')->on('electronic_invoices')->onDelete('cascade');
             $table->foreign('payment_method_id')->references('id')->on('payment_methods')->onDelete('cascade');
 
 
-            $table->date('fecha_pago');
-            $table->decimal('valor_pagado', 15, 2);
-            $table->string('moneda', 3);
-            $table->string('referencia_pago', 255);
+            $table->date('payment_date'); // Fecha de pago
+            $table->decimal('amount_paid', 15, 2); // Valor pagado
+            $table->string('currency', 3); // Moneda
+            $table->string('payment_reference', 255); // Referencia de pago
             $table->timestamps();
         });
     }

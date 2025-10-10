@@ -13,21 +13,25 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('razon_social',150);
-            $table->string('nit', 50)->unique();
-            $table->string('nombre_comercial', 150)->nullable();
-            $table->string('direccion', 150);
-            $table->string('ciudad', 100);
-            $table->string('departamento', 100);
-            $table->string('pais', 50);
-            $table->string('telefono', 20);
-            $table->string('correo_electronico', 100)->unique();
-            $table->string('regimen', 50);
-            $table->text('logo_url')->nullable();
-            $table->string('codigo_ciiu', 10)->nullable();
-            $table->string('representante_nombre', 150)->nullable();
-            $table->enum('representante_tipo_documento', ['CC', 'CE', 'NIT', 'PAS'])->nullable();
-            $table->string('representante_numero_documento', 20)->index()->nullable();
+           
+            $table->string('business_name', 150); // Razón social de la empresa
+            $table->string('nit', 50)->unique();  // NIT de la empresa (obligatorio)
+            $table->string('trade_name', 150)->nullable(); // Nombre comercial de la empresa
+            $table->string('address', 150); // Dirección física de la empresa
+            $table->string('city', 100); // Ciudad donde se encuentra la empresa
+            $table->string('department', 100); // Departamento donde se encuentra la empresa
+            $table->string('country', 50); // País donde se encuentra la empresa
+            $table->string('phone', 20);  // Teléfono de contacto de la empresa
+            $table->string('email', 100)->unique();  // Correo electrónico de la empresa
+            $table->string('tax_regime', 50); // Régimen tributario de la empresa
+            $table->text('logo_url')->nullable(); // URL del logo de la empresa
+            $table->string('ciiu_code', 10)->nullable(); // Código CIIU de la actividad económica principal
+            $table->string('legal_representative_name', 150)->nullable(); // Nombre del representante legal
+            // Tipo de documento del representante legal
+            $table->enum('legal_representative_document_type', ['CC', 'CE', 'NIT', 'PAS'])->nullable();
+            // Número de documento del representante legal
+            $table->string('legal_representative_document_number', 20)->index()->nullable();
+
             $table->timestamps();
         });
     }

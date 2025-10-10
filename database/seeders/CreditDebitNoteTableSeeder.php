@@ -14,38 +14,43 @@ class CreditDebitNoteTableSeeder extends Seeder
         $companies = Company::all();
 
         foreach ($companies as $company) {
-            // Obtener dos facturas de esta empresa para crear las notas
+            // Obtener hasta dos facturas asociadas a esta compañía
             $invoices = ElectronicInvoice::whereHas('user', function ($query) use ($company) {
                 $query->where('company_id', $company->id);
             })->inRandomOrder()->take(2)->get();
-            
+
             if ($invoices->count() >= 2) {
-                // Nota de crédito para la primera factura seleccionada
+
+                /** ==========================
+                 * Nota de CRÉDITO (credit note)
+                 * ===========================*/
                 $invoice1 = $invoices->first();
+
                 DB::table('credit_debit_notes')->insert([
-                    'electronic_invoice_id' => $invoice1->id,
-                    'motivo' => 'Anulación de la factura',
-                    'tipo_documento' => 'credito',
-                    'descripcion' => 'Anulación total del valor de la factura por error en el registro.',
-                    'numero_nota' => 'NC-' . $invoice1->numero_factura,
-                    'estado' => 'aceptada',
-                    'fecha_emision' => now(),
-                    'valor_total' => $invoice1->total_factura,
+                    'electronic_invoice_id' => $invoice1->id,  // Relación con la factura electrónica
+                    'reason' => 'Invoice cancellation due to registration error', // Motivo de la nota
+                    'note_type' => 'credit',  // Tipo de nota: crédito
+                    'note_number' => 'CN-' . $invoice1->invoice_number, // Número de la nota
+                    'status' => 'accepted',  // Estado actual
+                    'issue_date' => now(),  // Fecha de emisión
+                    'total_amount' => $invoice1->payable_amount ?? 0,  // Valor total corregido
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
 
-                // Nota de débito para la segunda factura seleccionada
+                /** ==========================
+                 * Nota de DÉBITO (debit note)
+                 * ===========================*/
                 $invoice2 = $invoices->last();
+
                 DB::table('credit_debit_notes')->insert([
                     'electronic_invoice_id' => $invoice2->id,
-                    'motivo' => 'Ajuste por recargo',
-                    'tipo_documento' => 'debito',
-                    'descripcion' => 'Ajuste por costos adicionales de envío no incluidos en el valor original.',
-                    'numero_nota' => 'ND-' . $invoice2->numero_factura,
-                    'estado' => 'aceptada',
-                    'fecha_emision' => now(),
-                    'valor_total' => 50000.00, // Ajuste manual
+                    'reason' => 'Adjustment for shipping surcharge', // Ajuste por recargo de envío
+                    'note_type' => 'debit',
+                    'note_number' => 'DN-' . $invoice2->invoice_number,
+                    'status' => 'accepted',
+                    'issue_date' => now(),
+                    'total_amount' => 50000.00, // Monto del ajuste
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);

@@ -12,12 +12,12 @@ class Payment extends Model
 
     // Campos que se pueden asignar masivamente
 protected $fillable = [
-        'electronic_invoice_id',
-        'payment_method_id',
-        'fecha_pago',
-        'valor_pagado',
-        'moneda',
-        'referencia_pago',
+        'electronic_invoice_id', // Factura electrónica
+        'payment_method_id',     // Método de pago
+        'payment_date',          // Fecha de pago
+        'amount_paid',           // Valor pagado
+        'currency',              // Moneda
+        'payment_reference',     // Referencia de pago
 ];
 
 
@@ -28,9 +28,9 @@ protected $fillable = [
         'paymentMethod',
     ];
     // Campos por los que se puede filtrar la consulta
-    protected $allowFilter = ['fecha_pago', 'valor_pagado', 'moneda'];
+    protected $allowFilter = ['payment_date', 'amount_paid', 'currency'];
     // Campos por los que se puede ordenar la consulta
-    protected $allowSort = ['fecha_pago', 'valor_pagado'];
+    protected $allowSort = ['payment_date', 'amount_paid'];
 
     // CARDINALIDAD //
 

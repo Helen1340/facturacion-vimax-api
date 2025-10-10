@@ -10,7 +10,17 @@ class Tax extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'descripcion', 'tipo', 'porcentaje_base', 'estado'];
+    protected $fillable = ['tax_code',        // Código único del tributo según DIAN
+        'name',            // Nombre del tributo
+        'description',     // Descripción del tributo
+        'type',            // Tipo de tributo: impuesto, retención, contribución, etc.
+        'percentage',      // Porcentaje aplicado sobre la base
+        'fixed_value',     // Valor fijo si aplica en lugar de porcentaje
+        'application_type',// Tipo de aplicación: Porcentaje, ValorFijo, Retencion
+        'min_value',       // Valor mínimo aplicable (opcional)
+        'max_value',       // Valor máximo aplicable (opcional)
+        'status',          // Estado del tributo: Activo o Inactivo
+        ];
 
     // Las posibles relaciones (includes) que se pueden cargar
     // a través de query parameters en la API
@@ -22,10 +32,18 @@ class Tax extends Model
     ];
 
     // Los campos por los que se puede filtrar la consulta
-    protected $allowFilter = ['nombre', 'tipo', 'estado'];
+    protected $allowFilter = ['tax_code',
+        'name',
+        'type',
+        'status',];
 
     // Los campos por los que se puede ordenar la consulta
-    protected $allowSort = ['nombre', 'tipo', 'porcentaje_base', 'estado'];
+    protected $allowSort = ['tax_code',
+        'name',
+        'type',
+        'percentage',
+        'fixed_value',
+        'status',];
 
     // CARDINALIDAD //
 
