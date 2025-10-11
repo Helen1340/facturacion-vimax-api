@@ -16,6 +16,7 @@ class DianNumberingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'company_id'           => 'required|exists:companies,id',                // ID de la compañía
             'document_type'        => 'required|in:Factura,NotaCredito,NotaDebito', // Tipo de documento DIAN
             'document_type_code'   => 'nullable|string|max:10',                       // Código oficial DIAN
             'prefix'               => 'required|string|max:10',                       // Prefijo de numeración
@@ -43,18 +44,19 @@ class DianNumberingController extends Controller
     public function update(Request $request, DianNumbering $dianNumbering)
     {
     $request->validate([
-         'document_type'        => 'sometimes|in:Factura,NotaCredito,NotaDebito',
-            'document_type_code'   => 'sometimes|string|max:10',
-            'prefix'               => 'sometimes|string|max:10',
-            'start_number'         => 'sometimes|numeric|min:0',
-            'end_number'           => 'sometimes|numeric|min:' . ($request->input('start_number') ?? 0),
-            'resolution_date'      => 'sometimes|date',
-            'resolution_number'    => 'sometimes|string|max:50',
-            'validity_start_date'  => 'sometimes|date',
-            'validity_end_date'    => 'sometimes|date|after_or_equal:validity_start_date',
-            'current_status'       => 'sometimes|in:Activo,Inactivo',
-            'environment'          => 'sometimes|in:Pruebas,Producción',
-            'description'          => 'sometimes|string|max:255',
+        'company_id'           => 'sometimes|exists:companies,id',                // ID de la compañía
+        'document_type'        => 'sometimes|in:Factura,NotaCredito,NotaDebito',
+        'document_type_code'   => 'sometimes|string|max:10',
+        'prefix'               => 'sometimes|string|max:10',
+        'start_number'         => 'sometimes|numeric|min:0',
+        'end_number'           => 'sometimes|numeric|min:' . ($request->input('start_number') ?? 0),
+        'resolution_date'      => 'sometimes|date',
+        'resolution_number'    => 'sometimes|string|max:50',
+        'validity_start_date'  => 'sometimes|date',
+        'validity_end_date'    => 'sometimes|date|after_or_equal:validity_start_date',
+        'current_status'       => 'sometimes|in:Activo,Inactivo',
+        'environment'          => 'sometimes|in:Pruebas,Producción',
+        'description'          => 'sometimes|string|max:255',
     ]);
 
     $dianNumbering->update($request->only(array_keys($request->all())));

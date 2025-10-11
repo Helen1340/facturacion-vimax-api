@@ -34,14 +34,16 @@ class ElectronicInvoice extends Model
         'payable_amount',
 
         // --- Control de estado DIAN ---
-        'estado_dian',
+        'dian_status',
         'sent_at',
         'received_at',
 
         // --- Información de pago ---
         'payment_means_code',
         'payment_terms',
+        'payment_means_name',
     ];
+
 
     protected static function booted()
     {
@@ -73,7 +75,7 @@ class ElectronicInvoice extends Model
 
     // Estados
     'internal_status',
-    'estado_dian',
+    'dian_status',
 
     // DIAN / UBL básicos
     'uuid',
@@ -97,7 +99,7 @@ class ElectronicInvoice extends Model
     'invoice_number',
     'issue_date',
     'internal_status',
-    'estado_dian',
+    'dian_status',
     'payable_amount',
     'sent_at',
     'received_at',
@@ -231,9 +233,9 @@ class ElectronicInvoice extends Model
         //http://api.codersfree1.test/v1/categories?perPage=2
     }
 
-    
+
     // (cálculos)
-    
+
 
     /**
      * Subtotal = SUM(cantidad * precio_unitario)

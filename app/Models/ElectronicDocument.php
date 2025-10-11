@@ -84,6 +84,7 @@ class ElectronicDocument extends Model
         'emission_mode',
     ];
 
+
     public function electronicInvoice()
     {
         return $this->belongsTo(ElectronicInvoice::class);
@@ -91,7 +92,10 @@ class ElectronicDocument extends Model
 
     public function dianNumbering()
     {
+
         return $this->belongsTo(DianNumbering::class,);
+
+        
     }
 
     public function creditDebitNote()

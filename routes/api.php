@@ -3,7 +3,9 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CreditDebitNoteController;
+use App\Http\Controllers\DianCredentialController;
 use App\Http\Controllers\DianNumberingController;
+use App\Http\Controllers\DianStatusResponseController;
 use App\Http\Controllers\DigitalCertificateController;
 use App\Http\Controllers\ElectronicDocumentController;
 use App\Http\Controllers\ElectronicInvoiceController;
@@ -43,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // routes/api.php
     Route::apiResource('companies',CompanyController::class);
     Route::apiResource('roles', RoleController::class);
-
+    Route::apiResource('dianStatusResponse', DianStatusResponseController::class);
     Route::apiResource('measurementUnints', MeasurementUnitController::class); // unidad-medida
     // detalle-factura
     Route::apiResource('payments', PaymentController::class);
@@ -56,7 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
     //Route::apiResource('product-taxes', ProductTaxController::class);
     //Route::apiResource('service-taxes', ServiceTaxController::class);
     Route::apiResource('digitalCertificates', DigitalCertificateController::class); // certificado-digital
-
+    Route::apiResource('dianCredential', DianCredentialController::class);
     // ORM Testing
     Route::get('test-all', [OrmController::class, 'testAllRelations']);
 

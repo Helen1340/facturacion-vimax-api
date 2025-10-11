@@ -11,23 +11,28 @@ class Company extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'legal_name',                    // razon_social: Nombre o razón social de la empresa
-        'tax_id',                         // nit: Número de identificación tributaria (NIT)
-        'trade_name',                     // nombre_comercial: Nombre comercial de la empresa
-        'address',                         // direccion: Dirección física
-        'city',                            // ciudad: Ciudad de la empresa
-        'department',                      // departamento: Departamento o región
-        'country',                          // pais: País de la empresa
-        'phone',                            // telefono: Número de contacto
-        'email',                            // correo_electronico: Correo electrónico principal
-        'tax_regime',                       // regimen: Régimen tributario
-        'ciiu_code',                        // codigo_ciiu: Código CIIU
-        'logo_url',                         // logo_url: URL del logo de la empresa
-        'legal_representative_name',        // representante_nombre: Nombre del representante legal
-        'legal_representative_document_type', // representante_tipo_documento: Tipo de documento del representante legal
-        'legal_representative_document_number', // representante_numero_documento: Número de documento del representante legal
-    ];
+
+protected $fillable = [
+    // Usar nombres EXACTOS de las columnas de la migración
+    'business_name',                    // Mapea a business_name (columna)
+    'nit',                              // Mapea a nit (columna)
+    'trade_name',                       
+    'address',                          
+    'city',                             
+    'department',                       
+    'country',                          
+    'phone',                            
+    'email',                            // Mapea a email (columna)
+    'tax_regime',                       
+    'ciiu_code',                        
+    'logo_url',                         
+    'legal_representative_name',        
+    'legal_representative_document_type', 
+    'legal_representative_document_number', 
+];
+
+
+
 
     // Las posibles relaciones (includes) que se pueden cargar
     //a través de query parameters en la API//

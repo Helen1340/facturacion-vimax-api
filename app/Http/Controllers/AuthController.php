@@ -20,22 +20,22 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'razon_social' => 'required|string|max:150',
-    'nit' => 'required|string|max:50|unique:companies,nit',
-    'correo_empresa' => 'required|string|email|max:100|unique:companies,correo_electronico',
+            // Validaciones de la Empresa
+            'business_name' => 'required|string|max:150',
+            'nit' => 'required|string|max:50|unique:companies,nit',
+            'company_email' => 'required|string|email|max:100|unique:companies,email', // Corregido: 'email' de empresa
 
-    // Representante (opcionales en registro inicial)
-    'representante_nombre' => 'nullable|string|max:150',
-    'representante_tipo_documento' => 'nullable|in:CC,CE,NIT,PAS',
-    'representante_numero_documento' => 'nullable|string|max:20',
+            // Representante (opcionales en registro inicial)
+            'legal_representative_name' => 'nullable|string|max:150',
+            'legal_representative_document_type' => 'nullable|in:CC,CE,NIT,PAS',
+            'legal_representative_document_number' => 'nullable|string|max:20',
 
-    // Usuario administrador
-    'nombre' => 'required|string|max:100',
-'correo_electronico' => 'required|string|email|max:150|unique:users,correo_electronico',
-'tipo_documento' => 'required|in:CC,CE,NIT,PAS',
-'numero_documento' => 'required|string|max:20|unique:users,numero_documento',
-'password' => 'required|string|min:8|confirmed',
-
+            // Validaciones del Usuario administrador
+            'first_name' => 'required|string|max:100',
+            'user_email' => 'required|string|email|max:150|unique:users,email', // Corregido: 'email' de usuario
+            'document_type' => 'required|in:CC,CE,NIT,PAS',
+            'document_number' => 'required|string|max:20|unique:users,document_number',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         if ($validator->fails()) {
@@ -46,26 +46,27 @@ class AuthController extends Controller
         try {
             // Crear empresa con defaults para campos opcionales
             $company = Company::create([
-                'razon_social' => $request->razon_social,
+                // Corregido: Usar 'business_name' y 'company_email' del request
+                'business_name' => $request->business_name,
                 'nit' => $request->nit,
-                'correo_electronico' => $request->correo_empresa,
-                'representante_nombre' => $request->representante_nombre,
-                'representante_tipo_documento' => $request->representante_tipo_documento,
-                'representante_numero_documento' => $request->representante_numero_documento,
+                'email' => $request->company_email, // Corregido: Mapeo
+                'legal_representative_name' => $request->legal_representative_name, // Corregido: Mapeo
+                'legal_representative_document_type' => $request->legal_representative_document_type, // Corregido: Mapeo
+                'legal_representative_document_number' => $request->legal_representative_document_number, // Corregido: Mapeo
                 // defaults
-                'nombre_comercial' => $request->nombre_comercial ?? '',
-                'direccion' => $request->direccion ?? 'Sin definir',
-                'ciudad' => $request->ciudad ?? 'Sin definir',
-                'departamento' => $request->departamento ?? 'Sin definir',
-                'pais' => $request->pais ?? 'Sin definir',
-                'telefono' => $request->telefono ?? 'Sin definir',
-                'regimen' => $request->regimen ?? 'Sin definir',
+                'trade_name' => $request->trade_name ?? '',
+                'address' => $request->address ?? 'Sin definir',
+                'city' => $request->city ?? 'Sin definir',
+                'department' => $request->department ?? 'Sin definir',
+                'country' => $request->country ?? 'Sin definir',
+                'phone' => $request->phone ?? 'Sin definir',
+                'tax_regime' => $request->tax_regime ?? 'Sin definir',
                 'logo_url' => $request->logo_url ?? '',
-                'codigo_ciiu' => $request->codigo_ciiu ?? '',
+                'ciiu_code' => $request->ciiu_code ?? '',
             ]);
 
             // Verificar que exista el rol administrador
-            $role = Role::where('nombre', 'administrador')->first();
+            $role = Role::where('role_name', 'administrator')->first();
             if (!$role) {
                 DB::rollBack();
                 return response()->json([
@@ -76,17 +77,15 @@ class AuthController extends Controller
 
             // Crear usuario administrador
             $user = User::create([
-                
-    'nombre' => $request->nombre,
-    'correo_electronico' => $request->correo_electronico,
-    'tipo_documento' => $request->tipo_documento,
-    'numero_documento' => $request->numero_documento,
-    'password' => Hash::make($request->password),
-    'company_id' => $company->id,
-    'role_id' => $roleId,
-]);
-
-            
+                // Corregido: Usar los nombres de campos del request
+                'first_name' => $request->first_name,
+                'email' => $request->user_email, // Corregido: Mapeo
+                'document_type' => $request->document_type,
+                'document_number' => $request->document_number,
+                'password' => Hash::make($request->password),
+                'company_id' => $company->id,
+                'role_id' => $roleId,
+            ]);
 
             DB::commit();
 
@@ -96,13 +95,13 @@ class AuthController extends Controller
                 'message' => 'Empresa y usuario administrador registrados correctamente',
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'user' => $user->only(['id','nombre','correo_electronico','company_id','role_id','numero_documento']),
-                'company' => $company->only(['id','razon_social','nit','correo_electronico']),
+                'user' => $user->only(['id','first_name','email','company_id','role_id','document_number']),
+                'company' => $company->only(['id','business_name','nit','email']),
             ], 201);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            // En producción preferible loggear $e->getMessage() y devolver mensaje genérico
+            // En producciÃ³n preferible loggear $e->getMessage() y devolver mensaje generico
             return response()->json([
                 'message' => 'Error al registrar empresa y usuario',
                 'error' => $e->getMessage()
@@ -110,21 +109,21 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * Login de usuario
-     */
+    //Login de usuario
+     
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'correo_electronico' => 'required|email',
+            'email' => 'required|email',
             'password' => 'required|string|min:8',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
-        $user = User::where('correo_electronico', $request->correo_electronico)->first();
+        
+        // Corregido: El campo del request para login es 'email', no 'correo_electronico'
+        $user = User::where('email', $request->email)->first(); 
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Credenciales incorrectas'], 401);
@@ -137,14 +136,13 @@ class AuthController extends Controller
             'message' => 'Login exitoso',
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => $user->only(['id','nombre','correo_electronico','company_id','role_id','numero_documento']),
-            'company' => $company ? $company->only(['id','razon_social','nit','correo_electronico']) : null,
+            'user' => $user->only(['id','first_name','email','company_id','role_id','document_number']),
+            'company' => $company ? $company->only(['id','business_name','nit','email']) : null,
         ], 200);
     }
+    
 
-    /**
-     * Obtener usuario autenticado
-     */
+    //Obtener usuario autenticado
     public function me(Request $request)
     {
         $user = $request->user();
@@ -156,14 +154,13 @@ class AuthController extends Controller
         $company = $user->company;
 
         return response()->json([
-            'user' => $user->only(['id','nombre','correo_electronico','company_id','role_id','numero_documento']),
-            'company' => $company ? $company->only(['id','razon_social','nit','correo_electronico']) : null,
+            'user' => $user->only(['id','first_name','email','company_id','role_id','document_number']),
+            'company' => $company ? $company->only(['id','business_name','nit','email']) : null,
         ], 200);
     }
 
-    /**
-     * Logout: revoca el token actual
-     */
+    // Logout: revoca el token actual
+    
     public function logout(Request $request)
     {
         $user = $request->user();
@@ -179,6 +176,6 @@ class AuthController extends Controller
             return response()->json(['message' => 'Sesión cerrada correctamente'], 200);
         }
 
-        return response()->json(['message' => 'No se encontró token activo'], 400);
+        return response()->json(['message' => 'No se encontro token activo'], 400);
     }
 }

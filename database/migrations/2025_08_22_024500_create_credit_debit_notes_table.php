@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('electronic_invoice_id'); // Esta FK va en la tabla electronic_invoices
             $table->foreign('electronic_invoice_id')->references('id')->on('electronic_invoices')->onDelete('cascade');
 
-        
+
             // Campos específicos de la nota
             $table->string('reason', 250); // Motivo de la nota crédito/débito
             $table->enum('note_type', ['debit', 'credit']); // Tipo de documento: débito o crédito

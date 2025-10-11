@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\DianCredential;
 use App\Models\DianNumbering;
+use App\Models\DianStatusResponse;
 use App\Models\ElectronicDocument;
 use App\Models\ElectronicInvoice;
 use App\Models\InvoiceDetail;
@@ -40,7 +42,8 @@ class DatabaseSeeder extends Seeder
         PaymentTableSeeder::class,
         ElectronicDocumentsSeeder::class,
         RadianEventTableSeeder::class,
-        
+        DianStatusResponseSeeder::class,
+        DianCredentialSeeder::class
     
     ]);
 
