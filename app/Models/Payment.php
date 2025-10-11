@@ -11,14 +11,19 @@ class Payment extends Model
     use HasFactory;
 
     // Campos que se pueden asignar masivamente
-protected $fillable = [
+    protected $fillable = [
         'electronic_invoice_id', // Factura electrónica
         'payment_method_id',     // Método de pago
         'payment_date',          // Fecha de pago
         'amount_paid',           // Valor pagado
         'currency',              // Moneda
         'payment_reference',     // Referencia de pago
-];
+    ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(new \App\Models\Scopes\CompanyScope);
+    }
 
 
     // Las posibles relaciones (includes) que se pueden cargar a través de query parameters en la API

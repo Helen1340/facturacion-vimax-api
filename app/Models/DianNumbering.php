@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class DianNumbering extends Model
 {
-use HasFactory;
+    use HasFactory;
 
     protected $fillable = [
         'company_id',           // Id de la compañía
@@ -25,6 +26,10 @@ use HasFactory;
         'description',          // Descripción opcional para referencia interna
     ];
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new \App\Models\Scopes\CompanyScope);
+    }
 
     // Listas blancas
     protected $allowIncluded = [
@@ -35,13 +40,16 @@ use HasFactory;
     ];
     // Permite incluir la relaciónes
 
-    protected $allowFilter = [ 'document_type',
+    protected $allowFilter = [
+        'document_type',
         'document_type_code',
         'prefix',
         'resolution_number',
         'current_status',
-        'environment', ];
-    protected $allowSort = [ 'document_type',
+        'environment',
+    ];
+    protected $allowSort = [
+        'document_type',
         'prefix',
         'start_number',
         'end_number',
@@ -49,7 +57,8 @@ use HasFactory;
         'validity_start_date',
         'validity_end_date',
         'current_status',
-        'environment',];
+        'environment',
+    ];
 
     // Cardinalidad: Un numero de numeración DIAN (1) puede tener muchos Documentos Electrónicos (M)
     public function electronicDocuments()

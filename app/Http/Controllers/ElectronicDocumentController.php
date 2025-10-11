@@ -33,7 +33,8 @@ class ElectronicDocumentController extends Controller
     {
 
         $validated = $request->validate([
-                'electronic_invoice_id' => 'required|exists:electronic_invoices,id', // FK a la factura electrónica
+
+            'electronic_invoice_id' => 'required|exists:electronic_invoices,id', // FK a la factura electrónica
             'dian_numbering_id'     => 'required|exists:dian_numberings,id',      // FK a la numeración DIAN
             'credit_debit_note_id'  => 'nullable|exists:credit_debit_notes,id',   // FK a nota crédito/débito
             'cufe'                  => 'required|string|max:255|unique:electronic_documents,cufe', // Código Único de Factura Electrónica
@@ -49,6 +50,7 @@ class ElectronicDocumentController extends Controller
             'qr_code'               => 'nullable|string',                         // Código QR del documento
             'cdr'                   => 'nullable|string',                         // Código de Respuesta de la DIAN
             'emission_mode'         => ['required', Rule::in(['normal', 'en contingencia'])], // Modo de emisión
+            
         ]);
 
         $electronicDocument = ElectronicDocument::create($validated);

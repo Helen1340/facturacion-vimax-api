@@ -6,10 +6,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    
+
     public function index()
     {
         $user = User::included()->filter()->sort()->getOrPaginate();
@@ -17,33 +18,43 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    
-    
+
+
     public function store(Request $request)
     {
+        $authUser = $request->user();
+
+        // Si el usuario autenticado pertenece a una empresa, se usa esa empresa.
+        $companyId = $authUser ? $authUser->company_id : $request->input('company_id');
+
         $validated = $request->validate([
-            'company_id' => ['nullable', 'integer', 'exists:companies,id'], // ID de la empresa a la que pertenece
-            'role_id' => ['nullable', 'integer'], // ID del rol del usuario
-            'name' => ['required', 'string', 'max:100'], // Nombre completo del usuario
-            'document_type' => ['nullable', Rule::in(['NIT', 'CC', 'CE'])], // Tipo de documento
-            'document_number' => ['required', 'string', 'max:50', 'unique:users,document_number'], // Número de documento
-            'address' => ['nullable', 'string', 'max:150'], // Dirección del usuario
-            'country' => ['nullable', 'string', 'max:100'], // País del usuario
-            'description' => ['nullable', 'string', 'max:250'], // Información adicional
-            'email' => ['required', 'email', 'max:150', 'unique:users,email'], // Correo electrónico
-            'phone' => ['nullable', 'string', 'max:20'], // Teléfono
-            'status' => ['nullable', Rule::in(['Activo', 'Inactivo'])], // Estado del usuario
-            'last_access' => ['nullable', 'date'], // Último acceso
-            'password' => ['required', 'string', 'min:8'], // Contraseña
+            'role_id' => ['nullable', 'integer'],
+            'name' => ['required', 'string', 'max:100'],
+            'document_type' => ['nullable', Rule::in(['NIT', 'CC', 'CE'])],
+            'document_number' => ['required', 'string', 'max:50', 'unique:users,document_number'],
+            'address' => ['nullable', 'string', 'max:150'],
+            'country' => ['nullable', 'string', 'max:100'],
+            'description' => ['nullable', 'string', 'max:250'],
+            'email' => ['required', 'email', 'max:150', 'unique:users,email'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'status' => ['nullable', Rule::in(['Active', 'Inactive'])],
+            'last_access' => ['nullable', 'date'],
+            'password' => ['required', 'string', 'min:8'],
         ]);
 
         $user = User::create([
             ...$validated,
+            'company_id' => $companyId,
             'password' => Hash::make($validated['password']),
         ]);
 
-        return response()->json($user);
+        return response()->json([
+            'message' => 'Usuario creado exitosamente',
+            'data' => $user,
+        ], 201);
     }
+
+
 
 
     /**

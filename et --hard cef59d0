@@ -1,0 +1,79 @@
+[33m4ed0d05[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/wilfran[m[33m, [m[1;31morigin/feature/helen[m[33m, [m[1;31morigin/develop[m[33m)[m HEAD@{0}: pull origin develop: Fast-forward
+[33md0ed26f[m HEAD@{1}: reset: moving to HEAD
+[33md0ed26f[m HEAD@{2}: pull origin develop: Fast-forward
+[33m2f6bc94[m[33m ([m[1;32mfeature/work[m[33m)[m HEAD@{3}: checkout: moving from feature/helen-wilfran to feature/wilfran
+[33m4cdaa19[m[33m ([m[1;32mfeature/helen-wilfran[m[33m)[m HEAD@{4}: commit: rutas api movidas
+[33me7b9c09[m[33m ([m[1;31morigin/feature/helen-wilfran[m[33m)[m HEAD@{5}: commit: arreglos en productcontroller y servicecontroller
+[33meda877c[m HEAD@{6}: commit: se ajusta la migracion de users
+[33me09373d[m HEAD@{7}: commit: se agrega actualizacion en reportController
+[33m6a7c4d7[m HEAD@{8}: commit: se modifican las rutas para que desprotegidas
+[33ma7ef56e[m HEAD@{9}: commit: se agrega actualizaciones en reportcontroller
+[33mb4ede37[m HEAD@{10}: commit: se agregan correcciones
+[33m57dc8e9[m HEAD@{11}: checkout: moving from feature/work to feature/helen-wilfran
+[33m2f6bc94[m[33m ([m[1;32mfeature/work[m[33m)[m HEAD@{12}: reset: moving to HEAD
+[33m2f6bc94[m[33m ([m[1;32mfeature/work[m[33m)[m HEAD@{13}: checkout: moving from feature/wilfran to feature/work
+[33m2f6bc94[m[33m ([m[1;32mfeature/work[m[33m)[m HEAD@{14}: checkout: moving from feature/work to feature/wilfran
+[33m2f6bc94[m[33m ([m[1;32mfeature/work[m[33m)[m HEAD@{15}: checkout: moving from feature/wilfran to feature/work
+[33m2f6bc94[m[33m ([m[1;32mfeature/work[m[33m)[m HEAD@{16}: pull origin develop: Fast-forward
+[33mcef59d0[m[33m ([m[1;31morigin/feature/wilfran[m[33m)[m HEAD@{17}: commit: arreglos en el modelo y controlador de services
+[33m69f0747[m HEAD@{18}: pull origin develop: Fast-forward
+[33m61a86f0[m HEAD@{19}: pull origin develop: Fast-forward
+[33m39fc011[m HEAD@{20}: pull origin develop: Fast-forward
+[33mc145c6d[m HEAD@{21}: commit: organizacion del scope Included
+[33m873a9f5[m HEAD@{22}: pull origin develop: Fast-forward
+[33m960555e[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{23}: checkout: moving from feature/wilfran to feature/wilfran
+[33m960555e[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{24}: merge origin/develop: Fast-forward
+[33m7089d0a[m HEAD@{25}: checkout: moving from develop to feature/wilfran
+[33m960555e[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{26}: pull origin develop: Fast-forward
+[33m7089d0a[m HEAD@{27}: checkout: moving from develop to develop
+[33m7089d0a[m HEAD@{28}: checkout: moving from feature/wilfran to develop
+[33m7089d0a[m HEAD@{29}: merge develop: Fast-forward
+[33mc47ed76[m HEAD@{30}: checkout: moving from develop to feature/wilfran
+[33m7089d0a[m HEAD@{31}: checkout: moving from feature/wilfran to develop
+[33mc47ed76[m HEAD@{32}: checkout: moving from develop to feature/wilfran
+[33m7089d0a[m HEAD@{33}: checkout: moving from feature/wilfran to develop
+[33mc47ed76[m HEAD@{34}: checkout: moving from develop to feature/wilfran
+[33m7089d0a[m HEAD@{35}: pull origin develop: Fast-forward
+[33m828e4f2[m HEAD@{36}: checkout: moving from feature/wilfran to develop
+[33mc47ed76[m HEAD@{37}: checkout: moving from develop to feature/wilfran
+[33m828e4f2[m HEAD@{38}: checkout: moving from feature/wilfran to develop
+[33mc47ed76[m HEAD@{39}: checkout: moving from develop to feature/wilfran
+[33m828e4f2[m HEAD@{40}: checkout: moving from feature/wilfran to develop
+[33mc47ed76[m HEAD@{41}: commit: Refactor: ajustes en relaciones de Product, Service y Tax con migración actualizada
+[33m828e4f2[m HEAD@{42}: checkout: moving from feature/wilfran to feature/wilfran
+[33m828e4f2[m HEAD@{43}: reset: moving to HEAD
+[33m828e4f2[m HEAD@{44}: checkout: moving from develop to feature/wilfran
+[33m828e4f2[m HEAD@{45}: checkout: moving from develop to develop
+[33m828e4f2[m HEAD@{46}: pull origin develop: Fast-forward
+[33m2cf9be0[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{47}: checkout: moving from feature/producto to develop
+[33m4e3463d[m[33m ([m[1;32mfeature/producto[m[33m)[m HEAD@{48}: commit: tabla Products migracion, modelo y controlador, llenado con factory
+[33m2cf9be0[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{49}: checkout: moving from feature/producto to feature/producto
+[33m2cf9be0[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{50}: checkout: moving from feature/servicio to feature/producto
+[33mab46b6a[m[33m ([m[1;32mfeature/servicio[m[33m)[m HEAD@{51}: commit: tabla services migracion, modelo y controlador, llenado con factory
+[33m2cf9be0[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{52}: checkout: moving from feature/rol to feature/servicio
+[33mdb23d25[m[33m ([m[1;32mfeature/rol[m[33m)[m HEAD@{53}: commit: se aregla relacion con la tabla user por motivo de eliminar la tabla pivot
+[33m4f4b25b[m HEAD@{54}: checkout: moving from feature/usuario to feature/rol
+[33m60ed4cc[m[33m ([m[1;32mfeature/usuario[m[33m)[m HEAD@{55}: commit: se agrega la llave foranea de role, y su relacion en el modelo
+[33maf55ef1[m HEAD@{56}: checkout: moving from develop to feature/usuario
+[33m2cf9be0[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{57}: checkout: moving from feature/usuario to develop
+[33maf55ef1[m HEAD@{58}: checkout: moving from feature/usuario to feature/usuario
+[33maf55ef1[m HEAD@{59}: checkout: moving from feature/documento-electronico to feature/usuario
+[33m84bd5b0[m[33m ([m[1;32mfeature/documento-electronico[m[33m)[m HEAD@{60}: commit: se agrega el archivo ElectronicDocumentfactory para llenado masivo de datos
+[33maaec130[m HEAD@{61}: checkout: moving from feature/usuario to feature/documento-electronico
+[33maf55ef1[m HEAD@{62}: commit: se agrega el archivo Usersfactory para llenado masivo de datos mas una correcion menor
+[33m296d963[m HEAD@{63}: checkout: moving from feature/documento-electronico to feature/usuario
+[33maaec130[m HEAD@{64}: checkout: moving from feature/usuario to feature/documento-electronico
+[33m296d963[m HEAD@{65}: checkout: moving from feature/documento-electronico to feature/usuario
+[33maaec130[m HEAD@{66}: checkout: moving from feature/usuario to feature/documento-electronico
+[33m296d963[m HEAD@{67}: commit: se agrega el archivo Usersfactory para llenado masivo de datos
+[33mb3263b5[m HEAD@{68}: checkout: moving from feature/rol to feature/usuario
+[33m4f4b25b[m HEAD@{69}: commit: se agrega el archivo rolefactory para llenado masivo de datos
+[33ma70eec3[m HEAD@{70}: commit: tabla Role con migracion, modelo, controlador y seeder con 5 registros
+[33m2cf9be0[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{71}: reset: moving to develop
+[33m2cf9be0[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{72}: checkout: moving from feature/usuario-rol to feature/rol
+[33mbd85000[m[33m ([m[1;32mfeature/usuario-rol[m[33m)[m HEAD@{73}: commit: tabla Pivot entre Usuarios y roles solo migracion y llaves foraneas
+[33m2cf9be0[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{74}: reset: moving to develop
+[33m2cf9be0[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{75}: reset: moving to develop
+[33m2cf9be0[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m HEAD@{76}: checkout: moving from feature/servicio-impuesto to feature/usuario-rol
+[33mb8be473[m[33m ([m[1;32mfeature/servicio-impuesto[m[33m)[m HEAD@{77}: checkout: moving from feature/usuario-rol to feature/servicio-impuesto
+[33m2cf9be0[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[

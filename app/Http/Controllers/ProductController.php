@@ -31,13 +31,13 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'measurement_unit_id' => ['required', 'integer'], // unidad de medida (FK)
+            'measurement_unit_id' => ['required', 'integer', 'exists:measurement_units,id'], // unidad de medida (FK)
             'standard_code'       => ['nullable', 'string', 'max:50'], // código estándar
             'product_code'        => ['required', 'string', 'max:50', 'unique:products,product_code'], // código interno
             'name'                => ['required', 'string', 'max:150'], // nombre
             'description'         => ['nullable', 'string', 'max:150'], // descripción
             'unit_price'          => ['required', 'numeric', 'min:0'], // precio unitario
-            'status'              => ['required', 'in:Activo,Inactivo'], // estado
+            'status'              => ['required', 'in:Active,Inactive'], // estado
         ]);
 
         $product = Product::create($validated);
@@ -49,7 +49,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::findorfail($id);
+        $product = Product::findOrFail($id);
 
         return response()->json($product, 200);
     }
@@ -60,17 +60,28 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $validated = $request->validate([
-            'measurement_unit_id' => ['sometimes', 'integer'],
-            'standard_code'       => ['sometimes', 'string', 'max:50'],
+            'measurement_unit_id' => ['sometimes', 'integer', 'exists:measurement_units,id'],
+            'standard_code'       => ['nullable', 'string', 'max:50'],
             'product_code'        => ['sometimes', 'string', 'max:50', 'unique:products,product_code,' . $product->id],
             'name'                => ['sometimes', 'string', 'max:150'],
-            'description'         => ['sometimes', 'string', 'max:150'],
+            'description'         => ['nullable', 'string', 'max:150'],
             'unit_price'          => ['sometimes', 'numeric', 'min:0'],
-            'status'              => ['sometimes', 'in:Activo,Inactivo'],
+            'status'              => ['sometimes', 'in:Active,Inactive'],
+        ]);
+
+        // Debug: Log los datos recibidos y validados
+        \Log::info('Product Update Request:', [
+            'original_request' => $request->all(),
+            'validated_data' => $validated,
+            'product_id' => $product->id
         ]);
 
         $product->update($validated);
-        return response()->json($product, 200);
+        
+        // Debug: Log el producto actualizado
+        \Log::info('Product Updated:', $product->fresh()->toArray());
+        
+        return response()->json($product->fresh(), 200);
     }
 
     /**

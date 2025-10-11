@@ -15,7 +15,7 @@ class RoleController extends Controller
     {
         $roles = Role::included()->filter()->sort()->getOrPaginate();
 
-        return response()->json($roles);
+        return response()->json($roles, 200);
     }
 
     /**
@@ -32,9 +32,9 @@ class RoleController extends Controller
     public function store(Request $request)
     {
             $validated = $request->validate([
-                'role_name'   => ['required', Rule::in(['administrador', 'facturador', 'contador', 'cliente'])], // Nombre del rol
-            'description' => ['nullable', 'string', 'max:255'], // Descripción del rol
-            'status'      => ['required', Rule::in(['activo', 'inactivo'])], // Estado del rol
+                'role_name'   => ['required', Rule::in(['administrator', 'billing', 'accountant', 'client'])], // Nombre del rol
+            'description' => ['required', 'string', 'max:250'], // Descripción del rol
+            'status'      => ['required', Rule::in(['active', 'inactive'])], // Estado del rol
             ]);
 
             $role = Role::create($validated);
@@ -49,7 +49,7 @@ class RoleController extends Controller
     {
         $role = Role::findOrFail($id);
 
-        return response()->json($role);
+        return response()->json($role, 200);
     }
 
     /**
@@ -58,9 +58,9 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
             $validated = $request->validate([
-                'role_name'   => ['sometimes', Rule::in(['administrador', 'facturador', 'contador', 'cliente'])], // Nombre del rol
-            'description' => ['sometimes', 'string', 'max:255'], // Descripción del rol
-            'status'      => ['sometimes', Rule::in(['activo', 'inactivo'])], // Estado del rol
+                'role_name'   => ['sometimes', Rule::in(['administrator', 'billing', 'accountant', 'client'])], // Nombre del rol
+            'description' => ['sometimes', 'string', 'max:250'], // Descripción del rol
+            'status'      => ['sometimes', Rule::in(['active', 'inactive'])], // Estado del rol
             ]);
 
             $role->update($validated);

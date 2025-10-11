@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ElectronicInvoice;
+use Illuminate\Support\Facades\Auth;
 
 class ElectronicInvoiceController extends Controller
 {
@@ -15,14 +16,15 @@ class ElectronicInvoiceController extends Controller
         return response()->json($invoices);
     }
 
-    
-
-    
     public function store(Request $request)
     {
-        $request->validate([
-            // --- Relación y datos base ---
-            'user_id'               => 'required|exists:users,id',
+        $authUser = $request->user();
+
+        if (!$authUser) {
+            return response()->json(['message' => 'No autorizado'], 401);
+        }
+
+        $validated = $request->validate([
             'invoice_number'        => 'required|string|max:20|unique:electronic_invoices,invoice_number',
             'issue_date'            => 'required|date',
             'internal_status'       => 'required|string|max:50',
@@ -33,7 +35,7 @@ class ElectronicInvoiceController extends Controller
             'customization_id'      => 'nullable|string|max:50',
             'profile_id'            => 'nullable|string|max:50',
             'uuid'                  => 'nullable|string|max:100',
-            'document_currency_code'=> 'nullable|string|max:10',
+            'document_currency_code' => 'nullable|string|max:10',
             'invoice_type_code'     => 'nullable|string|max:10',
 
             // --- Totales principales ---
@@ -52,12 +54,20 @@ class ElectronicInvoiceController extends Controller
             'payment_terms'         => 'nullable|string|max:255',
         ]);
 
-        $invoice = ElectronicInvoice::create($request->all());
+        $invoice = ElectronicInvoice::create([
+            ...$validated,
+            'user_id' => $authUser->id,
+        ]);
 
-        return response()->json($invoice);
+        return response()->json([
+            'message' => 'Factura creada exitosamente',
+            'data' => $invoice,
+        ], 201);
     }
 
-    
+
+
+
     public function show($id)
     {
         //$invoice = ElectronicInvoice::included()->findOrFail($id);
@@ -68,7 +78,7 @@ class ElectronicInvoiceController extends Controller
         return response()->json($invoice);
     }
 
-   
+
     public function update(Request $request, ElectronicInvoice $electronicInvoice)
     {
         $request->validate([
@@ -84,7 +94,7 @@ class ElectronicInvoiceController extends Controller
             'customization_id'      => 'nullable|string|max:50',
             'profile_id'            => 'nullable|string|max:50',
             'uuid'                  => 'nullable|string|max:100',
-            'document_currency_code'=> 'nullable|string|max:10',
+            'document_currency_code' => 'nullable|string|max:10',
             'invoice_type_code'     => 'nullable|string|max:10',
 
             // --- Totales principales ---
@@ -108,7 +118,7 @@ class ElectronicInvoiceController extends Controller
         return response()->json($electronicInvoice);
     }
 
-    
+
     public function destroy(ElectronicInvoice $electronicInvoice)
     {
         $electronicInvoice->delete();
