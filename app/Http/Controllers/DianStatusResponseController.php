@@ -27,12 +27,7 @@ class DianStatusResponseController extends Controller
             'received_at'            => ['nullable','date'],
         ]);
 
-        // Validar que el status_code esté en la lista aceptada (evita almacenar valores inesperados)
-        if (! in_array($validated['status_code'], DianStatusResponse::validStatusCodes(), true)) {
-            return response()->json([
-                'message' => 'Código de estado no permitido. Revise el catálogo DIAN / integrador.'
-            ], 422);
-        }
+    
 
         $response = DianStatusResponse::create($validated);
         return response()->json($response, 201);
@@ -57,9 +52,7 @@ class DianStatusResponseController extends Controller
             'received_at'        => ['sometimes','date'],
         ]);
 
-        if (isset($validated['status_code']) && ! in_array($validated['status_code'], DianStatusResponse::validStatusCodes(), true)) {
-            return response()->json(['message' => 'Código de estado no permitido.'], 422);
-        }
+        
 
         $dianStatusResponse->update($validated);
         return response()->json($dianStatusResponse, 200);

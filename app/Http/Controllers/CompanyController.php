@@ -4,83 +4,105 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Company;
+use Illuminate\Validation\Rule; // Necesario para la regla unique en update
 
 class CompanyController extends Controller
 {
-    // Listar todas las compañías
     public function index()
     {
-        $companies=Company::included()->filter()->sort()->getOrPaginate();
+        $roles = Company::included()->filter()->sort()->getOrPaginate();
 
-        return response()->json($companies);
+        return response()->json($roles);
     }
 
-    // Mostrar una compañía específica
-    public function show($id)
+    // Crear una nueva compaÃ±Ã­a
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            // Nombres de campos que vienen del JSON
+            'company_name' => 'required|string|max:150', 
+            'identification_number' => 'required|string|max:50|unique:companies,nit', // Valida contra la columna 'nit'
+            'trade_name' => 'nullable|string|max:150', 
+            'address' => 'required|string|max:150', 
+            'city' => 'required|string|max:100', 
+            'department' => 'required|string|max:100', 
+            'country' => 'required|string|max:50', 
+            'phone' => 'required|string|max:20', 
+            'email' => 'required|string|email|max:100|unique:companies,email', // Asume que la columna es 'email' (según tu migración)
+            'tax_regime' => 'required|string|max:50', 
+            'logo_url' => 'nullable|url|max:1000', 
+            'ciiu_code' => 'nullable|string|max:10', 
+            'legal_representative_name' => 'nullable|string|max:150', 
+            'legal_representative_document_type' => 'nullable|in:CC,CE,NIT,PAS', 
+            'legal_representative_document_number' => 'nullable|string|max:20', 
+        ]);
+
+        $company = Company::create($validatedData);
+        return response()->json($company, 201);
+    }
+      public function show($id)
     {
         $company = Company::findOrFail($id);
+
         return response()->json($company);
     }
 
-    // Crear una nueva compañía
-    public function store(Request $request)
-    {
-        $request->validate([
-            'company_name' => 'required|string|max:150', // Razón social de la empresa
-            'identification_number' => 'required|string|max:50|unique:companies,nit', // NIT o número de identificación
-            'trade_name' => 'nullable|string|max:150', // Nombre comercial
-            'address' => 'required|string|max:150', // Dirección principal
-            'city' => 'required|string|max:100', // Ciudad o municipio
-            'department' => 'required|string|max:100', // Departamento
-            'country' => 'required|string|max:50', // País
-            'phone' => 'required|string|max:20', // Teléfono de contacto
-            'email' => 'required|string|email|max:100|unique:companies,correo_electronico', // Correo electrónico oficial
-            'tax_regime' => 'required|string|max:50', // Régimen tributario (común, simplificado, etc.)
-            'logo_url' => 'nullable|url|max:1000', // URL del logotipo
-            'ciiu_code' => 'nullable|string|max:10', // Código CIIU de actividad económica
-            'legal_representative_name' => 'nullable|string|max:150', // Nombre del representante legal
-            'legal_representative_document_type' => 'nullable|in:CC,CE,NIT,PAS', // Tipo de documento del representante
-            'legal_representative_document_number' => 'nullable|string|max:20', // Número de documento del representante
-
-        ]);
-
-        $company = Company::create($request->all());
-        return response()->json($company, 201);
-    }
-
-    // Actualizar una compañía existente
+    // Actualizar una compaÃ±Ã­a existente
     public function update(Request $request, $id)
     {
         $company = Company::findOrFail($id);
-
-        $request->validate([
-            'company_name' => 'sometimes|required|string|max:150',
-            'identification_number' => 'sometimes|required|string|max:50|unique:companies,nit,' . $id,
+        
+        // La validaciÃ³n requiere el objeto $company para Rule::ignore(), asÃ­ que usamos el cÃ³digo de abajo
+        $validatedData = $request->validate([
+            
+            'company_name' => 'sometimes|string|max:150',
+            
+            'identification_number' => [
+                'sometimes', 
+                'string', 
+                'max:50', 
+                Rule::unique('companies', 'nit')->ignore($company->id)
+            ],
             'trade_name' => 'nullable|string|max:150',
-            'address' => 'sometimes|required|string|max:150',
-            'city' => 'sometimes|required|string|max:100',
-            'department' => 'sometimes|required|string|max:100',
-            'country' => 'sometimes|required|string|max:50',
-            'phone' => 'sometimes|required|string|max:20',
-            'email' => 'sometimes|required|string|email|max:100|unique:companies,correo_electronico,' . $id,
-            'tax_regime' => 'sometimes|required|string|max:50',
+            'address' => 'sometimes|string|max:150',
+            'city' => 'sometimes|string|max:100',
+            'department' => 'sometimes|string|max:100',
+            'country' => 'sometimes|string|max:50',
+            'phone' => 'sometimes|string|max:20',
+            // *** 3: Usar Rule::unique para email y mapear a 'email' ***
+            'email' => [
+                'sometimes', 
+                'string', 
+                'email', 
+                'max:100', 
+                Rule::unique('companies', 'email')->ignore($company->id)
+            ],
+            'tax_regime' => 'sometimes|string|max:50',
             'logo_url' => 'nullable|url|max:1000',
             'ciiu_code' => 'nullable|string|max:10',
             'legal_representative_name' => 'nullable|string|max:150',
             'legal_representative_document_type' => 'nullable|in:CC,CE,NIT,PAS',
             'legal_representative_document_number' => 'nullable|string|max:20',
         ]);
+        
+    
 
-        $company->update($request->all());
+        // Solo actualiza los campos mapeados y validados
+        $company->update($validatedData); 
         return response()->json($company);
     }
 
-    // Eliminar una compañía
+  
+    
     public function destroy($id)
     {
-        $company = Company::findOrFail($id);
+        // 1. Encontrar la empresa por ID. Falla con 404 si no existe.
+        $company = Company::findOrFail($id); 
+        
+        // 2. Eliminar el registro.
         $company->delete();
-        return response()->json(['message' => 'Company deleted successfully']);
+        
+        // 3. Devolver una respuesta 204 (No Content)
+        return response()->json(null, 204); 
     }
-}
-
+} 

@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Tax;
 use Illuminate\Http\Request;
+// Importar la clase Rule para la validación de unicidad en el método update
+use Illuminate\Validation\Rule; 
 
 class TaxController extends Controller
 {
-    // lista con filtros, relaciones y paginación
+    // lista con filtros, relaciones y paginaciÃ³n
     public function index()
     {
         $taxes = Tax::included()->filter()->sort()->getOrPaginate();
@@ -18,20 +20,24 @@ class TaxController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tax_code'       => 'required|string|max:50',   // Código único del tributo
-            'name'           => 'required|string|max:100',  // Nombre del tributo
-            'description'    => 'nullable|string',          // Descripción del tributo
-            'type'           => 'required|string|max:50',   // Tipo: impuesto, retención, contribución
-            'percentage'     => 'nullable|numeric|between:0,999.99', // Porcentaje aplicado si aplica
-            'fixed_value'    => 'nullable|numeric|min:0',   // Valor fijo si aplica
-            'application_type'=> 'required|string|in:Percentage,FixedValue,Retention', // Tipo de aplicación
-            'min_value'      => 'nullable|numeric|min:0',   // Valor mínimo aplicable
-            'max_value'      => 'nullable|numeric|min:0',   // Valor máximo aplicable
-            'status'         => 'required|in:Active,Inactive', // Estado del tributo
+            // *** CORRECCIÓN CLAVE 1: Agregamos unique:taxes para evitar el 500 por duplicado ***
+            'tax_code'       => 'required|string|max:50|unique:taxes', 
+            'name'           => 'required|string|max:100',
+            'description'    => 'nullable|string',
+            'type'           => 'required|string|max:50',
+            'percentage'     => 'nullable|numeric|between:0,999.99',
+            'fixed_value'    => 'nullable|numeric|min:0',
+            // Aseguramos que los valores coincidan con los de tu migración (sin caracteres corruptos)
+            'application_type'=> 'required|string|in:Porcentaje,ValorFijo,Retencion', 
+            'min_value'      => 'nullable|numeric|min:0',
+            'max_value'      => 'nullable|numeric|min:0',
+            'status'         => 'required|in:Activo,Inactivo', 
         ]);
 
         $tax = Tax::create($request->all());
-        return response()->json($tax);
+        
+        // Buena práctica: Usar 201 Created para una respuesta de creación exitosa
+        return response()->json($tax, 201); 
     }
 
     // mostrar un impuesto por id
@@ -44,21 +50,28 @@ class TaxController extends Controller
     // actualizar un impuesto
     public function update(Request $request, Tax $tax)
     {
-        $request->validate([
-            'tax_code'       => 'sometimes|string|max:50',
+        $validatedData = $request->validate([
+            // *** CORRECCIÓN CLAVE 2: Usar Rule::unique para ignorar el ID actual y permitir UPDATE ***
+            'tax_code'       => [
+                'sometimes', 
+                'string', 
+                'max:50', 
+                Rule::unique('taxes')->ignore($tax->id)
+            ],
             'name'           => 'sometimes|string|max:100',
             'description'    => 'sometimes|nullable|string',
             'type'           => 'sometimes|string|max:50',
-            'percentage'     => 'sometimes|numeric|between:0,999.99',
-            'fixed_value'    => 'sometimes|numeric|min:0',
-            'application_type'=> 'sometimes|string|in:Percentage,FixedValue,Retention',
-            'min_value'      => 'sometimes|numeric|min:0',
-            'max_value'      => 'sometimes|numeric|min:0',
-            'status'         => 'sometimes|in:Active,Inactive',
+            'percentage'     => 'sometimes|nullable|numeric|between:0,999.99',
+            'fixed_value'    => 'sometimes|nullable|numeric|min:0',
+            'application_type'=> 'sometimes|string|in:Porcentaje,ValorFijo,Retencion',
+            'min_value'      => 'sometimes|nullable|numeric|min:0',
+            'max_value'      => 'sometimes|nullable|numeric|min:0',
+            'status'         => 'sometimes|in:Activo,Inactivo',
         ]);
 
-        // Actualiza solo los campos presentes en la request
-        $tax->update($request->only(array_keys($request->all())));
+        // *** CORRECCIÓN CLAVE 3: Usar $request->validated() para una actualización más segura ***
+        // Solo actualizamos los campos que pasaron la validación
+        $tax->update($validatedData);
 
         return response()->json($tax);
     }
