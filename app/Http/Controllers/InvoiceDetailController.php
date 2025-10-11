@@ -14,7 +14,7 @@ class InvoiceDetailController extends Controller
      */
     public function index()
     {
-        $details = InvoiceDetail::with(['item', 'electronicInvoice'])->get();
+        $details = InvoiceDetail::included()->filter()->sort()->getOrPaginate();
         return response()->json($details);
     }
 
