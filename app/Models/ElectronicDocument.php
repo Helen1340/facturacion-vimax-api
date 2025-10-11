@@ -40,12 +40,12 @@ class ElectronicDocument extends Model
         'radianEvents',
     ];
      //relaciones con otras tablas
-    
+
     protected $allowFilter = [ 'electronic_invoice_id', 'dian_numbering_id', 'credit_debit_note_id',
         'cufe', 'cude', 'xml_document', 'dian_status', 'validation_date',
         'digital_signature', 'document_hash', 'description', 'environment',
         'document_type', 'qr_code', 'cdr', 'emission_mode',];
-        
+
     protected $allowSort = [ 'electronic_invoice_id', 'dian_numbering_id', 'credit_debit_note_id',
         'cufe', 'cude', 'xml_document', 'dian_status', 'validation_date',
         'digital_signature', 'document_hash', 'description', 'environment',
@@ -58,7 +58,7 @@ class ElectronicDocument extends Model
 
     public function dianNumbering()
     {
-        return $this->belongsTo(DianNumbering::class, );
+        return $this->belongsTo(DianNumbering::class);
     }
 
     public function creditDebitNote()
