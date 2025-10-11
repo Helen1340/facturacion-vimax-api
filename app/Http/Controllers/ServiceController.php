@@ -31,7 +31,7 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'measurement_unit_id' => ['required', 'integer'], // unidad de medida (FK)
+            'measurement_unit_id' => ['required', 'integer', 'exists:measurement_units,id'], // unidad de medida (FK)
             'name'                => ['required', 'string', 'max:150'], // nombre del servicio
             'description'         => ['nullable', 'string', 'max:150'], // descripción
             'service_code'        => ['required', 'string', 'max:50', 'unique:services,service_code'], // código del servicio
@@ -48,7 +48,7 @@ class ServiceController extends Controller
      */
     public function show($id)
     {
-        $service = Service::findorfail($id);
+        $service = Service::findOrFail($id);
 
         return response()->json($service, 200);
     }
@@ -59,9 +59,9 @@ class ServiceController extends Controller
     public function update(Request $request, Service $service)
     {
         $validated = $request->validate([
-            'measurement_unit_id' => ['sometimes', 'integer'], // unidad de medida (FK)
+            'measurement_unit_id' => ['sometimes', 'integer', 'exists:measurement_units,id'], // unidad de medida (FK)
             'name'                => ['sometimes', 'string', 'max:150'], // nombre del servicio
-            'description'         => ['sometimes', 'string', 'max:150'], // descripción
+            'description'         => ['nullable', 'string', 'max:150'], // descripción
             'service_code'        => ['sometimes', 'string', 'max:50', 'unique:services,service_code,' . $service->id], // código del servicio
             'unit_price'          => ['sometimes', 'numeric', 'min:0'], // precio unitario
             'status'              => ['sometimes', 'in:Active,Inactive'], // estado

@@ -10,6 +10,8 @@ class ElectronicInvoice extends Model
 {
     use HasFactory;
 
+    
+
     protected $fillable = [
         'user_id',
         'invoice_number',
@@ -43,6 +45,10 @@ class ElectronicInvoice extends Model
     ];
 
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new \App\Models\Scopes\CompanyScope);
+    }
 
     //LISTAS BLANCAS
 

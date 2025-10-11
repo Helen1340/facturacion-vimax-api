@@ -28,6 +28,11 @@ class InvoiceDetail extends Model
         'total_line_amount',     // Total línea (subtotal + impuestos)
     ];
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new \App\Models\Scopes\CompanyScope);
+    }
+
 
     // listas blancas para la consulta
     protected $allowIncluded =[

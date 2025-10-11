@@ -34,6 +34,11 @@ class User extends Authenticatable
     'last_access',
     ];
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new \App\Models\Scopes\CompanyScope);
+    }
+
     protected $allowIncluded = [
         'company',
         'company.digitalCertificates',

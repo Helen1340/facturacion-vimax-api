@@ -6,10 +6,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    
+
     public function index()
     {
         $user = User::included()->filter()->sort()->getOrPaginate();
@@ -17,12 +18,17 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    
-    
+
+
     public function store(Request $request)
     {
+        $authUser = $request->user();
+
+        // Si el usuario autenticado pertenece a una empresa, se usa esa empresa.
+        $companyId = $authUser ? $authUser->company_id : $request->input('company_id');
+
         $validated = $request->validate([
-        'company_id' => ['nullable', 'integer', 'exists:companies,id'],
+        
             'role_id' => ['nullable', 'integer'],
             'first_name' => ['required', 'string', 'max:100'],
             'document_type' => ['nullable', Rule::in(['NIT', 'CC', 'CE'])],
@@ -35,15 +41,22 @@ class UserController extends Controller
             'status' => ['nullable', Rule::in(['Active', 'Inactive'])],
             'last_access' => ['nullable', 'date'],
             'password' => ['required', 'string', 'min:8'], 
+
         ]);
 
         $user = User::create([
             ...$validated,
+            'company_id' => $companyId,
             'password' => Hash::make($validated['password']),
         ]);
 
-        return response()->json($user);
+        return response()->json([
+            'message' => 'Usuario creado exitosamente',
+            'data' => $user,
+        ], 201);
     }
+
+
 
 
     /**
