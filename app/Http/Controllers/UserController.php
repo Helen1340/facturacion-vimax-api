@@ -22,19 +22,19 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'company_id' => ['nullable', 'integer', 'exists:companies,id'], // ID de la empresa a la que pertenece
-            'role_id' => ['nullable', 'integer'], // ID del rol del usuario
-            'name' => ['required', 'string', 'max:100'], // Nombre completo del usuario
-            'document_type' => ['nullable', Rule::in(['NIT', 'CC', 'CE'])], // Tipo de documento
-            'document_number' => ['required', 'string', 'max:50', 'unique:users,document_number'], // Número de documento
-            'address' => ['nullable', 'string', 'max:150'], // Dirección del usuario
-            'country' => ['nullable', 'string', 'max:100'], // País del usuario
-            'description' => ['nullable', 'string', 'max:250'], // Información adicional
-            'email' => ['required', 'email', 'max:150', 'unique:users,email'], // Correo electrónico
-            'phone' => ['nullable', 'string', 'max:20'], // Teléfono
-            'status' => ['nullable', Rule::in(['Activo', 'Inactivo'])], // Estado del usuario
-            'last_access' => ['nullable', 'date'], // Último acceso
-            'password' => ['required', 'string', 'min:8'], // Contraseña
+        'company_id' => ['nullable', 'integer', 'exists:companies,id'],
+            'role_id' => ['nullable', 'integer'],
+            'first_name' => ['required', 'string', 'max:100'],
+            'document_type' => ['nullable', Rule::in(['NIT', 'CC', 'CE'])],
+            'document_number' => ['required', 'string', 'max:50', Rule::unique('users', 'document_number')],
+            'address' => ['nullable', 'string', 'max:150'],
+            'country' => ['nullable', 'string', 'max:100'],
+            'description' => ['nullable', 'string', 'max:250'],
+            'email' => ['required', 'email', 'max:150', Rule::unique('users', 'email')],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'status' => ['nullable', Rule::in(['Active', 'Inactive'])],
+            'last_access' => ['nullable', 'date'],
+            'password' => ['required', 'string', 'min:8'], 
         ]);
 
         $user = User::create([
@@ -64,30 +64,21 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'company_id' => ['sometimes', 'integer', 'exists:companies,id'],
-            'role_id' => ['sometimes', 'integer'],
-            'name' => ['sometimes', 'string', 'max:100'],
+            
+        'company_id' => ['sometimes', 'integer', 'exists:companies,id'], // CORREGIDO: nullable -> sometimes
+            'role_id' => ['sometimes', 'integer'], // CORREGIDO: nullable -> sometimes
+            'first_name' => ['sometimes', 'string', 'max:100'], 
             'document_type' => ['sometimes', Rule::in(['NIT', 'CC', 'CE'])],
-            'document_number' => [
-                'sometimes',
-                'string',
-                'max:50',
-                Rule::unique('users', 'document_number')->ignore($user->id),
-            ],
-            'address' => ['sometimes', 'string', 'max:150'],
-            'country' => ['sometimes', 'string', 'max:100'],
-            'description' => ['sometimes', 'string', 'max:250'],
-            'email' => [
-                'sometimes',
-                'email',
-                'max:150',
-                Rule::unique('users', 'email')->ignore($user->id),
-            ],
-            'phone' => ['sometimes', 'string', 'max:20'],
-            'status' => ['sometimes', Rule::in(['Activo', 'Inactivo'])],
+            'document_number' => ['sometimes', 'string', 'max:50', Rule::unique('users', 'document_number')->ignore($user->id)],
+            'address' => ['sometimes', 'string', 'max:150'], 
+            'country' => ['sometimes', 'string', 'max:100'], 
+            'description' => ['sometimes', 'string', 'max:250'], 
+            'email' => ['sometimes', 'email', 'max:150', Rule::unique('users', 'email')->ignore($user->id)],
+            'phone' => ['sometimes', 'string', 'max:20'], 
+            'status' => ['sometimes', Rule::in(['Active', 'Inactive'])], 
             'last_access' => ['sometimes', 'date'],
-            'password' => ['sometimes', 'string', 'min:8'],
-        ]);
+            'password' => ['sometimes', 'string', 'min:8'], 
+    ]);
 
         // Si se envía la password, se encripta
         if (isset($validated['password'])) {
