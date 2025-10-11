@@ -15,9 +15,9 @@ class ElectronicInvoiceController extends Controller
         return response()->json($invoices);
     }
 
-    
 
-    
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -43,13 +43,14 @@ class ElectronicInvoiceController extends Controller
             'payable_amount'        => 'nullable|numeric|min:0',
 
             // --- Control de estado DIAN ---
-            'estado_dian'           => 'nullable|string|max:50',
+            'dian_status'           => 'nullable|string|max:50',
             'sent_at'               => 'nullable|date',
             'received_at'           => 'nullable|date',
 
             // --- Información de pago ---
             'payment_means_code'    => 'nullable|string|max:10',
             'payment_terms'         => 'nullable|string|max:255',
+            'payment_means_name'    => 'nullable|string|max:255',
         ]);
 
         $invoice = ElectronicInvoice::create($request->all());
@@ -57,18 +58,18 @@ class ElectronicInvoiceController extends Controller
         return response()->json($invoice);
     }
 
-    
+
     public function show($id)
     {
         //$invoice = ElectronicInvoice::included()->findOrFail($id);
-        //return response()->json($invoice); //como nos enseno el instructor 
+        //return response()->json($invoice); //como nos enseno el instructor
 
         // Mostrar una factura con sus detalles y producto/servicio
         $invoice = ElectronicInvoice::with('invoiceDetails.item')->findOrFail($id);
         return response()->json($invoice);
     }
 
-   
+
     public function update(Request $request, ElectronicInvoice $electronicInvoice)
     {
         $request->validate([
@@ -94,13 +95,14 @@ class ElectronicInvoiceController extends Controller
             'payable_amount'        => 'nullable|numeric|min:0',
 
             // --- Control de estado DIAN ---
-            'estado_dian'           => 'nullable|string|max:50',
+            'dian_status'           => 'nullable|string|max:50',
             'sent_at'               => 'nullable|date',
             'received_at'           => 'nullable|date',
 
             // --- Información de pago ---
             'payment_means_code'    => 'nullable|string|max:10',
             'payment_terms'         => 'nullable|string|max:255',
+            'payment_means_name'    => 'nullable|string|max:255',
         ]);
 
         $electronicInvoice->update($request->all());
@@ -108,7 +110,7 @@ class ElectronicInvoiceController extends Controller
         return response()->json($electronicInvoice);
     }
 
-    
+
     public function destroy(ElectronicInvoice $electronicInvoice)
     {
         $electronicInvoice->delete();
