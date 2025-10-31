@@ -12,11 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-    $table->id();
+            $table->id();
 
-    // Relaciones
-            $table->unsignedBigInteger('company_id')->nullable(); // FK a la compañía
-            $table->unsignedBigInteger('role_id')->nullable();    // FK al rol del usuario
+            // Relaciones
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('role_id')->nullable();
+
+            $table->foreign('company_id')
+                ->references('id')
+                ->on('companies')
+                ->onDelete('cascade');
+
+            $table->foreign('role_id')
+                ->references('id')
+                ->on('roles')
+                ->onDelete('cascade');
 
             // Datos personales
             $table->string('first_name', 100); // Nombre del usuario
