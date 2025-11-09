@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
 
 class ProductController extends Controller
 {
@@ -70,7 +72,7 @@ class ProductController extends Controller
         ]);
 
         // Debug: Log los datos recibidos y validados
-        \Log::info('Product Update Request:', [
+        Log::info('Product Update Request:', [
             'original_request' => $request->all(),
             'validated_data' => $validated,
             'product_id' => $product->id
@@ -79,7 +81,7 @@ class ProductController extends Controller
         $product->update($validated);
         
         // Debug: Log el producto actualizado
-        \Log::info('Product Updated:', $product->fresh()->toArray());
+        Log::info('Product Updated:', $product->fresh()->toArray());
         
         return response()->json($product->fresh(), 200);
     }

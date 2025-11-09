@@ -24,7 +24,7 @@ protected $fillable = [
     'phone',                            
     'email',                            // Mapea a email (columna)
     'tax_regime',                       
-    'ciiu_code',                        
+    'ciiu_code',
     'logo_url',                         
     'legal_representative_name',        
     'legal_representative_document_type', 

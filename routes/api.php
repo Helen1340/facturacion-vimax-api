@@ -37,16 +37,16 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
-    
-});
+    Route::put('/completeRegistration', [AuthController::class, 'completeRegistration']);
 
     Route::apiResource('users', UserController::class);
-
+    
     // routes/api.php
-    Route::apiResource('companies',CompanyController::class);
+    Route::apiResource('companies', CompanyController::class);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('dianStatusResponse', DianStatusResponseController::class);
-    Route::apiResource('measurementUnints', MeasurementUnitController::class); // unidad-medida
+    Route::apiResource('measurementUnits', MeasurementUnitController::class);
+
     // detalle-factura
     Route::apiResource('payments', PaymentController::class);
     Route::apiResource('paymentMethods', PaymentMethodController::class); // metodo-pago
@@ -67,8 +67,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('services', ServiceController::class);
     Route::apiResource('electronicInvoices', ElectronicInvoiceController::class); // electronic-invoice-seeder
 
-Route::prefix('reportes')->group(function () {
-    Route::get('/facturas', [ReportController::class, 'reporteFacturas']);
-    Route::get('/pagos', [ReportController::class, 'reportePagos']);
-    Route::get('/usuarios', [ReportController::class, 'reporteUsuarios']);
+    Route::prefix('reportes')->group(function () {
+        Route::get('/facturas', [ReportController::class, 'reporteFacturas']);
+        Route::get('/pagos', [ReportController::class, 'reportePagos']);
+        Route::get('/usuarios', [ReportController::class, 'reporteUsuarios']);
+    });
 });

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-           
+        
             $table->string('business_name', 150); // Razón social de la empresa
             $table->string('nit', 50)->unique();  // NIT de la empresa (obligatorio)
             $table->string('trade_name', 150)->nullable(); // Nombre comercial de la empresa
