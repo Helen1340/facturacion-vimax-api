@@ -1,5 +1,6 @@
 <?php
 
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CreditDebitNoteController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\ElectronicDocumentController;
 use App\Http\Controllers\ElectronicInvoiceController;
 use App\Http\Controllers\InvoiceDetailController;
 use App\Http\Controllers\MeasurementUnitController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\RadianEventController;
@@ -94,6 +96,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('dianCredential', DianCredentialController::class);
     // ORM Testing
     Route::get('test-all', [OrmController::class, 'testAllRelations']);
+    
+Route::apiResource('notifications', NotificationController::class);
+
 
     Route::apiResource('invoiceDetails', InvoiceDetailController::class);
     
@@ -113,6 +118,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/usuarios', [ReportController::class, 'reporteUsuarios']);
     });
 
+  
+  
+  
+  
+
     // RUTAS DE CERTIFICADOS DIGITALES
     Route::prefix('certificates')->group(function () {
         Route::get('/info', [DigitalCertificateController::class, 'getInfo']);
@@ -120,4 +130,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [DigitalCertificateController::class, 'index']);
         Route::post('/{id}/deactivate', [DigitalCertificateController::class, 'deactivate']);
     });
+
 });
+
+
+
+
