@@ -84,6 +84,11 @@ class ElectronicDocument extends Model
         'emission_mode',
     ];
 
+    public function dianStatusResponses()
+    {
+        return $this->hasMany(DianStatusResponse::class, 'electronic_document_id');
+    }
+
 
     public function electronicInvoice()
     {

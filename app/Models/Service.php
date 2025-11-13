@@ -11,10 +11,16 @@ class Service extends Model
 
     use HasFactory;
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new \App\Models\Scopes\CompanyScope);
+    }
+
     protected $fillable = [
+        'company_id',          // empresa
         'measurement_unit_id',
         'name',                // nombre del servicio
-        'description',         // descripción
+        'description',       // descripción
         'service_code',        // código del servicio
         'unit_price',          // precio unitario
         'status',              // estado (Activo/Inactivo)
@@ -23,6 +29,11 @@ class Service extends Model
     protected $allowIncluded = [ 'measurementUnit', 'invoiceDetails', 'taxes'];
     protected $allowFilter = ['id', 'name', 'description', 'service_code', 'unit_price', 'status'];
     protected $allowSort = ['id', 'name', 'description', 'service_code', 'unit_price', 'status'];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     public function measurementUnit()
     {

@@ -5,16 +5,29 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * GET /api/products?status=Active&included=measurementUnit,taxes
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::included()->filter()->sort()->getOrPaginate();
+        $query = Product::query();
+
+        // Filtrar por status si se envía (por defecto solo activos si no se especifica)
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        } else {
+            // Por defecto, solo productos activos para facilitar uso en facturas
+            $query->where('status', 'Active');
+        }
+
+        // Aplicar includes, filtros y ordenamiento
+        $products = $query->included()->filter()->sort()->getOrPaginate();
 
         return response()->json($products, 200);
     }
@@ -42,8 +55,36 @@ class ProductController extends Controller
             'status'              => ['required', 'in:Active,Inactive'], // estado
         ]);
 
+        // Asignar automáticamente la empresa del usuario logueado
+        $user = Auth::user();
+        if (!$user || !$user->company_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no autenticado o sin empresa asociada'
+            ], 401);
+        }
+        $validated['company_id'] = $user->company_id;
+        
         $product = Product::create($validated);
         return response()->json($product, 201);
+    }
+
+    /**
+     * Obtener solo productos activos (útil para facturas)
+     * GET /api/products/active
+     */
+    public function active(Request $request)
+    {
+        $products = Product::where('status', 'Active')
+            ->with(['measurementUnit', 'taxes'])
+            ->select('id', 'product_code', 'name', 'description', 'unit_price', 'measurement_unit_id', 'status')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $products
+        ], 200);
     }
 
     /**

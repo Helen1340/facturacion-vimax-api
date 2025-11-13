@@ -23,9 +23,12 @@ class RouteServiceProvider extends ServiceProvider
     }
     protected function mapApiRoutes(): void
     {
-        Route::prefix('v1')
-            ->middleware('api')
-            ->group(base_path('routes/api.php'));
+        // Las rutas API se cargan directamente desde bootstrap/app.php
+        // Este método ya no es necesario, pero se mantiene por compatibilidad
+        // Si necesitas el prefijo 'v1', descomenta las siguientes líneas:
+        // Route::prefix('v1')
+        //     ->middleware('api')
+        //     ->group(base_path('routes/api.php'));
     }
 
 

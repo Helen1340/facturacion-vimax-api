@@ -14,6 +14,7 @@ class ElectronicInvoice extends Model
 
     protected $fillable = [
         'user_id',
+        'buyer_id',  // Cliente (comprador) - usuario con role 'client'
         'invoice_number',
         'issue_date',
         'internal_status',
@@ -50,6 +51,15 @@ class ElectronicInvoice extends Model
         static::addGlobalScope(new \App\Models\Scopes\CompanyScope);
     }
 
+    /**
+     * Los atributos que deben ser convertidos a tipos nativos.
+     */
+    protected $casts = [
+        'issue_date' => 'datetime',
+        'sent_at' => 'datetime',
+        'received_at' => 'datetime',
+    ];
+
     //LISTAS BLANCAS
 
     //Las posibles relaciones (includes) que se pueden cargar.
@@ -57,6 +67,9 @@ class ElectronicInvoice extends Model
         'user',
         'user.company',
         'user.role',
+        'buyer',
+        'buyer.company',
+        'buyer.role',
         'invoiceDetails',
         'invoiceDetails.item',
         'payment',
@@ -70,6 +83,7 @@ class ElectronicInvoice extends Model
     protected $allowFilter = [
     // Identificación
     'user_id',
+    'buyer_id',
     'invoice_number',
     'issue_date',
 
@@ -111,11 +125,18 @@ class ElectronicInvoice extends Model
 
     //RELACIONES CON OTRAS TABLAS
 
-    //Relación muchos a uno: Una factura pertenece a un usuario (cliente o facturador).
+    //Relación muchos a uno: Una factura pertenece a un usuario (facturador que crea la factura).
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    //Relación muchos a uno: Una factura tiene un comprador (cliente - usuario con role 'client').
+
+    public function buyer()
+    {
+        return $this->belongsTo(User::class, 'buyer_id');
     }
 
     //Relación uno a uno: Una factura puede tener un pago.

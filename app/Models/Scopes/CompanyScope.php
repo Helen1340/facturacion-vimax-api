@@ -24,7 +24,9 @@ class CompanyScope implements Scope
 
         // 🔹 1️⃣ Si el modelo tiene relación directa con empresa
         if (in_array('company_id', $model->getFillable())) {
-            $builder->where('company_id', $user->company_id);
+            // Filtrar por empresa y excluir registros con company_id NULL
+            $builder->where('company_id', $user->company_id)
+                    ->whereNotNull('company_id');
             return;
         }
 

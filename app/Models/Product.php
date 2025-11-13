@@ -9,8 +9,15 @@ use Illuminate\Database\Eloquent\Builder;
 class Product extends Model
 {
     use HasFactory;
+    
+    protected static function booted()
+    {
+        static::addGlobalScope(new \App\Models\Scopes\CompanyScope);
+    }
+    
     protected $fillable = [
-    'measurement_unit_id', // unidad de medida
+        'company_id',          // empresa
+        'measurement_unit_id', // unidad de medida
         'standard_code',       // código estándar (UNECE o GTIN)
         'product_code',        // código interno del producto
         'name',                // nombre del producto
@@ -38,6 +45,11 @@ class Product extends Model
         'unit_price',
         'status'];
 
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     public function measurementUnit()
     {

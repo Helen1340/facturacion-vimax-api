@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Tax;
 use Illuminate\Http\Request;
 // Importar la clase Rule para la validación de unicidad en el método update
-use Illuminate\Validation\Rule; 
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth; 
 
 class TaxController extends Controller
 {
@@ -34,7 +35,18 @@ class TaxController extends Controller
             'status'         => 'required|in:Activo,Inactivo', 
         ]);
 
-        $tax = Tax::create($request->all());
+        $data = $request->all();
+        // Asignar automáticamente la empresa del usuario logueado
+        $user = Auth::user();
+        if (!$user || !$user->company_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no autenticado o sin empresa asociada'
+            ], 401);
+        }
+        $data['company_id'] = $user->company_id;
+        
+        $tax = Tax::create($data);
         
         // Buena práctica: Usar 201 Created para una respuesta de creación exitosa
         return response()->json($tax, 201); 

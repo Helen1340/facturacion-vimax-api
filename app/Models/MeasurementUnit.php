@@ -10,7 +10,13 @@ class MeasurementUnit extends Model
 {
     use HasFactory;
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new \App\Models\Scopes\CompanyScope);
+    }
+
     protected $fillable = [
+        'company_id',        // empresa
         'name',              // Nombre
         'status',            // Estado
         'dian_code',         // Código DIAN
@@ -32,6 +38,11 @@ class MeasurementUnit extends Model
 
 
     // Cardinalidad //
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     // Una unidad de medida puede tener muchos productos
     public function products()

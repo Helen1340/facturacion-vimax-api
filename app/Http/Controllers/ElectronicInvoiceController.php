@@ -2,124 +2,412 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\InvoiceService;
+use App\Services\DianSimulatorService;
 use Illuminate\Http\Request;
 use App\Models\ElectronicInvoice;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+
 
 class ElectronicInvoiceController extends Controller
 {
-    public function index()
-    {
-        // Listar facturas electrónicas con filtros, orden y paginación
-        $invoices = ElectronicInvoice::included()->filter()->sort()->getOrPaginate();
+    private $invoiceService;
+    private $dianSimulator;
 
-        return response()->json($invoices);
+    // ⬇️ AGREGA ESTE CONSTRUCTOR
+    public function __construct(InvoiceService $invoiceService, DianSimulatorService $dianSimulator)
+    {
+        $this->invoiceService = $invoiceService;
+        $this->dianSimulator = $dianSimulator;
     }
-    public function store(Request $request)
+
+    /**
+     * Listar facturas con filtros opcionales
+     * GET /api/invoices?dian_status=accepted&date_from=2024-01-01
+     * Nota: Las facturas se filtran automáticamente por la empresa del usuario logueado
+     */
+    public function index(Request $request)
     {
-        $authUser = $request->user();
-
-        if (!$authUser) {
-            return response()->json(['message' => 'No autorizado'], 401);
-        }
-
-        $validated = $request->validate([
-            'invoice_number'        => 'required|string|max:20|unique:electronic_invoices,invoice_number',
-            'issue_date'            => 'required|date',
-            'internal_status'       => 'required|string|max:50',
-            'observation'           => 'nullable|string|max:255',
-
-            // --- Campos DIAN / UBL ---
-            'ubl_version'           => 'nullable|string|max:10',
-            'customization_id'      => 'nullable|string|max:50',
-            'profile_id'            => 'nullable|string|max:50',
-            'uuid'                  => 'nullable|string|max:100',
-            'document_currency_code' => 'nullable|string|max:10',
-            'invoice_type_code'     => 'nullable|string|max:10',
-
-            // --- Totales principales ---
-            'line_extension_amount' => 'nullable|numeric|min:0',
-            'tax_exclusive_amount'  => 'nullable|numeric|min:0',
-            'tax_inclusive_amount'  => 'nullable|numeric|min:0',
-            'payable_amount'        => 'nullable|numeric|min:0',
-
-            // --- Control de estado DIAN ---
-            'dian_status'           => 'nullable|string|max:50',
-            'sent_at'               => 'nullable|date',
-            'received_at'           => 'nullable|date',
-
-            // --- Información de pago ---
-            'payment_means_code'    => 'nullable|string|max:10',
-            'payment_terms'         => 'nullable|string|max:255',
-            'payment_means_name'    => 'nullable|string|max:255',
+        $filters = $request->only([
+            'user_id',
+            'dian_status',
+            'internal_status',
+            'date_from',
+            'date_to',
+            'per_page'
         ]);
 
-        $invoice = ElectronicInvoice::create([
-            ...$validated,
-            'user_id' => $authUser->id,
-        ]);
+        $invoices = $this->invoiceService->listInvoices($filters);
 
         return response()->json([
-            'message' => 'Factura creada exitosamente',
-            'data' => $invoice,
-        ], 201);
+            'success' => true,
+            'data' => $invoices
+        ]);
     }
 
-    public function show($id)
+    /**
+     * Crear factura completa con detalles
+     * POST /api/invoices
+     * {
+     *   "user_id": 3,  // Opcional: si no se envía, se usa el usuario logueado
+     *   "buyer_id": 5,  // Requerido: ID del cliente (usuario con role 'client')
+     *   "observation": "Factura de venta",
+     *   "items": [
+     *     {"type": "product", "id": 1, "quantity": 2, "discount": 5000},
+     *     {"type": "service", "id": 1, "quantity": 1}
+     *   ]
+     * }
+     * Nota: La factura se crea automáticamente para la empresa del usuario logueado
+     */
+    public function store(Request $request)
     {
-        //$invoice = ElectronicInvoice::included()->findOrFail($id);
-        //return response()->json($invoice); //como nos enseno el instructor
-
-        // Mostrar una factura con sus detalles y producto/servicio
-        $invoice = ElectronicInvoice::with('invoiceDetails.item')->findOrFail($id);
-        return response()->json($invoice);
-    }
-
-
-    public function update(Request $request, ElectronicInvoice $electronicInvoice)
-    {
-        $request->validate([
-            // --- Relación y datos base ---
-            'user_id'               => 'sometimes|exists:users,id',
-            'invoice_number'        => 'sometimes|string|max:20|unique:electronic_invoices,invoice_number,' . $electronicInvoice->id,
-            'issue_date'            => 'sometimes|date',
-            'internal_status'       => 'sometimes|string|max:50',
-            'observation'           => 'nullable|string|max:255',
-
-            // --- Campos DIAN / UBL ---
-            'ubl_version'           => 'nullable|string|max:10',
-            'customization_id'      => 'nullable|string|max:50',
-            'profile_id'            => 'nullable|string|max:50',
-            'uuid'                  => 'nullable|string|max:100',
-            'document_currency_code' => 'nullable|string|max:10',
-            'invoice_type_code'     => 'nullable|string|max:10',
-
-            // --- Totales principales ---
-            'line_extension_amount' => 'nullable|numeric|min:0',
-            'tax_exclusive_amount'  => 'nullable|numeric|min:0',
-            'tax_inclusive_amount'  => 'nullable|numeric|min:0',
-            'payable_amount'        => 'nullable|numeric|min:0',
-
-            // --- Control de estado DIAN ---
-            'dian_status'           => 'nullable|string|max:50',
-            'sent_at'               => 'nullable|date',
-            'received_at'           => 'nullable|date',
-
-            // --- Información de pago ---
-            'payment_means_code'    => 'nullable|string|max:10',
-            'payment_terms'         => 'nullable|string|max:255',
-            'payment_means_name'    => 'nullable|string|max:255',
+        $validated = $request->validate([
+            'user_id' => 'nullable|exists:users,id',
+            'buyer_id' => 'required|exists:users,id',  // Cliente (comprador) - debe ser usuario con role 'client'
+            'observation' => 'nullable|string|max:255',
+            'payment_means_code' => 'nullable|string|max:6',
+            'payment_means_name' => 'nullable|string|max:255',
+            'items' => 'required|array|min:1',
+            'items.*.type' => 'required|in:product,service',
+            'items.*.id' => 'required|integer',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.discount' => 'nullable|numeric|min:0'
         ]);
 
-        $electronicInvoice->update($request->all());
+        // Si no se envía user_id, usar el usuario logueado
+        if (!isset($validated['user_id'])) {
+            $validated['user_id'] = Auth::id();
+        }
 
-        return response()->json($electronicInvoice);
+        $result = $this->invoiceService->createInvoice($validated);
+
+        return response()->json($result, $result['success'] ? 201 : 400);
     }
 
-
-    public function destroy(ElectronicInvoice $electronicInvoice)
+    /**
+     * Obtener datos necesarios para crear una factura (productos, servicios, clientes)
+     * GET /api/invoices/create/data
+     */
+    public function createData(Request $request)
     {
-        $electronicInvoice->delete();
-        return response()->json($electronicInvoice);
+        try {
+            $loggedUser = Auth::user();
+            
+            if (!$loggedUser || !$loggedUser->company_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no autenticado o sin empresa asociada'
+                ], 401);
+            }
+
+            // Obtener productos activos de la empresa
+            $products = \App\Models\Product::where('status', 'Active')
+                ->with(['measurementUnit', 'taxes'])
+                ->select('id', 'product_code', 'name', 'description', 'unit_price', 'measurement_unit_id', 'status')
+                ->orderBy('name')
+                ->get();
+
+            // Obtener servicios activos de la empresa
+            $services = \App\Models\Service::where('status', 'Active')
+                ->with(['measurementUnit', 'taxes'])
+                ->select('id', 'service_code', 'name', 'description', 'unit_price', 'measurement_unit_id', 'status')
+                ->orderBy('name')
+                ->get();
+
+            // Obtener clientes activos de la empresa
+            $clients = \App\Models\User::where('company_id', $loggedUser->company_id)
+                ->whereHas('role', function ($query) {
+                    $query->where('role_name', 'client');
+                })
+                ->where('status', 'Active')
+                ->select('id', 'first_name', 'document_type', 'document_number', 'email', 'phone', 'address')
+                ->orderBy('first_name')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'products' => $products,
+                    'services' => $services,
+                    'clients' => $clients
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener datos: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtener lista de clientes (usuarios con role 'client') de la empresa logueada
+     * GET /api/invoices/clients
+     */
+    public function getClients(Request $request)
+    {
+        try {
+            $loggedUser = Auth::user();
+            
+            if (!$loggedUser || !$loggedUser->company_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no autenticado o sin empresa asociada'
+                ], 401);
+            }
+
+            // Obtener usuarios con role 'client' de la misma empresa
+            $clients = \App\Models\User::where('company_id', $loggedUser->company_id)
+                ->whereHas('role', function ($query) {
+                    $query->where('role_name', 'client');
+                })
+                ->where('status', 'Active')
+                ->select('id', 'first_name', 'document_type', 'document_number', 'email', 'phone', 'address')
+                ->orderBy('first_name')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $clients
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener clientes: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Ver factura completa con todos sus detalles
+     * GET /api/invoices/{id}
+     */
+    public function show($id)
+    {
+        try {
+            // comprueba si existe la factura
+            $invoice = ElectronicInvoice::find($id);
+
+            if (!$invoice) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Factura no encontrada'
+                ], 404);
+            }
+
+            // llama al servicio (mantiene la lógica existente)
+            $invoiceComplete = $this->invoiceService->getInvoiceComplete($id);
+
+            return response()->json([
+                'success' => true,
+                'data' => $invoiceComplete
+            ]);
+        } catch (\Exception $e) {
+            // log para depuración
+            Log::error('ElectronicInvoiceController@show error', [
+                'id' => $id,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // muestra mensaje más útil en entorno de desarrollo
+            $message = config('app.debug') ? $e->getMessage() : 'Error al obtener la factura';
+
+            return response()->json([
+                'success' => false,
+                'message' => $message
+            ], 500);
+        }
+    }
+
+    /**
+     * Enviar factura a la DIAN (SIMULADO)
+     * POST /api/invoices/{id}/send-dian
+     */
+    public function sendToDian($id)
+    {
+        $result = $this->invoiceService->sendToDian($id);
+
+        return response()->json($result, $result['success'] ? 200 : 400);
+    }
+
+    /**
+     * Consultar estado de factura en la DIAN
+     * GET /api/invoices/{id}/status
+     */
+    public function checkStatus($id)
+    {
+        try {
+            $invoice = ElectronicInvoice::findOrFail($id);
+
+            if (!$invoice->uuid) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Esta factura aún no ha sido enviada a la DIAN'
+                ], 400);
+            }
+
+            $result = $this->dianSimulator->checkInvoiceStatus($invoice->uuid);
+
+            return response()->json($result);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al consultar estado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Cancelar factura (solo si no está aceptada por la DIAN)
+     * POST /api/invoices/{id}/cancel
+     */
+    public function cancel($id)
+    {
+        $result = $this->invoiceService->cancelInvoice($id);
+
+        return response()->json($result, $result['success'] ? 200 : 400);
+    }
+
+    /**
+     * Actualizar factura (solo en estado borrador)
+     * PUT /api/invoices/{id}
+     */
+    public function update(Request $request, $id)
+    {
+        try {
+            $invoice = ElectronicInvoice::findOrFail($id);
+
+            if ($invoice->internal_status !== 'draft') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Solo se pueden editar facturas en estado borrador'
+                ], 400);
+            }
+
+            $validated = $request->validate([
+                'buyer_id' => 'nullable|exists:users,id',  // Cliente (comprador) - debe ser usuario con role 'client'
+                'observation' => 'nullable|string|max:255',
+                'payment_means_code' => 'nullable|string|max:6',
+                'payment_means_name' => 'nullable|string|max:255'
+            ]);
+
+            // Si se envía buyer_id, validar que sea un cliente válido
+            if (isset($validated['buyer_id'])) {
+                $loggedUser = Auth::user();
+                $buyer = \App\Models\User::with('role')->findOrFail($validated['buyer_id']);
+                
+                // Validar que pertenezca a la misma empresa
+                if ($buyer->company_id !== $loggedUser->company_id) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'El cliente seleccionado no pertenece a su empresa'
+                    ], 400);
+                }
+                
+                // Validar que tenga el role 'client'
+                if (!$buyer->role || $buyer->role->role_name !== 'client') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'El usuario seleccionado no es un cliente. Debe tener el role "client"'
+                    ], 400);
+                }
+            }
+
+            $invoice->update($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Factura actualizada exitosamente',
+                'data' => $invoice
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Eliminar factura (solo en estado borrador)
+     * DELETE /api/invoices/{id}
+     */
+    public function destroy($id)
+    {
+        try {
+            $invoice = ElectronicInvoice::findOrFail($id);
+
+            if ($invoice->internal_status !== 'draft') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Solo se pueden eliminar facturas en estado borrador'
+                ], 400);
+            }
+
+            $invoice->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Factura eliminada exitosamente'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al eliminar: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtener estadísticas de facturación
+     * GET /api/invoices/stats?company_id=1&date_from=2024-01-01&date_to=2024-12-31
+     */
+    public function stats(Request $request)
+    {
+        $companyId = $request->input('company_id');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+
+        $stats = $this->invoiceService->getInvoiceStats($companyId, $dateFrom, $dateTo);
+
+        return response()->json([
+            'success' => true,
+            'data' => $stats
+        ]);
+    }
+
+    /**
+     * Generar código QR de la factura
+     * GET /api/invoices/{id}/qr
+     */
+    public function generateQR($id)
+    {
+        try {
+            $invoice = ElectronicInvoice::findOrFail($id);
+
+            if (!$invoice->uuid) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Esta factura no tiene CUFE generado'
+                ], 400);
+            }
+
+            $qrUrl = $this->dianSimulator->generateQRCodeImage($invoice);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'qr_url' => $qrUrl,
+                    'cufe' => $invoice->uuid
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al generar QR: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

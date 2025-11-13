@@ -1,90 +1,100 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\DigitalCertificate;
 
+use App\Services\DigitalSignatureService;
+use App\Models\Company;
+use App\Models\DigitalCertificate;
 use Illuminate\Http\Request;
 
 class DigitalCertificateController extends Controller
 {
-    /*  la función index devuelve una lista de certificados digitales
-        con la posibilidad de incluir relaciones, filtrar y ordenar
-        según los parámetros de la solicitud.
-    */
-    public function index()
+    private $signatureService;
+
+    public function __construct(DigitalSignatureService $signatureService)
     {
-        $digital_certificates = DigitalCertificate::included()->filter()->sort()->getOrPaginate();
-        return response()->json($digital_certificates);
+        $this->signatureService = $signatureService;
     }
 
-    /*  la función store crea un nuevo certificado digital
-        validando los datos de la solicitud y guardándolos en la base de datos.
-    */
-    public function store(Request $request)
+    /**
+     * Obtener información del certificado de la empresa
+     * GET /api/certificates/info?company_id=1
+     */
+    public function getInfo(Request $request)
     {
-        $request->validate([
-            'company_id'            => 'required|exists:companies,id', // ID de la compañía propietaria del certificado
-            'certificate_name'      => 'required|string|max:255',       // Nombre del certificado
-            'certificate_path'      => 'required|string',               // Ruta del archivo del certificado
-            'serial_number'         => 'required|string|max:100',       // Número de serie del certificado
-            'password'              => 'required|string|max:150',       // Contraseña del certificado
-            'start_date'            => 'required|date',                 // Fecha de inicio de vigencia
-            'end_date'              => 'required|date|after_or_equal:start_date', // Fecha de fin de vigencia
-            'status'                => 'required|in:Vigente,Vencido,Revocado', // Estado actual del certificado
-            'issuer'                => 'required|string|max:100',       // Entidad emisora del certificado
-            'certificate_type'      => 'sometimes|in:Producción,Pruebas', // Tipo de certificado (producción o pruebas)
-            'signature_algorithm'   => 'sometimes|string|max:50',       // Algoritmo de firma digital
-            'uuid'                  => 'sometimes|string|max:100',      // UUID del certificado (opcional)
-            'description'           => 'sometimes|string|max:255',      // Descripción opcional del certificado
+        $companyId = $request->input('company_id');
+        
+        if (!$companyId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Se requiere el ID de la empresa'
+            ], 400);
+        }
+
+        $company = Company::findOrFail($companyId);
+        $result = $this->signatureService->getCertificateInfo($company);
+
+        return response()->json($result);
+    }
+
+    /**
+     * Crear certificado de prueba
+     * POST /api/certificates/create-test
+     * { "company_id": 1 }
+     */
+    public function createTest(Request $request)
+    {
+        $validated = $request->validate([
+            'company_id' => 'required|exists:companies,id'
         ]);
 
-        $digital_certificate = DigitalCertificate::create($request->all());
-        return response()->json($digital_certificate, 201);
+        $company = Company::findOrFail($validated['company_id']);
+        $result = $this->signatureService->createTestCertificate($company);
+
+        return response()->json($result, $result['success'] ? 201 : 400);
     }
 
-    /*  la función show devuelve un certificado digital específico
-        basado en su ID, lanzando un error 404 si no se encuentra.
-    */
-    public function show($id)
+    /**
+     * Listar certificados de una empresa
+     * GET /api/certificates?company_id=1
+     */
+    public function index(Request $request)
     {
-        $digital_certificate = DigitalCertificate::findOrFail($id);
-        return response()->json($digital_certificate);
+        $companyId = $request->input('company_id');
+        
+        if (!$companyId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Se requiere el ID de la empresa'
+            ], 400);
+        }
+
+        $certificates = DigitalCertificate::where('company_id', $companyId)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $certificates
+        ]);
     }
 
-    /*  la función update actualiza un certificado digital existente
-        validando los datos de la solicitud y actualizando solo los campos proporcionados.
-    */
-    public function update(Request $request, DigitalCertificate $digitalCertificate)
+    /**
+     * Desactivar certificado
+     * POST /api/certificates/{id}/deactivate
+     */
+    public function deactivate($id)
     {
-        $request->validate([
-            'company_id'            => 'sometimes|exists:companies,id', 
-            'certificate_name'      => 'sometimes|required|string|max:255',
-            'certificate_path'      => 'sometimes|required|string',
-            'serial_number'         => 'sometimes|required|string|max:100',
-            'password'              => 'sometimes|required|string|max:150',
-            'start_date'            => 'sometimes|required|date',
-            'end_date'              => 'sometimes|required|date|after_or_equal:start_date',
-            'status'                => 'sometimes|required|in:Vigente,Vencido,Revocado',
-            'issuer'                => 'sometimes|required|string|max:100',
-            'certificate_type'      => 'sometimes|in:Producción,Pruebas',
-            'signature_algorithm'   => 'sometimes|string|max:50',
-            'uuid'                  => 'sometimes|string|max:100',
-            'description'           => 'sometimes|string|max:255',
+        $certificate = DigitalCertificate::findOrFail($id);
+        
+        $certificate->update([
+            'status' => 'Revocado'
         ]);
 
-        // Actualiza solo los campos que vienen en el request
-        $digitalCertificate->update($request->only(array_keys($request->all())));
-
-        return response()->json($digitalCertificate);
-    }
-
-    /*  la función destroy elimina un certificado digital específico
-        basado en su ID, lanzando un error 404 si no se encuentra.
-    */
-    public function destroy($id)
-    {
-        $digital_certificate = DigitalCertificate::findOrFail($id);
-        $digital_certificate->delete();
-        return response()->json(null, 204);
+        return response()->json([
+            'success' => true,
+            'message' => 'Certificado desactivado exitosamente',
+            'data' => $certificate
+        ]);
     }
 }

@@ -40,9 +40,42 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/completeRegistration', [AuthController::class, 'completeRegistration']);
-
-    Route::apiResource('users', UserController::class);
     
+    // CRUD de recursos (todos protegidos por autenticación)
+    Route::apiResource('users', UserController::class);
+
+    // routes/api.php - Actualiza el grupo de invoices
+    Route::prefix('invoices')->group(function () {
+        // CRUD básico
+        Route::get('/', [ElectronicInvoiceController::class, 'index']);
+        Route::post('/', [ElectronicInvoiceController::class, 'store']);
+        Route::get('/{id}', [ElectronicInvoiceController::class, 'show']);
+        Route::put('/{id}', [ElectronicInvoiceController::class, 'update']);
+        Route::delete('/{id}', [ElectronicInvoiceController::class, 'destroy']);
+        
+        // Datos para creación de facturas
+        Route::get('/create/data', [ElectronicInvoiceController::class, 'createData']);
+        
+        // Obtener clientes (usuarios con role 'client')
+        Route::get('/clients', [ElectronicInvoiceController::class, 'getClients']);
+        
+        // Acciones DIAN
+        Route::post('/{id}/send-dian', [ElectronicInvoiceController::class, 'sendToDian']);
+        Route::get('/{id}/status', [ElectronicInvoiceController::class, 'checkStatus']);
+        Route::post('/{id}/cancel', [ElectronicInvoiceController::class, 'cancel']);
+        Route::get('/{id}/qr', [ElectronicInvoiceController::class, 'generateQR']);
+        
+        // Descargas y documentos
+        Route::get('/{id}/download/pdf', [ElectronicInvoiceController::class, 'downloadPDF']);
+        Route::get('/{id}/download/xml', [ElectronicInvoiceController::class, 'downloadXML']);
+        Route::get('/{id}/preview', [ElectronicInvoiceController::class, 'preview']);
+        
+        // Estadísticas y reportes
+        Route::get('/stats/summary', [ElectronicInvoiceController::class, 'stats']);
+        Route::get('/dashboard/metrics', [ElectronicInvoiceController::class, 'dashboardMetrics']);
+    });
+    
+
     // routes/api.php
     Route::apiResource('companies', CompanyController::class);
     Route::apiResource('roles', RoleController::class);
@@ -68,8 +101,15 @@ Route::apiResource('notifications', NotificationController::class);
 
 
     Route::apiResource('invoiceDetails', InvoiceDetailController::class);
+    
+    // Rutas específicas de productos (deben ir antes de apiResource)
+    Route::get('products/active', [ProductController::class, 'active']); // Productos activos para facturas
     Route::apiResource('products', ProductController::class);
+    
+    // Rutas específicas de servicios (deben ir antes de apiResource)
+    Route::get('services/active', [ServiceController::class, 'active']); // Servicios activos para facturas
     Route::apiResource('services', ServiceController::class);
+    
     Route::apiResource('electronicInvoices', ElectronicInvoiceController::class); // electronic-invoice-seeder
 
     Route::prefix('reportes')->group(function () {
@@ -77,7 +117,22 @@ Route::apiResource('notifications', NotificationController::class);
         Route::get('/pagos', [ReportController::class, 'reportePagos']);
         Route::get('/usuarios', [ReportController::class, 'reporteUsuarios']);
     });
+
+  
+  
+  
+  
+
+    // RUTAS DE CERTIFICADOS DIGITALES
+    Route::prefix('certificates')->group(function () {
+        Route::get('/info', [DigitalCertificateController::class, 'getInfo']);
+        Route::post('/create-test', [DigitalCertificateController::class, 'createTest']);
+        Route::get('/', [DigitalCertificateController::class, 'index']);
+        Route::post('/{id}/deactivate', [DigitalCertificateController::class, 'deactivate']);
+    });
+
 });
+
 
 
 

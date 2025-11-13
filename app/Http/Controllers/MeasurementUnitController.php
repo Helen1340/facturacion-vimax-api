@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MeasurementUnit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MeasurementUnitController extends Controller
 {
@@ -25,7 +26,18 @@ class MeasurementUnitController extends Controller
             'application_type' => 'required|in:Product,Service',       // Tipo de aplicación
         ]);
 
-        $unit = MeasurementUnit::create($request->all());
+        $data = $request->all();
+        // Asignar automáticamente la empresa del usuario logueado
+        $user = Auth::user();
+        if (!$user || !$user->company_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no autenticado o sin empresa asociada'
+            ], 401);
+        }
+        $data['company_id'] = $user->company_id;
+        
+        $unit = MeasurementUnit::create($data);
         return response()->json($unit, 201);
     }
 
