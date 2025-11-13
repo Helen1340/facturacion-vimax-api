@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('digital_signature', 50); // Firma digital del documento
             $table->string('document_hash', 150); // Hash del documento electrónico
             $table->string('description', 250); // Descripción del documento
-            $table->enum('environment', ['Pruebas', 'Producción'])->default('Pruebas'); // Ambiente de emisión: Pruebas o Producción
+            $table->enum('environment', ['HABILITACION', 'PRODUCCION'])->default('HABILITACION'); // Ambiente de emisión: Pruebas o Producción
             $table->string('document_type', 50); // Tipo de documento (Factura, Nota Crédito, Nota Débito, etc.)
             $table->longText('qr_code'); // Código QR del documento
             $table->longText('cdr'); // Código de Respuesta de la DIAN

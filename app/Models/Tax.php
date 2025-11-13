@@ -10,7 +10,14 @@ class Tax extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['tax_code',        // Código único del tributo según DIAN
+    protected static function booted()
+    {
+        static::addGlobalScope(new \App\Models\Scopes\CompanyScope);
+    }
+
+    protected $fillable = [
+        'company_id',      // empresa
+        'tax_code',        // Código único del tributo según DIAN
         'name',            // Nombre del tributo
         'description',     // Descripción del tributo
         'type',            // Tipo de tributo: impuesto, retención, contribución, etc.
@@ -20,7 +27,7 @@ class Tax extends Model
         'min_value',       // Valor mínimo aplicable (opcional)
         'max_value',       // Valor máximo aplicable (opcional)
         'status',          // Estado del tributo: Activo o Inactivo
-        ];
+    ];
 
     // Las posibles relaciones (includes) que se pueden cargar
     // a través de query parameters en la API
@@ -46,6 +53,11 @@ class Tax extends Model
         'status',];
 
     // CARDINALIDAD //
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     public function products()
     {

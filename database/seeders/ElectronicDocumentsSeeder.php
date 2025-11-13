@@ -69,7 +69,7 @@ class ElectronicDocumentsSeeder extends Seeder
             'digital_signature' => Str::random(50),
             'document_hash' => hash('sha256', $xmlContent),
             'description' => "Documento electrónico generado automáticamente para " . $docType,
-            'environment' => $faker->randomElement(['Pruebas', 'Producción']),
+            'environment' => $faker->randomElement(['HABILITACION', 'PRODUCCION']),
             'document_type' => $docType,
             'qr_code' => $qrCode,
             'cdr' => $cdrContent,

@@ -4,17 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ServiceController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * GET /api/services?status=Active&included=measurementUnit,taxes
      */
-    public function index()
+    public function index(Request $request)
     {
-        $service = Service::included()->filter()->sort()->getOrPaginate();
+        $query = Service::query();
 
-        return response()->json($service, 200);
+        // Filtrar por status si se envía (por defecto solo activos si no se especifica)
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        } else {
+            // Por defecto, solo servicios activos para facilitar uso en facturas
+            $query->where('status', 'Active');
+        }
+
+        // Aplicar includes, filtros y ordenamiento
+        $services = $query->included()->filter()->sort()->getOrPaginate();
+
+        return response()->json($services, 200);
     }
 
     /**
@@ -39,8 +52,36 @@ class ServiceController extends Controller
             'status'              => ['required', 'in:Active,Inactive'], // estado
         ]);
 
+        // Asignar automáticamente la empresa del usuario logueado
+        $user = Auth::user();
+        if (!$user || !$user->company_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no autenticado o sin empresa asociada'
+            ], 401);
+        }
+        $validated['company_id'] = $user->company_id;
+        
         $service = Service::create($validated);
         return response()->json($service, 201);
+    }
+
+    /**
+     * Obtener solo servicios activos (útil para facturas)
+     * GET /api/services/active
+     */
+    public function active(Request $request)
+    {
+        $services = Service::where('status', 'Active')
+            ->with(['measurementUnit', 'taxes'])
+            ->select('id', 'service_code', 'name', 'description', 'unit_price', 'measurement_unit_id', 'status')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $services
+        ], 200);
     }
 
     /**
