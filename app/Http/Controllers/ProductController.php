@@ -93,6 +93,14 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::findOrFail($id);
+        
+        // Aplicar includes si se solicitan
+        if (request('included')) {
+            $product->load(explode(',', request('included')));
+        } else {
+            // Por defecto, incluir impuestos para facilitar la edición
+            $product->load('taxes');
+        }
 
         return response()->json($product, 200);
     }
@@ -135,5 +143,44 @@ class ProductController extends Controller
         $product->delete();
 
         return response()->json($product, 204);
+    }
+
+    /**
+     * Sincronizar impuestos de un producto
+     * POST /api/products/{id}/sync-taxes
+     */
+    public function syncTaxes(Request $request, $id)
+    {
+        $request->validate([
+            'tax_ids' => ['required', 'array'],
+            'tax_ids.*' => ['integer', 'exists:taxes,id']
+        ]);
+
+        // Si el array está vacío, permitirlo (para eliminar todos los impuestos)
+        if (empty($request->tax_ids)) {
+            $request->tax_ids = [];
+        }
+
+        $product = Product::findOrFail($id);
+        
+        // Verificar que el producto pertenece a la empresa del usuario
+        $user = Auth::user();
+        if ($product->company_id !== $user->company_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No autorizado para modificar este producto'
+            ], 403);
+        }
+
+        $product->taxes()->sync($request->tax_ids);
+
+        // Recargar el producto con sus impuestos
+        $product->load('taxes');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Impuestos sincronizados correctamente',
+            'data' => $product
+        ], 200);
     }
 }

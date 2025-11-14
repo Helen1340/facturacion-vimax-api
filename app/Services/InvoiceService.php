@@ -198,7 +198,8 @@ class InvoiceService
             'line_extension_amount' => round($subtotal, 2),
             'tax_exclusive_amount' => round($subtotal, 2),
             'tax_inclusive_amount' => round($subtotal + $totalTax, 2),
-            'payable_amount' => round($subtotal + $totalTax, 2)
+            'payable_amount' => round($subtotal + $totalTax, 2),
+            'total_discount' => round($totalDiscount, 2)
         ];
     }
 
@@ -374,7 +375,37 @@ class InvoiceService
             'payment.paymentMethod'
         ])->findOrFail($invoiceId);
 
-        return $invoice;
+        // Asegurar que invoiceDetails sea una colección/array
+        // Convertir a array para asegurar que se serialice correctamente
+        $invoiceArray = $invoice->toArray();
+        
+        // Si invoiceDetails no está como array, forzarlo
+        if (isset($invoiceArray['invoice_details']) && !is_array($invoiceArray['invoice_details'])) {
+            $invoiceArray['invoice_details'] = [];
+        }
+        
+        // También asegurar el formato correcto de invoiceDetails
+        if ($invoice->relationLoaded('invoiceDetails')) {
+            $invoiceArray['invoiceDetails'] = $invoice->invoiceDetails->map(function ($detail) {
+                $detailArray = $detail->toArray();
+                // Asegurar que el item esté correctamente formateado
+                if ($detail->relationLoaded('item') && $detail->item) {
+                    $detailArray['item'] = $detail->item->toArray();
+                    // Asegurar que taxes y measurementUnit estén como arrays
+                    if ($detail->item->relationLoaded('taxes')) {
+                        $detailArray['item']['taxes'] = $detail->item->taxes->toArray();
+                    }
+                    if ($detail->item->relationLoaded('measurementUnit')) {
+                        $detailArray['item']['measurementUnit'] = $detail->item->measurementUnit->toArray();
+                    }
+                }
+                return $detailArray;
+            })->toArray();
+        } else {
+            $invoiceArray['invoiceDetails'] = [];
+        }
+
+        return $invoiceArray;
     }
 
     /**

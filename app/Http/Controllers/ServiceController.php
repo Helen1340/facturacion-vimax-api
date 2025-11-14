@@ -90,6 +90,14 @@ class ServiceController extends Controller
     public function show($id)
     {
         $service = Service::findOrFail($id);
+        
+        // Aplicar includes si se solicitan
+        if (request('included')) {
+            $service->load(explode(',', request('included')));
+        } else {
+            // Por defecto, incluir impuestos para facilitar la edición
+            $service->load('taxes');
+        }
 
         return response()->json($service, 200);
     }
@@ -120,5 +128,44 @@ class ServiceController extends Controller
         $service->delete();
 
         return response()->json($service, 204);
+    }
+
+    /**
+     * Sincronizar impuestos de un servicio
+     * POST /api/services/{id}/sync-taxes
+     */
+    public function syncTaxes(Request $request, $id)
+    {
+        $request->validate([
+            'tax_ids' => ['required', 'array'],
+            'tax_ids.*' => ['integer', 'exists:taxes,id']
+        ]);
+
+        // Si el array está vacío, permitirlo (para eliminar todos los impuestos)
+        if (empty($request->tax_ids)) {
+            $request->tax_ids = [];
+        }
+
+        $service = Service::findOrFail($id);
+        
+        // Verificar que el servicio pertenece a la empresa del usuario
+        $user = Auth::user();
+        if ($service->company_id !== $user->company_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No autorizado para modificar este servicio'
+            ], 403);
+        }
+
+        $service->taxes()->sync($request->tax_ids);
+
+        // Recargar el servicio con sus impuestos
+        $service->load('taxes');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Impuestos sincronizados correctamente',
+            'data' => $service
+        ], 200);
     }
 }
