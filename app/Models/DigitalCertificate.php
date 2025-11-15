@@ -23,6 +23,7 @@ class DigitalCertificate extends Model
         'certificate_type',       // Tipo de certificado: Producción o Pruebas
         'signature_algorithm',    // Algoritmo de firma (SHA256withRSA)
         'uuid',                   // Identificador único externo (opcional)
+        'signature_type',
         'description',            // Descripción o notas adicionales
     ];
 
