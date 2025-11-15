@@ -29,6 +29,7 @@ return new class extends Migration
             $table->enum('certificate_type', ['Producción', 'Pruebas'])->default('Pruebas'); // Tipo de certificado
             $table->string('signature_algorithm', 50)->nullable(); // Algoritmo de firma (SHA256withRSA)
             $table->string('uuid', 100)->nullable(); // Identificador único externo (opcional)
+            $table->string('signature_type', 100)->nullable(); // tipo de firma
             $table->text('description')->nullable(); // Descripción opcional
             $table->timestamps();
         });
