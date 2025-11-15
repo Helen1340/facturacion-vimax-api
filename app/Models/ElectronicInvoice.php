@@ -33,6 +33,7 @@ class ElectronicInvoice extends Model
         'tax_exclusive_amount',
         'tax_inclusive_amount',
         'payable_amount',
+        'total_discount',
 
         // --- Control de estado DIAN ---
         'dian_status',

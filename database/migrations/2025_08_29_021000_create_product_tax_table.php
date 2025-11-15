@@ -12,15 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('product_tax', function (Blueprint $table) {
-
-            // No se define un 'id' propio ya que es una tabla pivote simple
-             $table->id(); // Por si se va a implementa un ID autoincremental para esta tabla
+            $table->id();
 
             // Definición de las claves foráneas
-            $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->unsignedBigInteger('tax_id');
-            $table->foreign('tax_id')->references('id')->on('taxes')->onDelete('cascade');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
+            $table->foreignId('tax_id')->constrained('taxes')->onDelete('cascade');
+
+            // Índice único para evitar duplicados (un producto no puede tener el mismo impuesto dos veces)
+            $table->unique(['product_id', 'tax_id']);
 
             $table->timestamps();
         });

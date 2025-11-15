@@ -104,10 +104,12 @@ Route::apiResource('notifications', NotificationController::class);
     
     // Rutas específicas de productos (deben ir antes de apiResource)
     Route::get('products/active', [ProductController::class, 'active']); // Productos activos para facturas
+    Route::post('products/{id}/sync-taxes', [ProductController::class, 'syncTaxes']); // Sincronizar impuestos de producto
     Route::apiResource('products', ProductController::class);
     
     // Rutas específicas de servicios (deben ir antes de apiResource)
     Route::get('services/active', [ServiceController::class, 'active']); // Servicios activos para facturas
+    Route::post('services/{id}/sync-taxes', [ServiceController::class, 'syncTaxes']); // Sincronizar impuestos de servicio
     Route::apiResource('services', ServiceController::class);
     
     Route::apiResource('electronicInvoices', ElectronicInvoiceController::class); // electronic-invoice-seeder

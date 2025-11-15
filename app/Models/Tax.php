@@ -64,8 +64,8 @@ class Tax extends Model
         return $this->belongsToMany(
             Product::class,
             'product_tax',
-            'Tax_id',
-            'Product_id'
+            'tax_id',      // FK en la pivote hacia Tax (snake_case)
+            'product_id'   // FK en la pivote hacia Product (snake_case)
         )->withTimestamps();
     }
 
@@ -74,8 +74,8 @@ class Tax extends Model
         return $this->belongsToMany(
             Service::class,
             'service_tax',
-            'Tax_id',
-            'Service_id'
+            'tax_id',      // FK en la pivote hacia Tax (snake_case)
+            'service_id'   // FK en la pivote hacia Service (snake_case)
         )->withTimestamps();
     }
 
