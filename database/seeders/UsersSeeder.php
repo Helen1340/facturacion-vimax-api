@@ -15,10 +15,10 @@ class UsersSeeder extends Seeder
         $faker = Faker::create('es_CO');
 
         // Buscar roles según el nuevo nombre en inglés (role_name)
-        $adminRole = Role::where('role_name', 'administrator')->first()?->id;
-        $billingRole = Role::where('role_name', 'billing')->first()?->id;
-        $accountantRole = Role::where('role_name', 'accountant')->first()?->id;
-        $clientRole = Role::where('role_name', 'client')->first()?->id;
+        $adminRole = Role::where('role_name', 'administrador')->first()?->id;
+        $billingRole = Role::where('role_name', 'Facturador')->first()?->id;
+        $accountantRole = Role::where('role_name', 'Contador')->first()?->id;
+        $clientRole = Role::where('role_name', 'cliente')->first()?->id;
 
         $companies = Company::all();
 

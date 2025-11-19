@@ -7,6 +7,7 @@ use App\Models\InvoiceDetail;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\User;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -62,8 +63,8 @@ class InvoiceService
             }
 
             // Validar que el buyer tenga el role 'client'
-            if (!$buyer->role || $buyer->role->role_name !== 'client') {
-                throw new \Exception('El usuario seleccionado no es un cliente. Debe tener el role "client"');
+            if (!$buyer->role || $buyer->role->role_name !== 'cliente') {
+                throw new \Exception('El usuario seleccionado no es un cliente. Debe tener el role "cliente"');
             }
 
             // 1. Generar número de factura
@@ -570,4 +571,8 @@ class InvoiceService
             'message' => 'Factura eliminada exitosamente'
         ];
     }
+
+
+
+
 }

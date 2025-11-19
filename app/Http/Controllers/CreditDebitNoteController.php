@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\CreditDebitNote;
+use App\Models\ElectronicDocument;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CreditDebitNoteController extends Controller
 {
@@ -57,6 +59,34 @@ class CreditDebitNoteController extends Controller
         $credit_debit_note = CreditDebitNote::findOrFail($id);
         $credit_debit_note->delete();
         return response()->json(null, 204);
+    }
+
+    public function downloadPDF($id)
+    {
+        try {
+            $note = CreditDebitNote::with(['electronicInvoice.user.company'])->findOrFail($id);
+            $pdf = Pdf::loadView('pdf.note', [
+                'note' => $note,
+            ])->setPaper('letter');
+            $filename = 'note-' . ($note->note_number ?? $note->id) . '.pdf';
+            return $pdf->download($filename);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al generar PDF: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function downloadXML($id)
+    {
+        $doc = ElectronicDocument::where('credit_debit_note_id', $id)->orderByDesc('id')->first();
+        if (!$doc || !$doc->xml_document) {
+            return response()->json(['success' => false, 'message' => 'Documento electrónico no encontrado para la nota'], 404);
+        }
+        return response($doc->xml_document, 200)
+            ->header('Content-Type', 'application/xml')
+            ->header('Content-Disposition', 'attachment; filename="note-' . $id . '.xml"');
     }
 }
 

@@ -9,6 +9,7 @@ class DianStatusResponseSeeder extends Seeder
 {
     public function run(): void
     {
+        /*
         DianStatusResponse::create([
             'electronic_document_id' => 1,
             'status_code' => '200',
@@ -28,5 +29,6 @@ class DianStatusResponseSeeder extends Seeder
             'protocol_number' => 'PRT-000123457',
             'received_at' => now(),
         ]);
+        */
     }
 }
