@@ -14,28 +14,28 @@ class RolesSeeder extends Seeder
     {
         DB::table('roles')->insert([
             [
-                'role_name' => 'administrator', // Administrador del sistema
+                'role_name' => 'Administrador', // Administrador del sistema
                 'description' => 'System administrator with full permissions', // Descripción del rol
                 'status' => 'active', // Estado activo
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'role_name' => 'billing', // Facturador
+                'role_name' => 'Facturador', // Facturador
                 'description' => 'User authorized to create and send invoices', 
                 'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'role_name' => 'accountant', // Contador
+                'role_name' => 'Contador', // Contador
                 'description' => 'User responsible for accounting and tax reports',
                 'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'role_name' => 'client', // Cliente
+                'role_name' => 'Cliente', // Cliente
                 'description' => 'Client who receives and reviews electronic documents',
                 'status' => 'active',
                 'created_at' => now(),

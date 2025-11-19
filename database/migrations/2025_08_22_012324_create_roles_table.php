@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
 
-            $table->enum('role_name', ['administrator', 'billing', 'accountant', 'client']); 
+            $table->enum('role_name', ['administrador', 'facturador', 'contador', 'cliente']); 
             // Nombre del rol en inglés: administrador, facturador, contador, cliente
              $table->string('description', 250); // Descripción del rol
             $table->enum('status', ['active', 'inactive'])->default('active'); 

@@ -6,8 +6,14 @@ use App\Services\InvoiceService;
 use App\Services\DianSimulatorService;
 use Illuminate\Http\Request;
 use App\Models\ElectronicInvoice;
+use App\Models\ElectronicDocument;
+use App\Models\CreditDebitNote;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 
 class ElectronicInvoiceController extends Controller
@@ -85,6 +91,9 @@ class ElectronicInvoiceController extends Controller
         return response()->json($result, $result['success'] ? 201 : 400);
     }
 
+
+
+
     /**
      * Obtener datos necesarios para crear una factura (productos, servicios, clientes)
      * GET /api/invoices/create/data
@@ -118,7 +127,7 @@ class ElectronicInvoiceController extends Controller
             // Obtener clientes activos de la empresa
             $clients = \App\Models\User::where('company_id', $loggedUser->company_id)
                 ->whereHas('role', function ($query) {
-                    $query->where('role_name', 'client');
+                    $query->where('role_name', 'cliente');
                 })
                 ->where('status', 'Active')
                 ->select('id', 'first_name', 'document_type', 'document_number', 'email', 'phone', 'address')
@@ -160,7 +169,7 @@ class ElectronicInvoiceController extends Controller
             // Obtener usuarios con role 'client' de la misma empresa
             $clients = \App\Models\User::where('company_id', $loggedUser->company_id)
                 ->whereHas('role', function ($query) {
-                    $query->where('role_name', 'client');
+                    $query->where('role_name', 'cliente');
                 })
                 ->where('status', 'Active')
                 ->select('id', 'first_name', 'document_type', 'document_number', 'email', 'phone', 'address')
@@ -307,10 +316,10 @@ class ElectronicInvoiceController extends Controller
                 }
                 
                 // Validar que tenga el role 'client'
-                if (!$buyer->role || $buyer->role->role_name !== 'client') {
+                if (!$buyer->role || $buyer->role->role_name !== 'cliente') {
                     return response()->json([
                         'success' => false,
-                        'message' => 'El usuario seleccionado no es un cliente. Debe tener el role "client"'
+                        'message' => 'El usuario seleccionado no es un cliente. Debe tener el role "cliente"'
                     ], 400);
                 }
             }
@@ -410,4 +419,112 @@ class ElectronicInvoiceController extends Controller
             ], 500);
         }
     }
+
+    public function downloadXML($id)
+    {
+        $doc = ElectronicDocument::where('electronic_invoice_id', $id)
+            ->whereNull('credit_debit_note_id')
+            ->orderByDesc('id')
+            ->first();
+        if (!$doc || !$doc->xml_document) {
+            return response()->json(['success' => false, 'message' => 'Documento electrónico no encontrado para la factura'], 404);
+        }
+        return response($doc->xml_document, 200)
+            ->header('Content-Type', 'application/xml')
+            ->header('Content-Disposition', 'attachment; filename="invoice-' . $id . '.xml"');
+    }
+
+    public function preview($id)
+    {
+        $invoice = ElectronicInvoice::with([
+            'user.company',
+            'buyer',
+            'invoiceDetails.item.taxes',
+            'invoiceDetails.item.measurementUnit',
+            'electronicDocuments'
+        ])->findOrFail($id);
+        $html = view('pdf.invoice', ['invoice' => $invoice])->render();
+        return response($html, 200)->header('Content-Type', 'text/html');
+    }
+
+    public function downloadPDF($id)
+    {
+        try {
+            $invoice = ElectronicInvoice::with([
+                'user',
+                'buyer',
+                'invoiceDetails',
+                'invoiceDetails.item',
+                'invoiceDetails.item.taxes',
+                'invoiceDetails.item.measurementUnit',
+                'electronicDocuments'
+            ])->findOrFail($id);
+
+            $pdf = Pdf::loadView('pdf.invoice', [
+                'invoice' => $invoice
+            ])->setPaper('letter');
+
+            $filename = 'invoice-' . ($invoice->invoice_number ?? $invoice->id) . '.pdf';
+            return $pdf->download($filename);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al generar PDF: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function createNote(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:250',
+            'note_type' => ['required', Rule::in(['debit','credit'])],
+            'total_amount' => 'required|numeric|min:0|regex:/^\d+(\.\d{1,2})?$/',
+        ]);
+        $invoice = ElectronicInvoice::with('user.company')->findOrFail($id);
+        $amount = (float)$validated['total_amount'];
+        if ($validated['note_type'] === 'credit' && $amount > (float)($invoice->payable_amount ?? 0)) {
+            return response()->json(['success'=>false,'message'=>'El valor de la nota crédito no puede exceder el total de la factura'],400);
+        }
+        $companyId = $invoice->user->company_id;
+        $prefix = $validated['note_type'] === 'credit' ? 'CN' : 'DN';
+        $noteNumber = $prefix . '-' . $companyId . '-' . now()->format('YmdHis');
+        $note = CreditDebitNote::create([
+            'electronic_invoice_id' => $invoice->id,
+            'reason' => $validated['reason'],
+            'note_type' => $validated['note_type'],
+            'note_number' => $noteNumber,
+            'status' => 'pending',
+            'issue_date' => now(),
+            'total_amount' => $amount,
+        ]);
+        return response()->json(['success'=>true,'data'=>$note],201);
+    }
+
+    public function listNotes($id)
+    {
+        $notes = CreditDebitNote::where('electronic_invoice_id', $id)->orderBy('id','desc')->get();
+        return response()->json(['success'=>true,'data'=>$notes]);
+    }
+
+    public function annulWithCreditNote(Request $request, $id)
+    {
+        $invoice = ElectronicInvoice::findOrFail($id);
+        $amount = (float)($invoice->payable_amount ?? 0);
+        if ($amount <= 0) {
+            return response()->json(['success'=>false,'message'=>'La factura no tiene total pagadero válido para anulación'],400);
+        }
+        $validated = $request->validate(['reason'=>'required|string|max:250']);
+        $note = CreditDebitNote::create([
+            'electronic_invoice_id' => $invoice->id,
+            'reason' => $validated['reason'],
+            'note_type' => 'credit',
+            'note_number' => 'CN-' . ($invoice->user->company_id) . '-' . now()->format('YmdHis'),
+            'status' => 'pending',
+            'issue_date' => now(),
+            'total_amount' => $amount,
+        ]);
+        return response()->json(['success'=>true,'data'=>$note],201);
+    }
+
 }

@@ -66,9 +66,25 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}/qr', [ElectronicInvoiceController::class, 'generateQR']);
         
         // Descargas y documentos
+        // GET /api/invoices/{id}/download/pdf -> Descarga PDF de la factura con diseño
         Route::get('/{id}/download/pdf', [ElectronicInvoiceController::class, 'downloadPDF']);
         Route::get('/{id}/download/xml', [ElectronicInvoiceController::class, 'downloadXML']);
         Route::get('/{id}/preview', [ElectronicInvoiceController::class, 'preview']);
+        
+        // Crear notas crédito/débito para una factura (POST)
+        // Uso: POST /api/invoices/{id}/notes
+        // Crea una nota para la factura indicada. Campos: reason, note_type (credit|debit), total_amount.
+        Route::post('/{id}/notes', [ElectronicInvoiceController::class, 'createNote']);
+
+        // Listar notas de una factura (GET)
+        // Uso: GET /api/invoices/{id}/notes
+        // Devuelve todas las notas crédito/débito asociadas a la factura.
+        Route::get('/{id}/notes', [ElectronicInvoiceController::class, 'listNotes']);
+
+        // Anular factura con nota crédito total (POST)
+        // Uso: POST /api/invoices/{id}/notes/annul
+        // Crea una nota crédito por el total de la factura. Campo requerido: reason.
+        Route::post('/{id}/notes/annul', [ElectronicInvoiceController::class, 'annulWithCreditNote']);
         
         // Estadísticas y reportes
         Route::get('/stats/summary', [ElectronicInvoiceController::class, 'stats']);
@@ -86,6 +102,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('payments', PaymentController::class);
     Route::apiResource('paymentMethods', PaymentMethodController::class); // metodo-pago
     Route::apiResource('creditDebitNotes', CreditDebitNoteController::class); // nota-credito-debito
+    Route::get('/notes/{id}/download/pdf', [CreditDebitNoteController::class, 'downloadPDF']);
+    Route::get('/notes/{id}/download/xml', [CreditDebitNoteController::class, 'downloadXML']);
     Route::apiResource('electronicDocuments', ElectronicDocumentController::class); // documento-electronico
     Route::apiResource('radianEvents', RadianEventController::class);
     Route::apiResource('dianNumberings', DianNumberingController::class); // numeracion-dian

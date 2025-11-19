@@ -66,7 +66,7 @@ class AuthController extends Controller
             ]);
 
             // Verificar que exista el rol administrador
-            $role = Role::where('role_name', 'administrator')->first();
+            $role = Role::where('role_name', 'administrador')->first();
             if (!$role) {
                 DB::rollBack();
                 return response()->json([
