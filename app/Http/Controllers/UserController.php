@@ -77,26 +77,34 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            
-        'company_id' => ['sometimes', 'integer', 'exists:companies,id'], // CORREGIDO: nullable -> sometimes
-            'role_id' => ['sometimes', 'integer'], // CORREGIDO: nullable -> sometimes
-            'first_name' => ['sometimes', 'string', 'max:100'], 
+            'company_id' => ['sometimes', 'integer', 'exists:companies,id'],
+            'role_id' => ['sometimes', 'integer'],
+            'first_name' => ['sometimes', 'string', 'max:100'],
             'document_type' => ['sometimes', Rule::in(['NIT', 'CC', 'CE'])],
             'document_number' => ['sometimes', 'string', 'max:50', Rule::unique('users', 'document_number')->ignore($user->id)],
-            'address' => ['sometimes', 'string', 'max:150'], 
-            'country' => ['sometimes', 'string', 'max:100'], 
-            'description' => ['sometimes', 'string', 'max:250'], 
+            'address' => ['sometimes', 'string', 'max:150'],
+            'country' => ['sometimes', 'string', 'max:100'],
+            'description' => ['sometimes', 'string', 'max:250'],
             'email' => ['sometimes', 'email', 'max:150', Rule::unique('users', 'email')->ignore($user->id)],
-            'phone' => ['sometimes', 'string', 'max:20'], 
-            'status' => ['sometimes', Rule::in(['Active', 'Inactive'])], 
+            'phone' => ['sometimes', 'string', 'max:20'],
+            'status' => ['sometimes', Rule::in(['Active', 'Inactive'])],
             'last_access' => ['sometimes', 'date'],
-            'password' => ['sometimes', 'string', 'min:8'], 
-    ]);
+            'current_password' => ['required', 'string'],
+            'password' => ['sometimes', 'string', 'min:8'],
+        ]);
 
-        // Si se envía la password, se encripta
+        if (!Hash::check($validated['current_password'], $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La contraseña actual es incorrecta'
+            ], 422);
+        }
+
         if (isset($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         }
+
+        unset($validated['current_password']);
 
         $user->update($validated);
 

@@ -8,6 +8,7 @@ use App\Models\DigitalCertificate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon; // Para verificar fechas
 
 class DigitalCertificateController extends Controller
@@ -31,8 +32,9 @@ class DigitalCertificateController extends Controller
     public function index(Request $request)
     {
         try {
-            // Este es el 'index' que lista todos los certificados con mapeo para el frontend
-            $certificates = DigitalCertificate::orderBy('id', 'desc')->get();
+            // Este es el 'index' que lista certificados de la empresa del usuario
+            $loggedUser = Auth::user();
+            $certificates = DigitalCertificate::where('company_id', $loggedUser->company_id)->orderBy('id', 'desc')->get();
 
             // Mapear los nombres de columnas al formato esperado por el frontend
             $mapped = $certificates->map(function ($cert) {
@@ -70,16 +72,21 @@ class DigitalCertificateController extends Controller
         try {
             Log::info('Datos recibidos para crear certificado:', $request->all());
 
+            $loggedUser = Auth::user();
+            if (!$loggedUser || !$loggedUser->company_id) {
+                return response()->json(['success' => false, 'message' => 'Usuario no autenticado o sin empresa asociada'], 401);
+            }
+
             $validated = $request->validate([
-                'company_id' => 'required|exists:companies,id',
                 'certificate_name' => 'required|string|max:225',
                 'serial_number' => 'required|string|max:100',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after:start_date',
-                'signature_type' => 'required|string|in:digital,electronica',
-                'certificate_type' => 'required|string|in:ProducciÃ³n,Pruebas',
+                'signature_type' => 'required|string|in:digital,electronica,electrónica',
+                'certificate_type' => 'required|string|in:Producción,Produccion,Pruebas,ProducciÃ³n',
                 'issuer' => 'nullable|string|max:100',
                 'description' => 'nullable|string',
+                'password' => 'nullable|string|max:255',
                 'certificate_file' => 'nullable|file|mimes:pfx,p12|max:5120', // 5MB
                 'status' => 'nullable|string|in:Vigente,Vencido,Revocado'
             ]);
@@ -93,7 +100,7 @@ class DigitalCertificateController extends Controller
             }
 
             $certificate = DigitalCertificate::create([
-                'company_id' => $validated['company_id'],
+                'company_id' => $loggedUser->company_id,
                 'certificate_name' => $validated['certificate_name'],
                 'serial_number' => $validated['serial_number'],
                 'start_date' => $validated['start_date'],
@@ -103,7 +110,7 @@ class DigitalCertificateController extends Controller
                 'issuer' => $validated['issuer'] ?? '',
                 'description' => $validated['description'] ?? '',
                 'certificate_path' => $certificatePath ?? '',
-                'password' => '', // Mantenido vacío por seguridad
+                'password' => $validated['password'] ?? '',
                 'status' => $validated['status'] ?? 'Vigente',
                 'signature_algorithm' => 'SHA256withRSA',
                 'uuid' => null
@@ -134,6 +141,10 @@ class DigitalCertificateController extends Controller
     {
         try {
             $certificate = DigitalCertificate::findOrFail($id);
+            $loggedUser = Auth::user();
+            if (!$loggedUser || $certificate->company_id !== $loggedUser->company_id) {
+                return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+            }
             return response()->json(['success' => true, 'data' => $certificate], 200);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Certificado no encontrado'], 404);
@@ -150,18 +161,22 @@ class DigitalCertificateController extends Controller
             Log::info('Actualizando certificado ID: ' . $id);
 
             $certificate = DigitalCertificate::findOrFail($id);
+            $loggedUser = Auth::user();
+            if (!$loggedUser || $certificate->company_id !== $loggedUser->company_id) {
+                return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+            }
 
             $validated = $request->validate([
-                'company_id' => 'required|exists:companies,id',
                 'certificate_name' => 'required|string|max:225',
                 'serial_number' => 'required|string|max:100',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after:start_date',
-                'signature_type' => 'required|string|in:digital,electronica',
-                'certificate_type' => 'required|string|in:ProducciÃ³n,Pruebas',
+                'signature_type' => 'required|string|in:digital,electronica,electrónica',
+                'certificate_type' => 'required|string|in:Producción,Produccion,Pruebas',
                 'issuer' => 'nullable|string|max:100',
                 'description' => 'nullable|string',
-                'certificate_file' => 'nullable|file|mimes:pfx,p12|max:5120',
+                'password' => 'nullable|string|max:255',
+                'certificate_file' => 'nullable|file|mimes:pfx,p12|max:5120', // 5MB
                 'status' => 'nullable|string|in:Vigente,Vencido,Revocado'
             ]);
 
@@ -199,6 +214,10 @@ class DigitalCertificateController extends Controller
     {
         try {
             $certificate = DigitalCertificate::findOrFail($id);
+            $loggedUser = Auth::user();
+            if (!$loggedUser || $certificate->company_id !== $loggedUser->company_id) {
+                return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+            }
 
             // Eliminar el archivo del certificado si existe
             if ($certificate->certificate_path && Storage::disk('public')->exists($certificate->certificate_path)) {

@@ -97,7 +97,7 @@ class DianSimulatorService
 
         // En desarrollo: siempre aceptar. En producción: 90% de éxito, 10% de rechazo
         $isDevelopment = config('app.env') === 'local' || config('app.debug');
-        $success = $isDevelopment ? true : (rand(1, 100) <= 100);
+        $success = $isDevelopment ? true : (rand(1, 100) <= 90);
 
         if ($success) {
             // Generar CUFE único
