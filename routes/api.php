@@ -10,6 +10,7 @@ use App\Http\Controllers\DianStatusResponseController;
 use App\Http\Controllers\DigitalCertificateController;
 use App\Http\Controllers\ElectronicDocumentController;
 use App\Http\Controllers\ElectronicInvoiceController;
+use App\Http\Controllers\FCMTokenController;
 use App\Http\Controllers\InvoiceDetailController;
 use App\Http\Controllers\MeasurementUnitController;
 use App\Http\Controllers\NotificationController;
@@ -34,6 +35,9 @@ Route::get('/user', function (Request $request) {
 // --- Auth ---
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::post('/fcm-token', [FCMTokenController::class, 'store']);
+Route::delete('/fcm-token', [FCMTokenController::class, 'destroy']);
 
 // --- Rutas protegidas ---
 Route::middleware('auth:sanctum')->group(function () {
