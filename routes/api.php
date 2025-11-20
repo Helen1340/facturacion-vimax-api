@@ -25,6 +25,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrmController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\BackupController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -136,12 +137,18 @@ Route::apiResource('notifications', NotificationController::class);
         Route::get('/facturas', [ReportController::class, 'reporteFacturas']);
         Route::get('/pagos', [ReportController::class, 'reportePagos']);
         Route::get('/usuarios', [ReportController::class, 'reporteUsuarios']);
+        Route::get('/resumen/facturas', [ReportController::class, 'resumenFacturas']);
+        Route::get('/resumen/pagos', [ReportController::class, 'resumenPagos']);
+        Route::get('/productos', [ReportController::class, 'reporteProductos']);
+        Route::get('/servicios', [ReportController::class, 'reporteServicios']);
+        Route::get('/resumen/productos', [ReportController::class, 'resumenProductos']);
+        Route::get('/resumen/servicios', [ReportController::class, 'resumenServicios']);
     });
 
-  
-  
-  
-  
+    Route::post('/backups/run', [BackupController::class, 'run']);
+    Route::get('/backups/download', [BackupController::class, 'download']);
+    Route::get('/backups/list', [BackupController::class, 'list']);
+
 
     // RUTAS DE CERTIFICADOS DIGITALES
     Route::prefix('certificates')->group(function () {
