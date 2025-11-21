@@ -72,12 +72,27 @@ class UserController extends Controller
             'phone' => ['sometimes', 'string', 'max:20'],
             'status' => ['sometimes', Rule::in(['Active', 'Inactive'])],
             'last_access' => ['sometimes', 'date'],
+
+            'current_password' => ['required', 'string'],
             'password' => ['sometimes', 'string', 'min:8'],
         ]);
+
+        if (!Hash::check($validated['current_password'], $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La contraseña actual es incorrecta'
+            ], 422);
+        }
+
+            'password' => ['sometimes', 'string', 'min:8'],
+        ]);
+
 
         if (isset($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         }
+
+        unset($validated['current_password']);
 
         $user->update($validated);
 
