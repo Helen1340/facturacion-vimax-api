@@ -21,9 +21,13 @@ class NotificacionService
         ];
     }
 
-    public function getAllNotificaciones(int $userId)
+    public function getAllNotificaciones(int $userId, ?int $companyId = null, array $filters = [])
     {
         Log::info("Consultando notificaciones para usuario: {$userId}");
+        $type = $filters['type'] ?? null; // sistema|dian_operativa|cumplimiento|operativa
+        $from = $filters['from'] ?? null;
+        $to = $filters['to'] ?? null;
+        $limit = (int)($filters['limit'] ?? 50);
         $last90Days = Carbon::now()->subDays(90)->toDateTimeString();
 
         $userInactiveAlert = DB::table('users')
@@ -38,7 +42,9 @@ class NotificacionService
             ))
             ->where('id', $userId)
             ->where('status', 'Inactive')
-            ->where('updated_at', '>', $last90Days);
+            ->when($from, fn($q) => $q->where('updated_at', '>=', $from))
+            ->when($to, fn($q) => $q->where('updated_at', '<=', $to))
+            ->when(!$from && !$to, fn($q) => $q->where('updated_at', '>', $last90Days));
 
         $rejectedInvoices = DB::table('electronic_invoices')
             ->select($this->generateSelect(
@@ -46,14 +52,16 @@ class NotificacionService
                 'dian_operativa',
                 "CONCAT('Factura Rechazada DIAN: ', invoice_number)",
                 "CONCAT('Tu factura #', invoice_number, ' fue rechazada por la DIAN. Revisa y reenvía.')",
-                'CASE WHEN internal_status = \"cancelled\" THEN 1 ELSE 0 END',
+                "CASE WHEN internal_status = 'cancelled' THEN 1 ELSE 0 END",
                 'COALESCE(received_at, updated_at)',
                 'electronic_invoices'
             ))
             ->where('user_id', $userId)
             ->where('dian_status', 'rejected')
             ->where('internal_status', '!=', 'cancelled')
-            ->where(DB::raw('COALESCE(received_at, updated_at)'), '>', $last90Days);
+            ->when($from, fn($q) => $q->where(DB::raw('COALESCE(received_at, updated_at)'), '>=', $from))
+            ->when($to, fn($q) => $q->where(DB::raw('COALESCE(received_at, updated_at)'), '<=', $to))
+            ->when(!$from && !$to, fn($q) => $q->where(DB::raw('COALESCE(received_at, updated_at)'), '>', $last90Days));
 
         $newTaxes = DB::table('taxes')
             ->select($this->generateSelect(
@@ -66,7 +74,12 @@ class NotificacionService
                 'taxes'
             ))
             ->where('status', 'Activo')
-            ->where('created_at', '>', $last90Days)
+            ->when($companyId, function ($q) use ($companyId) {
+                $q->where('company_id', $companyId);
+            })
+            ->when($from, fn($q) => $q->where('created_at', '>=', $from))
+            ->when($to, fn($q) => $q->where('created_at', '<=', $to))
+            ->when(!$from && !$to, fn($q) => $q->where('created_at', '>', $last90Days))
             ->orderBy('created_at', 'desc')
             ->limit(10);
 
@@ -82,16 +95,30 @@ class NotificacionService
                 'credit_debit_notes'
             ))
             ->where('ei.user_id', $userId)
-            ->where('cdn.created_at', '>', $last90Days)
+            ->when($from, fn($q) => $q->where('cdn.created_at', '>=', $from))
+            ->when($to, fn($q) => $q->where('cdn.created_at', '<=', $to))
+            ->when(!$from && !$to, fn($q) => $q->where('cdn.created_at', '>', $last90Days))
             ->orderBy('cdn.created_at', 'desc')
             ->limit(10);
 
-        $notificaciones = $userInactiveAlert
-            ->unionAll($rejectedInvoices)
-            ->unionAll($newTaxes)
-            ->unionAll($newNotes)
+        $queries = [];
+        if (!$type || $type === 'sistema') { $queries[] = $userInactiveAlert; }
+        if (!$type || $type === 'dian_operativa') { $queries[] = $rejectedInvoices; }
+        if (!$type || $type === 'cumplimiento') { $queries[] = $newTaxes; }
+        if (!$type || $type === 'operativa') { $queries[] = $newNotes; }
+
+        if (empty($queries)) {
+            return collect();
+        }
+
+        $builder = array_shift($queries);
+        foreach ($queries as $q) {
+            $builder = $builder->unionAll($q);
+        }
+
+        $notificaciones = $builder
             ->orderBy('created_at', 'desc')
-            ->limit(50)
+            ->limit($limit)
             ->get();
 
         return $notificaciones->map(function ($item) {

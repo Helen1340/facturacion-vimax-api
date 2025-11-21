@@ -7,18 +7,22 @@ use Illuminate\Support\Facades\DB;
 
 class FCMTokenController extends Controller
 {
-    /**
-     * Guardar token FCM
-     */
     public function store(Request $request)
     {
         $request->validate([
             'fcm_token' => 'required|string',
-            'user_id' => 'required|integer|exists:users,id'
         ]);
 
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No autenticado'
+            ], 401);
+        }
+
         DB::table('device_tokens')->updateOrInsert(
-            ['user_id' => $request->user_id],
+            ['user_id' => $user->id],
             [
                 'fcm_token' => $request->fcm_token,
                 'platform' => 'web',
@@ -34,22 +38,18 @@ class FCMTokenController extends Controller
         ]);
     }
 
-    /**
-     * Desactivar token (logout)
-     */
     public function destroy(Request $request)
     {
-        $userId = $request->query('user_id') ?? $request->input('user_id');
-
-        if (!$userId) {
+        $user = $request->user();
+        if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'user_id requerido'
-            ], 400);
+                'message' => 'No autenticado'
+            ], 401);
         }
 
         DB::table('device_tokens')
-            ->where('user_id', $userId)
+            ->where('user_id', $user->id)
             ->update(['is_active' => false]);
 
         return response()->json([

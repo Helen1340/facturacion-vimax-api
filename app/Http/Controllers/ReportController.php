@@ -15,7 +15,7 @@ class ReportController extends Controller
     // REPORTE DE FACTURAS (JSON para Angular)
     public function reporteFacturas(Request $request)
     {
-        $query = ElectronicInvoice::with(['buyer', 'payment'])
+        $query = ElectronicInvoice::with(['buyer', 'payment', 'payment.paymentMethod'])
             ->join('users', 'electronic_invoices.buyer_id', '=', 'users.id');
 
         // filtros desde query params
@@ -45,7 +45,8 @@ class ReportController extends Controller
         $facturas = $query->select(
             'electronic_invoices.*',
             'users.first_name as cliente_nombre',
-            'users.document_number as cliente_documento'
+            'users.document_number as cliente_documento',
+            'users.email as buyer_email'
         )
             ->orderBy('issue_date', 'desc')
             ->get();
@@ -61,13 +62,20 @@ class ReportController extends Controller
                 'total_invoice' => $f->total_invoice,
                 'cliente_nombre' => $f->cliente_nombre,
                 'cliente_documento' => $f->cliente_documento,
+                'buyer_email' => $f->buyer_email,
+                'document_currency_code' => $f->document_currency_code,
+                'uuid' => $f->uuid,
+                'dian_status' => $f->dian_status,
+                'payment_date' => optional(optional($f->payment)->payment_date)->format('Y-m-d'),
+                'amount_paid' => optional($f->payment)->amount_paid,
+                'metodo_pago' => optional(optional($f->payment)->paymentMethod)->name,
             ];
         });
 
         if ($request->query('format') === 'csv') {
             return $this->toCsv(
                 $out,
-                ['invoice_number', 'issue_date', 'internal_status', 'payable_amount', 'sub_total', 'total_tax', 'total_invoice', 'cliente_nombre', 'cliente_documento'],
+                ['invoice_number', 'issue_date', 'internal_status', 'payable_amount', 'sub_total', 'total_tax', 'total_invoice', 'document_currency_code', 'uuid', 'dian_status', 'payment_date', 'amount_paid', 'metodo_pago', 'cliente_nombre', 'cliente_documento', 'buyer_email'],
                 'reporte-facturas.csv'
             );
         }
@@ -106,6 +114,7 @@ class ReportController extends Controller
             'electronic_invoices.invoice_number',
             'electronic_invoices.issue_date',
             'electronic_invoices.internal_status',
+            'electronic_invoices.payable_amount',
             'payment_methods.name as metodo_pago'
         )
             ->orderBy('payments.payment_date', 'desc')
@@ -120,6 +129,8 @@ class ReportController extends Controller
                 'issue_date' => optional($p->issue_date)->format('Y-m-d'),
                 'internal_status' => $p->internal_status,
                 'metodo_pago' => $p->metodo_pago,
+                'payable_amount' => $p->payable_amount,
+                'paid_ratio' => $p->payable_amount ? round(((float) $p->amount_paid) / ((float) $p->payable_amount), 4) : null,
                 'cliente_nombre' => $p->cliente_nombre,
                 'cliente_documento' => $p->cliente_documento,
             ];
@@ -128,7 +139,7 @@ class ReportController extends Controller
         if ($request->query('format') === 'csv') {
             return $this->toCsv(
                 $out,
-                ['payment_date', 'amount_paid', 'currency', 'invoice_number', 'issue_date', 'internal_status', 'metodo_pago', 'cliente_nombre', 'cliente_documento'],
+                ['payment_date', 'amount_paid', 'currency', 'invoice_number', 'issue_date', 'internal_status', 'metodo_pago', 'payable_amount', 'paid_ratio', 'cliente_nombre', 'cliente_documento'],
                 'reporte-pagos.csv'
             );
         }
