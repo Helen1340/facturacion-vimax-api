@@ -37,14 +37,14 @@ Route::get('/user', function (Request $request) {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::post('/fcm-token', [FCMTokenController::class, 'store']);
-Route::delete('/fcm-token', [FCMTokenController::class, 'destroy']);
 
 // --- Rutas protegidas ---
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me', [AuthController::class, 'me']);
-    Route::put('/completeRegistration', [AuthController::class, 'completeRegistration']);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/me', [AuthController::class, 'me']);
+        Route::put('/completeRegistration', [AuthController::class, 'completeRegistration']);
+        Route::post('/fcm-token', [FCMTokenController::class, 'store']);
+        Route::delete('/fcm-token', [FCMTokenController::class, 'destroy']);
     
     // CRUD de recursos (todos protegidos por autenticación)
     Route::apiResource('users', UserController::class);
@@ -120,7 +120,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // ORM Testing
     Route::get('test-all', [OrmController::class, 'testAllRelations']);
     
-Route::apiResource('notifications', NotificationController::class);
+    Route::apiResource('notifications', NotificationController::class);
 
 
     Route::apiResource('invoiceDetails', InvoiceDetailController::class);

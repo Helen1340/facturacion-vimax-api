@@ -57,9 +57,12 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail($id);
-        $oldStatus = $user->status; // 👈 Guardar status anterior
-
-        $validated = $request->validate([
+        $oldStatus = $user->status; //  Guardar status anterior
+        $isClient = optional($user->role)->role_name === 'cliente';
+        $authUser = $request->user();
+        $authRole = optional($authUser)->role ? optional($authUser->role)->role_name : null;
+        $isAdmin = in_array(strtolower((string)$authRole), ['admin', 'administrador', 'superadmin']);
+        $rules = [
             'company_id' => ['sometimes', 'integer', 'exists:companies,id'],
             'role_id' => ['sometimes', 'integer'],
             'first_name' => ['sometimes', 'string', 'max:100'],
@@ -72,22 +75,20 @@ class UserController extends Controller
             'phone' => ['sometimes', 'string', 'max:20'],
             'status' => ['sometimes', Rule::in(['Active', 'Inactive'])],
             'last_access' => ['sometimes', 'date'],
-
-            'current_password' => ['required', 'string'],
+            'current_password' => [($isClient || $isAdmin) ? 'nullable' : 'required', 'string'],
             'password' => ['sometimes', 'string', 'min:8'],
-        ]);
+        ];
+        $validated = $request->validate($rules);
 
-        if (!Hash::check($validated['current_password'], $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'La contraseña actual es incorrecta'
-            ], 422);
+        if (!$isClient && !$isAdmin) {
+            if (!Hash::check($validated['current_password'], $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La contraseña actual es incorrecta'
+                ], 422);
+            }
         }
-
-            'password' => ['sometimes', 'string', 'min:8'],
-        ]);
-
-
+        
         if (isset($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         }

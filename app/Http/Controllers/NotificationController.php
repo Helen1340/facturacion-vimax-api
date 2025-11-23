@@ -31,8 +31,14 @@ class NotificationController extends Controller
             ], 401);
         }
 
-        $userId = $user->id;
-        $notificaciones = $this->notificacionService->getAllNotificaciones($userId);
+        $filters = [
+            'type' => $request->query('type'), // sistema|dian_operativa|cumplimiento|operativa
+            'from' => $request->query('from'), // YYYY-MM-DD o ISO datetime
+            'to' => $request->query('to'),     // YYYY-MM-DD o ISO datetime
+            'limit' => (int)($request->query('limit') ?? 50),
+        ];
+
+        $notificaciones = $this->notificacionService->getAllNotificaciones($user->id, $user->company_id, $filters);
 
         return response()->json([
             'success' => true,
@@ -47,7 +53,6 @@ class NotificationController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
             'subject' => 'required|string|max:255',
             'body' => 'required|string',
             'resource_id' => 'required|integer',
@@ -79,19 +84,20 @@ class NotificationController extends Controller
      */
     protected function sendRealtime(Request $request)
     {
-        // ✅ Usa la configuración de Laravel en lugar de env()
         $ablyKey = config('broadcasting.connections.ably.key');
 
-        if (!$ablyKey || !str_contains($ablyKey, ':')) {
-            throw new \Exception('ABLY_KEY no configurada correctamente en .env o broadcasting.php');
+        $realtimeEnabled = $ablyKey && str_contains($ablyKey, ':');
+        $ably = null;
+        if ($realtimeEnabled) {
+            $ably = new AblyRest($ablyKey);
+        } else {
+            Log::warning('Ably no configurado correctamente. Se omite envío en tiempo real.');
         }
 
-        $ably = new AblyRest($ablyKey);
-
-        $userId = $request->input('user_id');
+        $userId = $request->input('user_id') ?? optional($request->user())->id;
         $channelName = "notifications:{$userId}";
 
-        $channel = $ably->channel($channelName);
+        $channel = $ably ? $ably->channel($channelName) : null;
 
         $data = [
             'type' => $request->input('type'),
@@ -104,10 +110,15 @@ class NotificationController extends Controller
             'read' => false,
         ];
 
-        // 📡 Publicar evento en Ably
-        $channel->publish('new_alert', $data);
-
-        Log::info("✅ Notificación PUSH enviada a canal {$channelName}", $data);
+        // 📡 Publicar evento en Ably si está habilitado
+        if ($channel) {
+            $channel->publish('new_alert', $data);
+            $data['realtime_sent'] = true;
+            Log::info("✅ Notificación PUSH enviada a canal {$channelName}", $data);
+        } else {
+            $data['realtime_sent'] = false;
+            Log::info("ℹ️ Notificación registrada sin envío en tiempo real (Ably no configurado)", $data);
+        }
 
         return $data;
     }

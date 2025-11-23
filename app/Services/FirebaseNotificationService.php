@@ -8,28 +8,42 @@ use Illuminate\Support\Facades\Log;
 
 class FirebaseNotificationService
 {
-    // 👇 Pon aquí tus credenciales de Firebase (las sacas del JSON que descargaste)
-    // Ve a Firebase Console → Project Settings → Service Accounts → Generate new private key
-    private $serviceAccount = [
-        "type" => "service_account",
-        "project_id" => "vi-max-ec031",
-        "private_key_id" => "aa21d54e1a76f438c473aada0ed5e5bbe86e0720",
-        "private_key" => "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCsljayjvh0X3n1\nvQ8pXXCGemtG1lpOe61hWuU7+5aoAC1C2CWX1DES/c/sScjixuuaVUYAAQVgKpzf\n3W0XaJHFwNiUNgOdSWlFrpW68zZBZnuwRogdnzhJtqa7i24P6WebZfqmz7jZxQB+\ne4ISVjd61J8YYj/DGxsmGzIDraUUf/YwFzavDXaGaqw6XXHUirUg6EwG+iBCfWhz\nD0HlBxa2Gh4vjK3oKaNmnjMctilwylfxvSWidj7nFYeyIm0hy3UXP/IPei64uSSk\nzoxBzlYb35S0w3LNItOKgaynWj0wDNi8/AQ04WcR253VegSsMjZB01OT6ajoyrN5\nVJTHL8DpAgMBAAECggEAA2YjyTgPB9teWihT6/1CKJ3bhBjCN3fmAgwMRiEGIQR8\nNQwEz9o5m12FEAA4glHcr5c6F+jX56J94Nv6KJW87Y4m8yKjXIBxgAeIZ/cKBKH4\nHJBuYMH4ix1w0sepU7Yls0NqsIjDA9lGcWyX3aoAcU0jyH3H3R0eV42TJQwmkLJN\nATHf9t230JV7RksL6XbNmh31G4xDUu3JfZ4q37fLhzfEZHuCLHupms4v6ojkpdGG\nXiadTRIXVHSn6JK2aszikPTBL8Rpab5wBTFtm+MgNJnKspT6buytcEYM8FLdVWT1\n6YfjblhkXYJfL15DEQOWXfIrKYSmNv1qHdBZ4JNBwQKBgQDenNC98ymKFLcKKwbB\nO15liUJ6utnB/YXBqpWKaOn7QvnTSAnyuiaD1jEoPW3VhPCkm8ME6q1c72dtOfCB\nn+8z2fg5dm+TzdFqKhTtqZkOR9N3KdlantQH0PXvla3eOGETv9MHOIga1sfoPC6t\nbfj4WhaqBbNl28ukVQBdejgQQQKBgQDGeKnmT4spz+Ep7Tn47sfSWyZ4qa2SJ8GY\nRgS/N9FkNIQPlYIWsNvPRG/GeZrI6reOqFVTEWgQA7trTkefp+o2+USvQ2FLOmdA\nHD4TdDABlDtT0nbKFCeI85Zj6kAz6MMJ2y0LlWMhuQi+3W00Mp1tbyv8AN+uapiD\nLwu51OuGqQKBgFa3LVUg+KhyI08RraLt9nqE+mGGkbbQhB8JzRDKh4K590lHQaDM\nxJ4MfL+ZFkTbcUYd6tzqcbfHBjn1HOvRmkNPgDMaIKKpxQ6e7+IYc6etcQF1StbT\nEfMtge/fFYh/28juq0yfx9z0l5CuiNxD/3z20udOKzDdarlL50WCi35BAoGAU1dY\nAN5mEai5ZGG5dk7OmgasoP6fZEBNiyPb2nAV/X4P9ntRpTWfF+olBbMKzFPDwKPv\nMHKewBrRGL5GVUStlWgW74Hb2TstID670m93uTIFt60pNLJB58Bh5pL3YtTbEch3\noeWZOw/4HC3fLYwTj2Cfl7LGOveIE44t3lsKjAECgYEAtowULNBJiH0kc/Pb8N2o\nAEQA+Atyn8IPumZ2mYMJFMBfMlZxg5FvNHc8B8sqNFJ15CorWuzUYzp7hz+aEv0v\nP9agsqdSa0mPorolxvetRReRQuGMtJYxJDcmtg50YdlDT0dMgruwxQUYfsqTH29c\nPi5b3CfbTvdjZAz5SVV3LtE=\n-----END PRIVATE KEY-----\n",
-        "client_email" => "firebase-adminsdk-xxxxx@vi-max-ec031.iam.gserviceaccount.com",
-        "client_id" => "112872972029936767965",
-        "token_uri" => "https://oauth2.googleapis.com/token",
-    ];
+    private function getServiceAccount()
+    {
+        $projectId = env('FIREBASE_PROJECT_ID');
+        $clientEmail = env('FIREBASE_CLIENT_EMAIL');
+        $privateKey = env('FIREBASE_PRIVATE_KEY');
+        $tokenUri = env('FIREBASE_TOKEN_URI', 'https://oauth2.googleapis.com/token');
+        if (!$projectId || !$clientEmail || !$privateKey) {
+            return null;
+        }
+        $privateKey = str_replace("\\n", "\n", $privateKey);
+        return [
+            'type' => 'service_account',
+            'project_id' => $projectId,
+            'private_key_id' => env('FIREBASE_PRIVATE_KEY_ID'),
+            'private_key' => $privateKey,
+            'client_email' => $clientEmail,
+            'client_id' => env('FIREBASE_CLIENT_ID'),
+            'token_uri' => $tokenUri,
+        ];
+    }
 
     /**
      * Generar Access Token para Firebase
      */
     private function getAccessToken()
     {
+        $serviceAccount = $this->getServiceAccount();
+        if (!$serviceAccount) {
+            Log::warning('Firebase no configurado, omitida generación de access token');
+            return null;
+        }
         $now = time();
         $payload = [
-            'iss' => $this->serviceAccount['client_email'],
+            'iss' => $serviceAccount['client_email'],
             'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
-            'aud' => 'https://oauth2.googleapis.com/token',
+            'aud' => $serviceAccount['token_uri'] ?? 'https://oauth2.googleapis.com/token',
             'exp' => $now + 3600,
             'iat' => $now
         ];
@@ -39,11 +53,11 @@ class FirebaseNotificationService
         $payloadEncoded = $this->base64UrlEncode(json_encode($payload));
         $dataToSign = $headerEncoded . '.' . $payloadEncoded;
 
-        openssl_sign($dataToSign, $signature, $this->serviceAccount['private_key'], 'SHA256');
+        openssl_sign($dataToSign, $signature, $serviceAccount['private_key'], 'SHA256');
         $signatureEncoded = $this->base64UrlEncode($signature);
         $jwt = $dataToSign . '.' . $signatureEncoded;
 
-        $response = Http::asForm()->timeout(10)->post('https://oauth2.googleapis.com/token', [
+        $response = Http::asForm()->timeout(10)->post($serviceAccount['token_uri'] ?? 'https://oauth2.googleapis.com/token', [
             'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
             'assertion' => $jwt
         ]);
@@ -63,6 +77,11 @@ class FirebaseNotificationService
     public function sendUserStatusNotification($userId, $newStatus)
     {
         try {
+            $serviceAccount = $this->getServiceAccount();
+            if (!$serviceAccount) {
+                Log::warning('Firebase no configurado, omitido envío de notificación');
+                return false;
+            }
             // 1. Obtener token del usuario
             $token = DB::table('device_tokens')
                 ->where('user_id', $userId)
@@ -130,7 +149,11 @@ class FirebaseNotificationService
     private function sendToToken($fcmToken, $title, $body, $data, $accessToken)
     {
         try {
-            $projectId = $this->serviceAccount['project_id'];
+            $serviceAccount = $this->getServiceAccount();
+            if (!$serviceAccount) {
+                return ['success' => false, 'invalid_token' => false];
+            }
+            $projectId = $serviceAccount['project_id'];
             $fcmUrl = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
 
             $payload = [
