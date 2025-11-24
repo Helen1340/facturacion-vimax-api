@@ -166,13 +166,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 
 
-// --- Rutas de prueba para confirmar que la API funciona ---
-Route::get('/', function () {
-    return response()->json([
-        'message' => 'API de Facturación Vimax activa.',
-        'status' => 'OK'
-    ]);
-});
+
 
 
 
