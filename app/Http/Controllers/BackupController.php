@@ -90,24 +90,43 @@ class BackupController extends Controller
                 mkdir($dbDir, 0775, true);
             }
             $dumpPath = "{$dbDir}/dump.sql";
-            $mysqldump = 'c:\xampp\mysql\bin\mysqldump.exe';
-            $db = env('DB_DATABASE');
-            $dbUser = env('DB_USERNAME');
-            $dbPass = env('DB_PASSWORD');
-            $dbHost = env('DB_HOST', '127.0.0.1');
-            if (is_file($mysqldump)) {
-                $cmd = "\"{$mysqldump}\" --user=\"{$dbUser}\" --password=\"{$dbPass}\" --host=\"{$dbHost}\" --routines --triggers \"{$db}\" --result-file=\"{$dumpPath}\"";
+            $driver = DB::getDefaultConnection();
+            $db = config("database.connections.{$driver}.database", env('DB_DATABASE'));
+            $dbUser = config("database.connections.{$driver}.username", env('DB_USERNAME'));
+            $dbPass = config("database.connections.{$driver}.password", env('DB_PASSWORD'));
+            $dbHost = config("database.connections.{$driver}.host", env('DB_HOST', '127.0.0.1'));
+            $dbPort = config("database.connections.{$driver}.port", env('DB_PORT'));
+
+            if ($driver === 'mysql') {
+                $mysqldump = 'c:\\xampp\\mysql\\bin\\mysqldump.exe';
+                if (!is_file($mysqldump)) {
+                    $mysqldump = 'mysqldump';
+                }
+                $cmd = "\"{$mysqldump}\" --user=\"{$dbUser}\" --password=\"{$dbPass}\" --host=\"{$dbHost}\"" . ($dbPort ? " --port=\"{$dbPort}\"" : "") . " --routines --triggers \"{$db}\" --result-file=\"{$dumpPath}\"";
+                @exec($cmd, $out, $status);
+                if ($status === 0 && is_file($dumpPath)) {
+                    $dbIncluded = true;
+                }
+            } elseif ($driver === 'pgsql') {
+                $pgDump = 'pg_dump';
+                $prefix = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' ? "set PGPASSWORD=\"{$dbPass}\" && " : "PGPASSWORD=\"{$dbPass}\" ";
+                $cmd = $prefix . "{$pgDump} -h \"{$dbHost}\"" . ($dbPort ? " -p \"{$dbPort}\"" : "") . " -U \"{$dbUser}\" -d \"{$db}\" -f \"{$dumpPath}\" -F p";
                 @exec($cmd, $out, $status);
                 if ($status === 0 && is_file($dumpPath)) {
                     $dbIncluded = true;
                 }
             }
+
             if (!$dbIncluded) {
                 $csvDir = "{$dbDir}/csv";
                 if (!is_dir($csvDir)) {
                     mkdir($csvDir, 0775, true);
                 }
-                $tables = DB::select('SHOW FULL TABLES WHERE Table_type = "BASE TABLE"');
+                if ($driver === 'mysql') {
+                    $tables = DB::select('SHOW FULL TABLES WHERE Table_type = "BASE TABLE"');
+                } else {
+                    $tables = DB::select("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'");
+                }
                 $csvAny = false;
                 foreach ($tables as $t) {
                     $arrT = (array) $t;
@@ -115,8 +134,12 @@ class BackupController extends Controller
                     if (!$table) {
                         continue;
                     }
-                    $cols = DB::select("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?", [$db, $table]);
-                    $colNames = array_map(fn($c) => $c->COLUMN_NAME, $cols);
+                    if ($driver === 'mysql') {
+                        $cols = DB::select("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?", [$db, $table]);
+                    } else {
+                        $cols = DB::select("SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = ?", [$table]);
+                    }
+                    $colNames = array_map(function ($c) { $arr = (array) $c; return reset($arr); }, $cols);
                     $csvPath = "{$csvDir}/{$table}.csv";
                     $fh = fopen($csvPath, 'w');
                     fputcsv($fh, $colNames);
