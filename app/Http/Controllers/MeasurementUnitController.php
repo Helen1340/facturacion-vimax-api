@@ -27,16 +27,6 @@ class MeasurementUnitController extends Controller
         ]);
 
         $data = $request->all();
-        // Asignar automáticamente la empresa del usuario logueado
-        $user = Auth::user();
-        if (!$user || !$user->company_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Usuario no autenticado o sin empresa asociada'
-            ], 401);
-        }
-        $data['company_id'] = $user->company_id;
-        
         $unit = MeasurementUnit::create($data);
         return response()->json($unit, 201);
     }

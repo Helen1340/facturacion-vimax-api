@@ -12,7 +12,7 @@ class MeasurementUnit extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope(new \App\Models\Scopes\CompanyScope);
+        
     }
 
     protected $fillable = [
@@ -127,4 +127,3 @@ class MeasurementUnit extends Model
         return $query->get();
     }
 }
-
