@@ -7,6 +7,8 @@ use App\Models\InvoiceDetail;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\FacturaAprobada;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -30,7 +32,7 @@ class InvoiceService
     public function createInvoice(array $data)
     {
         DB::beginTransaction();
-        
+
         try {
             // Obtener usuario logueado y su empresa
             $loggedUser = Auth::user();
@@ -40,7 +42,7 @@ class InvoiceService
 
             // Validar que el usuario (facturador) existe y tiene empresa
             $user = User::with('company')->findOrFail($data['user_id']);
-            
+
             if (!$user->company) {
                 throw new \Exception('El usuario no tiene una empresa asociada');
             }
@@ -52,7 +54,7 @@ class InvoiceService
 
             // Validar que el buyer_id (cliente) existe y es un cliente
             $buyer = User::with(['company', 'role'])->findOrFail($data['buyer_id']);
-            
+
             if (!$buyer->company) {
                 throw new \Exception('El cliente no tiene una empresa asociada');
             }
@@ -110,10 +112,9 @@ class InvoiceService
                 'message' => 'Factura creada exitosamente',
                 'data' => $invoice
             ];
-
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             Log::error('Error creando factura', [
                 'error' => $e->getMessage(),
                 'data' => $data
@@ -227,16 +228,16 @@ class InvoiceService
                 case 'Porcentaje':
                     $taxValue = ($amount * $tax->percentage) / 100;
                     break;
-                
+
                 case 'ValorFijo':
                     $taxValue = $tax->fixed_value;
                     break;
-                
+
                 case 'Retencion':
                     // Las retenciones son negativas (restan del total)
-                    $taxValue = -($amount * $tax->percentage) / 100;
+                    $taxValue = - ($amount * $tax->percentage) / 100;
                     break;
-                
+
                 default:
                     $taxValue = 0;
             }
@@ -271,9 +272,9 @@ class InvoiceService
         }
 
         // Buscar el último número usado con este prefijo
-        $lastInvoice = ElectronicInvoice::whereHas('user', function($q) use ($company) {
-                $q->where('company_id', $company->id);
-            })
+        $lastInvoice = ElectronicInvoice::whereHas('user', function ($q) use ($company) {
+            $q->where('company_id', $company->id);
+        })
             ->where('invoice_number', 'like', $numbering->prefix . '-%')
             ->orderBy('id', 'desc')
             ->first();
@@ -299,12 +300,49 @@ class InvoiceService
     }
 
     /**
+     * Envía email al cliente cuando la factura es aceptada por la DIAN
+     */
+    private function sendApprovalEmail($invoice)
+    {
+        try {
+            $cliente = $invoice->buyer;
+
+            if (!$cliente || !$cliente->email) {
+                Log::warning('No se puede enviar email: cliente sin email', [
+                    'factura_id' => $invoice->id,
+                    'cliente_id' => $invoice->buyer_id
+                ]);
+                return false;
+            }
+
+            // Enviar email con PDF adjunto
+            Mail::to($cliente->email)
+                ->send(new FacturaAprobada($invoice, $cliente));
+
+            Log::info('✅ Email de factura aprobada enviado CON PDF', [
+                'factura' => $invoice->invoice_number,
+                'cliente' => $cliente->email,
+                'pdf_generado' => true
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('❌ Error enviando email de factura aprobada', [
+                'factura_id' => $invoice->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return false;
+        }
+    }
+
+    /**
      * Envía la factura a la DIAN (simulado)
      */
     public function sendToDian($invoiceId)
     {
         $invoice = ElectronicInvoice::with([
-            'user.company', 
+            'user.company',
             'user.company.dianNumberings',
             'user.company.digitalCertificates',
             'buyer',
@@ -358,6 +396,11 @@ class InvoiceService
         // Simular envío a la DIAN
         $result = $this->dianSimulator->sendInvoiceToDian($invoice);
 
+        //  ENVIAR EMAIL SI FUE EXITOSO
+        if ($result['success'] && $result['data']['status'] === 'accepted') {
+            $this->sendApprovalEmail($invoice);
+        }
+
         return $result;
     }
 
@@ -379,12 +422,12 @@ class InvoiceService
         // Asegurar que invoiceDetails sea una colección/array
         // Convertir a array para asegurar que se serialice correctamente
         $invoiceArray = $invoice->toArray();
-        
+
         // Si invoiceDetails no está como array, forzarlo
         if (isset($invoiceArray['invoice_details']) && !is_array($invoiceArray['invoice_details'])) {
             $invoiceArray['invoice_details'] = [];
         }
-        
+
         // También asegurar el formato correcto de invoiceDetails
         if ($invoice->relationLoaded('invoiceDetails')) {
             $invoiceArray['invoiceDetails'] = $invoice->invoiceDetails->map(function ($detail) {
@@ -450,9 +493,9 @@ class InvoiceService
             if ($loggedUser && $loggedUser->company_id) {
                 // Validar que el usuario filtrado pertenezca a la misma empresa
                 $query->where('user_id', $filters['user_id'])
-                      ->whereHas('user', function($q) use ($loggedUser) {
-                          $q->where('company_id', $loggedUser->company_id);
-                      });
+                    ->whereHas('user', function ($q) use ($loggedUser) {
+                        $q->where('company_id', $loggedUser->company_id);
+                    });
             } else {
                 $query->where('user_id', $filters['user_id']);
             }
@@ -498,7 +541,7 @@ class InvoiceService
         $query = ElectronicInvoice::query();
 
         if ($companyId) {
-            $query->whereHas('user', function($q) use ($companyId) {
+            $query->whereHas('user', function ($q) use ($companyId) {
                 $q->where('company_id', $companyId);
             });
         }
@@ -571,8 +614,4 @@ class InvoiceService
             'message' => 'Factura eliminada exitosamente'
         ];
     }
-
-
-
-
 }

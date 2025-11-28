@@ -261,6 +261,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'Credenciales incorrectas'], 401);
         }
 
+        if (strtolower((string) $user->status) === 'inactive') {
+            return response()->json(['message' => 'Usuario desactivado'], 403);
+        }
+
         $company = $user->company;
         $token = $user->createToken('auth_token')->plainTextToken;
 

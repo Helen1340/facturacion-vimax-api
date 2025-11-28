@@ -27,13 +27,13 @@ class DianSimulatorService
     public function generateCUFE($invoice)
     {
         $company = $invoice->user->company;
-        
+
         // Asegurar que issue_date sea un objeto Carbon
         $issueDate = $invoice->issue_date;
         if (is_string($issueDate)) {
             $issueDate = \Carbon\Carbon::parse($issueDate);
         }
-        
+
         // Datos para generar CUFE (según especificación DIAN)
         $cufeData = [
             $company->nit,
@@ -45,16 +45,16 @@ class DianSimulatorService
             $invoice->document_currency_code,
             $company->nit // NIT del adquirente (mismo que emisor en este caso)
         ];
-        
+
         // Concatenar datos
         $cufeString = implode('', $cufeData);
-        
+
         // Generar hash SHA-384 (simulado, en producción sería más complejo)
         $hash = hash('sha256', $cufeString . config('app.key'));
-        
+
         // Formato CUFE: primeros 64 caracteres del hash en mayúsculas
         $cufe = strtoupper(substr($hash, 0, 64));
-        
+
         // Agregar prefijo para simulación
         return 'CUFE-' . $cufe;
     }
@@ -80,7 +80,7 @@ class DianSimulatorService
                 'dian_status' => 'rejected',
                 'sent_at' => now()
             ]);
-            
+
             return [
                 'success' => false,
                 'message' => 'La factura no cumple con los requisitos para ser enviada a la DIAN',
@@ -214,37 +214,37 @@ class DianSimulatorService
     {
         $company = $invoice->user->company;
         $user = $invoice->user;
-        
+
         // Cargar detalles con relaciones y buyer (cliente/comprador)
         $invoice->load('invoiceDetails.item.taxes', 'invoiceDetails.item.measurementUnit', 'buyer');
-        
+
         // Validar que existe un buyer (cliente)
         if (!$invoice->buyer) {
             throw new \Exception('La factura debe tener un cliente (buyer) asignado');
         }
-        
+
         // Asegurar que issue_date sea un objeto Carbon
         $issueDateObj = $invoice->issue_date;
         if (is_string($issueDateObj)) {
             $issueDateObj = \Carbon\Carbon::parse($issueDateObj);
         }
-        
+
         // Formatear fecha según UBL (YYYY-MM-DD)
         $issueDate = $issueDateObj->format('Y-m-d');
         $issueTime = $issueDateObj->format('H:i:s');
-        
+
         // Generar líneas de factura (InvoiceLine)
         $invoiceLines = $this->generateInvoiceLines($invoice);
-        
+
         // Generar totales de impuestos
         $taxTotal = $this->generateTaxTotal($invoice);
-        
+
         // Generar información del cliente (usar buyer en lugar de user)
         $customerParty = $this->generateCustomerParty($invoice->buyer);
-        
+
         // Generar información de pago
         $paymentMeans = $this->generatePaymentMeans($invoice);
-        
+
         // 1. Generar XML sin firma
         $xmlWithoutSignature = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -317,7 +317,7 @@ XML;
         // 2. Firmar el XML
         try {
             $signatureData = $this->signatureService->signXML($xmlWithoutSignature, $company);
-            
+
             // 3. Insertar la firma en el XML
             $xmlWithSignature = str_replace(
                 '{{SIGNATURE}}',
@@ -326,7 +326,6 @@ XML;
             );
 
             return $xmlWithSignature;
-
         } catch (\Exception $e) {
             // Si no hay certificado, devolver XML sin firma
             Log::warning("No se pudo firmar el XML: " . $e->getMessage());
@@ -364,17 +363,18 @@ XML;
     /**
      * Genera URL del código QR en formato DIAN
      */
-    private function generateQRUrl($invoice, $cufe)
+    // En DianSimulatorService.php
+    public function generateQRUrl($invoice, $cufe)
     {
         $company = $invoice->user->company;
 
         $qrData = [
             'NumFac' => $invoice->invoice_number,
-            'FecFac' => is_string($invoice->issue_date) 
+            'FecFac' => is_string($invoice->issue_date)
                 ? date('Y-m-d', strtotime($invoice->issue_date))
                 : $invoice->issue_date->format('Y-m-d'),
             'NitFac' => $company->nit,
-            'DocAdq' => $invoice->user->document_number,
+            'DocAdq' => optional($invoice->buyer)->document_number,
             'ValFac' => number_format($invoice->payable_amount, 2, '.', ''),
             'ValIva' => number_format($invoice->tax_inclusive_amount - $invoice->tax_exclusive_amount, 2, '.', ''),
             'ValOtroIm' => '0.00',
@@ -483,7 +483,7 @@ XML;
             ->where('document_type', 'Factura')
             ->where('current_status', 'Activo')
             ->first();
-        
+
         if (!$numbering) {
             $errors[] = 'No hay numeración DIAN activa para facturas';
         } else {
@@ -525,14 +525,14 @@ XML;
     {
         $lines = '';
         $lineNumber = 1;
-        
+
         foreach ($invoice->invoiceDetails as $detail) {
             $item = $detail->item;
             $unitCode = 'C62'; // C62 = Unidad (por defecto)
             if ($item && $item->relationLoaded('measurementUnit') && $item->measurementUnit) {
                 $unitCode = $item->measurementUnit->code ?? 'C62';
             }
-            
+
             $lines .= <<<XML
     <cac:InvoiceLine>
         <cbc:ID>{$lineNumber}</cbc:ID>
@@ -555,7 +555,7 @@ XML;
 XML;
             $lineNumber++;
         }
-        
+
         return $lines;
     }
 
@@ -565,61 +565,61 @@ XML;
     private function generateLineTaxes($detail)
     {
         $item = $detail->item;
-        
+
         if (!$item || !$item->relationLoaded('taxes')) {
             // Si no hay item o impuestos cargados, retornar vacío
             return '';
         }
-        
+
         $taxes = $item->taxes->where('status', 'Activo');
-        
+
         if ($taxes->isEmpty() || $detail->tax_amount <= 0) {
             return '';
         }
-        
+
         $taxableAmount = $detail->line_extension_amount;
         $taxSubtotals = '';
         $totalTaxAmount = 0;
-        
+
         // Generar un TaxSubtotal por cada impuesto activo
         foreach ($taxes as $tax) {
             $taxValue = 0;
-            
+
             // Calcular el valor del impuesto según su tipo de aplicación
             switch ($tax->application_type) {
                 case 'Porcentaje':
                     $taxValue = ($taxableAmount * $tax->percentage) / 100;
                     break;
-                
+
                 case 'ValorFijo':
                     $taxValue = $tax->fixed_value ?? 0;
                     break;
-                
+
                 case 'Retencion':
                     // Las retenciones se calculan pero se muestran como negativas en el XML
                     $taxValue = ($taxableAmount * $tax->percentage) / 100;
                     break;
-                
+
                 default:
                     $taxValue = 0;
             }
-            
+
             if ($taxValue <= 0 && $tax->application_type !== 'Retencion') {
                 continue; // Saltar impuestos con valor 0 (excepto retenciones)
             }
-            
+
             // Mapear tipo de impuesto a código DIAN
             $taxSchemeId = $this->getTaxSchemeId($tax->type);
             $taxSchemeName = $tax->name;
             $percent = $tax->application_type === 'Porcentaje' ? $tax->percentage : 0;
-            
+
             // Para retenciones, el valor es negativo
             if ($tax->application_type === 'Retencion') {
                 $taxValue = -abs($taxValue);
             }
-            
+
             $totalTaxAmount += $taxValue;
-            
+
             $taxSubtotals .= <<<XML
             <cac:TaxSubtotal>
                 <cbc:TaxableAmount currencyID="COP">{$this->formatAmount($taxableAmount)}</cbc:TaxableAmount>
@@ -634,11 +634,11 @@ XML;
             </cac:TaxSubtotal>
 XML;
         }
-        
+
         if (empty($taxSubtotals)) {
             return '';
         }
-        
+
         // El TaxAmount total debe ser la suma de todos los impuestos (puede ser negativo si hay retenciones)
         return <<<XML
         <cac:TaxTotal>
@@ -647,7 +647,7 @@ XML;
         </cac:TaxTotal>
 XML;
     }
-    
+
     /**
      * Mapea el tipo de impuesto al código DIAN según especificación UBL 2.1
      */
@@ -662,14 +662,14 @@ XML;
             'RETEIVA' => '03',       // Retención de IVA
             'RETEICA' => '03',       // Retención de ICA
         ];
-        
+
         // Buscar coincidencia exacta o parcial
         foreach ($mapping as $key => $code) {
             if (stripos($taxType, $key) !== false) {
                 return $code;
             }
         }
-        
+
         // Por defecto, usar código 01 (IVA) si no se encuentra
         return '01';
     }
@@ -680,27 +680,27 @@ XML;
     private function generateTaxTotal($invoice)
     {
         $totalTax = $invoice->tax_inclusive_amount - $invoice->tax_exclusive_amount;
-        
+
         if ($totalTax <= 0) {
             return '';
         }
-        
+
         // Agrupar impuestos por tipo desde todos los detalles
         $taxGroups = [];
         $taxableAmount = $invoice->tax_exclusive_amount;
-        
+
         foreach ($invoice->invoiceDetails as $detail) {
             $item = $detail->item;
-            
+
             if (!$item || !$item->relationLoaded('taxes')) {
                 continue;
             }
-            
+
             $taxes = $item->taxes->where('status', 'Activo');
-            
+
             foreach ($taxes as $tax) {
                 $taxKey = $tax->type . '_' . ($tax->percentage ?? $tax->fixed_value ?? '0');
-                
+
                 if (!isset($taxGroups[$taxKey])) {
                     $taxGroups[$taxKey] = [
                         'tax' => $tax,
@@ -708,30 +708,30 @@ XML;
                         'taxable_amount' => 0
                     ];
                 }
-                
+
                 // Calcular el valor del impuesto para esta línea
                 $lineTaxableAmount = $detail->line_extension_amount;
                 $taxValue = 0;
-                
+
                 switch ($tax->application_type) {
                     case 'Porcentaje':
                         $taxValue = ($lineTaxableAmount * $tax->percentage) / 100;
                         break;
-                    
+
                     case 'ValorFijo':
                         $taxValue = $tax->fixed_value ?? 0;
                         break;
-                    
+
                     case 'Retencion':
-                        $taxValue = -($lineTaxableAmount * $tax->percentage) / 100;
+                        $taxValue = - ($lineTaxableAmount * $tax->percentage) / 100;
                         break;
                 }
-                
+
                 $taxGroups[$taxKey]['total_amount'] += $taxValue;
                 $taxGroups[$taxKey]['taxable_amount'] += $lineTaxableAmount;
             }
         }
-        
+
         if (empty($taxGroups)) {
             // Si no hay impuestos agrupados, usar el total calculado
             return <<<XML
@@ -751,26 +751,26 @@ XML;
     </cac:TaxTotal>
 XML;
         }
-        
+
         // Generar TaxSubtotal por cada grupo de impuestos
         $taxSubtotals = '';
         $calculatedTotal = 0;
-        
+
         foreach ($taxGroups as $group) {
             $tax = $group['tax'];
             $groupTaxAmount = $group['total_amount'];
             $groupTaxableAmount = $group['taxable_amount'];
-            
+
             if (abs($groupTaxAmount) < 0.01) {
                 continue; // Saltar grupos con valor muy pequeño
             }
-            
+
             $taxSchemeId = $this->getTaxSchemeId($tax->type);
             $taxSchemeName = $tax->name;
             $percent = $tax->application_type === 'Porcentaje' ? $tax->percentage : 0;
-            
+
             $calculatedTotal += $groupTaxAmount;
-            
+
             $taxSubtotals .= <<<XML
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{$invoice->document_currency_code}">{$this->formatAmount($groupTaxableAmount)}</cbc:TaxableAmount>
@@ -785,11 +785,11 @@ XML;
         </cac:TaxSubtotal>
 XML;
         }
-        
+
         if (empty($taxSubtotals)) {
             return '';
         }
-        
+
         return <<<XML
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="{$invoice->document_currency_code}">{$this->formatAmount($totalTax)}</cbc:TaxAmount>
@@ -805,7 +805,7 @@ XML;
     {
         $documentType = $user->document_type ?? 'CC';
         $documentNumber = $user->document_number ?? '';
-        
+
         return <<<XML
     <cac:AccountingCustomerParty>
         <cac:Party>
@@ -833,7 +833,7 @@ XML;
     {
         $paymentCode = $invoice->payment_means_code ?? '10';
         $paymentName = $invoice->payment_means_name ?? 'Contado';
-        
+
         return <<<XML
     <cac:PaymentMeans>
         <cbc:PaymentMeansCode listID="UN/ECE 4461" listName="Payment Means" listAgencyName="United Nations Economic Commission for Europe">{$paymentCode}</cbc:PaymentMeansCode>

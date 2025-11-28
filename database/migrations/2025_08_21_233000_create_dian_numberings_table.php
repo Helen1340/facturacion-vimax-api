@@ -20,7 +20,7 @@ return new class extends Migration
             
            // Información de la numeración según DIAN
             $table->enum('document_type', ['Factura', 'NotaCredito', 'NotaDebito']); // Tipo de documento
-            $table->string('document_type_code', 2)->nullable(); // Código del tipo de documento según DIAN (opcional)
+            $table->string('document_type_code', 100)->nullable(); // Código del tipo de documento según DIAN (opcional)
             $table->string('prefix', 10); // Prefijo de numeración
             $table->unsignedBigInteger('start_number'); // Número inicial autorizado
             $table->unsignedBigInteger('end_number'); // Número final autorizado

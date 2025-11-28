@@ -1,173 +1,222 @@
-<!doctype html>
-<html lang="es">
+<!DOCTYPE html>
+<html>
 
 <head>
     <meta charset="utf-8">
+    <title>Factura {{ $invoice->invoice_number }}</title>
     <style>
         body {
-            font-family: DejaVu Sans, Arial, sans-serif;
+            font-family: Arial, sans-serif;
             font-size: 12px;
-            color: #111;
-        }
-
-        .wrap {
-            width: 100%;
-            padding: 24px;
         }
 
         .header {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
-        .brand {
-            font-size: 18px;
-            font-weight: 700;
-            color: #0f6efd;
+        .logo {
+            width: 100px;
+            margin-right: 20px;
         }
 
-        .doc-title {
-            text-align: right;
+        .qr img, .qr svg {
+            width: 120px;
+            height: 120px;
         }
 
-        .doc-title h1 {
-            font-size: 18px;
-            margin: 0;
+        .company-details {
+            flex: 1;
         }
 
-        .section {
-            margin-top: 14px;
+        .company-info {
+            margin-bottom: 20px;
         }
 
-        .box {
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 10px;
+        .invoice-info {
+            margin-bottom: 20px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 20px;
         }
 
         th,
         td {
+            border: 1px solid #ddd;
             padding: 8px;
-            border-bottom: 1px solid #eee;
             text-align: left;
         }
 
         th {
-            background: #f7f7f9;
-            font-weight: 600;
+            background-color: #f2f2f2;
         }
 
-        .right {
-            text-align: right;
+        .totals {
+            float: right;
+            width: 300px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .watermark {
+            opacity: 0.1;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 72px;
+            color: #ccc;
         }
     </style>
 </head>
 
 <body>
-    <div class="wrap">
-        <div class="header">
-            <div class="brand">
-                @if(!empty($invoice->user->company->logo_url))
-                    <img src="{{ $invoice->user->company->logo_url }}" alt="Logo" style="max-height:48px;">
-                @else
-                    {{ $invoice->user->company->business_name ?? 'Empresa' }}
-                @endif
-            </div>
-            <div class="doc-title">
-                <h1>Factura {{ $invoice->invoice_number ?? $invoice->id }}</h1>
-                <div>Fecha: {{ \Carbon\Carbon::parse($invoice->issue_date)->format('Y-m-d') }}</div>
-                @if(!empty($invoice->uuid))
-                    <div>CUFE: {{ $invoice->uuid }}</div>
-                @endif
-            </div>
-        </div>
+    <!-- Marca de agua opcional 
+    <div class="watermark">APROBADA DIAN</div>-->
 
-        <div class="section box">
-            <table>
-                <tr>
-                    <th>Vendedor</th>
-                    <th>Cliente</th>
-                </tr>
-                <tr>
-                    <td>
-                        {{ $invoice->user->company->business_name ?? 'Empresa' }}<br>
-                        {{ $invoice->user->email ?? '' }}<br>
-                        {{ $invoice->user->company->address ?? '' }}
-                    </td>
-                    <td>
-                        {{ $invoice->buyer->first_name ?? 'Cliente' }}<br>
-                        {{ $invoice->buyer->email ?? '' }}<br>
-                        {{ $invoice->buyer->address ?? '' }}
-                    </td>
-                </tr>
-            </table>
+    <div class="header">
+        @if(($enableImages ?? true) && optional(optional($invoice->user)->company)->logo_url)
+        <div class="logo">
+            <img src="{{ optional(optional($invoice->user)->company)->logo_url }}" alt="Logo" style="max-width: 100px; max-height: 80px;">
         </div>
+        @endif
 
-        <div class="section box">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Descripción</th>
-                        <th class="right">Cantidad</th>
-                        <th class="right">Precio</th>
-                        <th class="right">Descuento</th>
-                        <th class="right">Impuestos</th>
-                        <th class="right">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach(($invoice->invoiceDetails ?? []) as $d)
-                    <tr>
-                        <td>{{ $d->description ?? ($d->item->name ?? '') }}</td>
-                        <td class="right">{{ number_format($d->quantity ?? 0, 0) }}</td>
-                        <td class="right">{{ number_format($d->unit_price ?? 0, 2, '.', ',') }}</td>
-                        <td class="right">{{ number_format($d->discount_amount ?? 0, 2, '.', ',') }}</td>
-                        <td class="right">{{ number_format($d->tax_amount ?? 0, 2, '.', ',') }}</td>
-                        <td class="right">{{ number_format($d->total_line_amount ?? 0, 2, '.', ',') }}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        <div class="section box">
-            <table>
-                <tr>
-                    <td class="right"><strong>Subtotal</strong></td>
-                    <td class="right">{{ number_format($invoice->line_extension_amount ?? 0, 2, '.', ',') }}</td>
-                </tr>
-                <tr>
-                    <td class="right"><strong>Impuestos</strong></td>
-                    <td class="right">{{ number_format(($invoice->tax_inclusive_amount ?? 0) - ($invoice->tax_exclusive_amount ?? 0), 2, '.', ',') }}</td>
-                </tr>
-                <tr>
-                    <td class="right"><strong>Total</strong></td>
-                    <td class="right">{{ number_format($invoice->payable_amount ?? 0, 2, '.', ',') }} {{ $invoice->document_currency_code ?? 'COP' }}</td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="section box">
-            <strong>Pago</strong>
-            <div><b>Método:</b> {{ $invoice->payment_means_name ?? 'Contado' }} ({{ $invoice->payment_means_code ?? '10' }})</div>
-        </div>
-
-        @if(isset($invoice->electronicDocuments) && $invoice->electronicDocuments->count())
-            @php $doc = $invoice->electronicDocuments->last(); @endphp
-            @if(!empty($doc->qr_code))
-                <div class="section box">
-                    <strong>QR de validación DIAN</strong><br>
-                    <img src="{{ $doc->qr_code }}" alt="QR" style="max-height:120px;">
-                </div>
+        <div class="company-details">
+            <h1>FACTURA ELECTRÓNICA</h1>
+            <h2>{{ optional(optional($invoice->user)->company)->business_name ?? 'Empresa' }}</h2>
+            <p>NIT: {{ optional(optional($invoice->user)->company)->nit ?? 'Sin NIT' }}</p>
+            @if(optional(optional($invoice->user)->company)->trade_name)
+            <p>Nombre Comercial: {{ optional(optional($invoice->user)->company)->trade_name }}</p>
             @endif
+        </div>
+
+        @if(($qrSvg ?? null) || (($enableImages ?? true) && ($qrImageUrl ?? null)))
+        <div class="qr">
+            @if(($qrSvg ?? null))
+                {!! $qrSvg !!}
+            @elseif(($enableImages ?? true) && ($qrImageUrl ?? null))
+                <img src="{{ $qrImageUrl }}" alt="QR">
+            @endif
+        </div>
         @endif
     </div>
+
+    <div class="company-info">
+        <strong>EMISOR:</strong><br>
+        {{ optional(optional($invoice->user)->company)->business_name ?? '' }}<br>
+        @if(optional(optional($invoice->user)->company)->address && optional(optional($invoice->user)->company)->address !== 'Sin definir')
+        {{ optional(optional($invoice->user)->company)->address }}<br>
+        @endif
+        @if(optional(optional($invoice->user)->company)->city && optional(optional($invoice->user)->company)->city !== 'Sin definir')
+        {{ optional(optional($invoice->user)->company)->city }},
+        @endif
+        @if(optional(optional($invoice->user)->company)->department && optional(optional($invoice->user)->company)->department !== 'Sin definir')
+        {{ optional(optional($invoice->user)->company)->department }}<br>
+        @endif
+        @if(optional(optional($invoice->user)->company)->phone && optional(optional($invoice->user)->company)->phone !== 'Sin definir')
+        Tel: {{ optional(optional($invoice->user)->company)->phone }}<br>
+        @endif
+        @if(optional(optional($invoice->user)->company)->email && optional(optional($invoice->user)->company)->email !== 'Sin definir')
+        Email: {{ optional(optional($invoice->user)->company)->email }}
+        @endif
+    </div>
+
+    <div class="invoice-info">
+        <strong>INFORMACIÓN DE LA FACTURA</strong><br>
+        <strong>No:</strong> {{ $invoice->invoice_number }}<br>
+        <strong>Fecha:</strong> {{ $invoice->issue_date ? \Carbon\Carbon::parse($invoice->issue_date)->format('d/m/Y') : '' }}<br>
+        <strong>CUFE:</strong> {{ $invoice->uuid ?? 'Pendiente' }}<br>
+
+        <br><strong>INFORMACIÓN DEL CLIENTE</strong><br>
+        <strong>Nombre:</strong> {{ optional($invoice->buyer)->first_name ?? '' }}<br>
+        <strong>Documento:</strong> {{ optional($invoice->buyer)->document_type ?? '' }} {{ optional($invoice->buyer)->document_number ?? '' }}<br>
+        @if(optional($invoice->buyer)->address)
+        <strong>Dirección:</strong> {{ optional($invoice->buyer)->address }}<br>
+        @endif
+        @if(optional($invoice->buyer)->email)
+        <strong>Email:</strong> {{ optional($invoice->buyer)->email }}<br>
+        @endif
+        @if(optional($invoice->buyer)->phone)
+        <strong>Teléfono:</strong> {{ optional($invoice->buyer)->phone }}
+        @endif
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Descripción</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Descuento</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($invoice->invoiceDetails as $index => $detail)
+            <tr>
+                <td>{{ $index + 1 }}</td>
+                <td>{{ $detail->description }}</td>
+                <td>{{ $detail->quantity }}</td>
+                <td>${{ number_format($detail->unit_price, 2) }}</td>
+                <td>${{ number_format($detail->discount_amount, 2) }}</td>
+                <td>${{ number_format($detail->total_line_amount, 2) }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <table>
+            <tr>
+                <td><strong>Subtotal:</strong></td>
+                <td>${{ number_format($invoice->tax_exclusive_amount ?? 0, 2) }}</td>
+            </tr>
+            <tr>
+                <td><strong>Impuestos:</strong></td>
+                <td>${{ number_format(($invoice->tax_inclusive_amount ?? 0) - ($invoice->tax_exclusive_amount ?? 0), 2) }}</td>
+            </tr>
+            @if(($invoice->total_discount ?? 0) > 0)
+            <tr>
+                <td><strong>Descuentos:</strong></td>
+                <td>${{ number_format($invoice->total_discount ?? 0, 2) }}</td>
+            </tr>
+            @endif
+            <tr style="background-color: #f8f9fa;">
+                <td><strong>TOTAL A PAGAR:</strong></td>
+                <td><strong>${{ number_format($invoice->payable_amount ?? 0, 2) }}</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="clear: both;"></div>
+
+    @if($invoice->observation)
+    <div style="margin-top: 20px;">
+        <strong>Observaciones:</strong><br>
+        {{ $invoice->observation }}
+    </div>
+    @endif
+
+    @if($invoice->uuid)
+    <div class="footer">
+        <p><strong>Factura electrónica generada automáticamente</strong></p>
+        <p><strong>CUFE:</strong> {{ $invoice->uuid }}</p>
+        <p>Este documento es válido como factura de venta según normativa DIAN</p>
+        @if($invoice->sent_at)
+        <p>Fecha de validación: {{ \Carbon\Carbon::parse($invoice->sent_at)->format('d/m/Y H:i:s') }}</p>
+        @endif
+    </div>
+    @endif
 </body>
 
 </html>
