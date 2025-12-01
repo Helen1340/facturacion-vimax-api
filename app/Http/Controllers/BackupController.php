@@ -104,7 +104,7 @@ class BackupController extends Controller
                 }
                 $cmd = "\"{$mysqldump}\" --user=\"{$dbUser}\" --password=\"{$dbPass}\" --host=\"{$dbHost}\"" . ($dbPort ? " --port=\"{$dbPort}\"" : "") . " --routines --triggers \"{$db}\" --result-file=\"{$dumpPath}\"";
                 @exec($cmd, $out, $status);
-                if ($status === 0 && is_file($dumpPath)) {
+                if (is_file($dumpPath) && filesize($dumpPath) > 0) {
                     $dbIncluded = true;
                 }
             } elseif ($driver === 'pgsql') {
@@ -112,7 +112,7 @@ class BackupController extends Controller
                 $prefix = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' ? "set PGPASSWORD=\"{$dbPass}\" && " : "PGPASSWORD=\"{$dbPass}\" ";
                 $cmd = $prefix . "{$pgDump} -h \"{$dbHost}\"" . ($dbPort ? " -p \"{$dbPort}\"" : "") . " -U \"{$dbUser}\" -d \"{$db}\" -f \"{$dumpPath}\" -F p";
                 @exec($cmd, $out, $status);
-                if ($status === 0 && is_file($dumpPath)) {
+                if (is_file($dumpPath) && filesize($dumpPath) > 0) {
                     $dbIncluded = true;
                 }
             }

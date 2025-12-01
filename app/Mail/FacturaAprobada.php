@@ -65,12 +65,13 @@ class FacturaAprobada extends Mailable
         // Opciones para DomPDF para mejor manejo de imágenes
         $options = [
             'defaultFont' => 'Arial',
-            'isRemoteEnabled' => true, // Permitir cargar imágenes remotas
+            'isRemoteEnabled' => false, // Deshabilitar carga de imágenes remotas para evitar dependencia GD/Imagick
             'isHtml5ParserEnabled' => true
         ];
 
         $pdf = Pdf::loadView('pdf.invoice', [
-            'invoice' => $facturaCompleta
+            'invoice' => $facturaCompleta,
+            'enableImages' => false
         ])
             ->setPaper('letter')
             ->setOptions($options);
