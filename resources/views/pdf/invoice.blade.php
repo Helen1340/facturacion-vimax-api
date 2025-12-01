@@ -84,7 +84,7 @@
     <div class="watermark">APROBADA DIAN</div>-->
 
     <div class="header">
-        @if(($enableImages ?? true) && optional(optional($invoice->user)->company)->logo_url)
+        @if(($enableImages ?? false) && optional(optional($invoice->user)->company)->logo_url)
         <div class="logo">
             <img src="{{ optional(optional($invoice->user)->company)->logo_url }}" alt="Logo" style="max-width: 100px; max-height: 80px;">
         </div>
@@ -99,11 +99,11 @@
             @endif
         </div>
 
-        @if(($qrSvg ?? null) || (($enableImages ?? true) && ($qrImageUrl ?? null)))
+        @if(($qrSvg ?? null) || (($enableImages ?? false) && ($qrImageUrl ?? null)))
         <div class="qr">
             @if(($qrSvg ?? null))
                 {!! $qrSvg !!}
-            @elseif(($enableImages ?? true) && ($qrImageUrl ?? null))
+            @elseif(($enableImages ?? false) && ($qrImageUrl ?? null))
                 <img src="{{ $qrImageUrl }}" alt="QR">
             @endif
         </div>
